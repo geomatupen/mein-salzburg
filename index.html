@@ -287,6 +287,9 @@
 
 
     
+    // ------------------------------------Data Sources and Layers------------------------------------  //
+    // Load all GeoJSON data sources and add them as layers
+      // Add all GeoJSON sources
     // ------------------------------------choropleth layer------------------------------------  //
     // Add DEM source + enable 3D terrain, then GeoJSON source and layers
     map.on("load", () => {
@@ -304,7 +307,7 @@
 
       // Enable 3D terrain and raise exaggeration so relief is visible.
       // Increase the `exaggeration` value if you want a stronger effect.
-      map.setTerrain({ source: 'dem', exaggeration: 14.5 });
+      map.setTerrain({ source: 'dem', exaggeration: 1.2});
 
       // Add a simple sky layer for a nicer 3D appearance
       map.addLayer({
@@ -317,81 +320,7 @@
         }
       });
 
-      map.addSource("regions", {
-        type: "geojson",
-        data: "data/austria-demography-simplified-wgs84.geojson"
-      });
-
-      // Add fill layer with data-driven color using expression
-      map.addLayer({
-        id: "regions-fill",
-        type: "fill", 
-        source: "regions",
-        paint: {
-          "fill-color": "#ff8f8f", /*[
-            "interpolate",
-            ["linear"],
-            ["get", "POP_DENSIT"],    // property from  GeoJSON
-            50, "#ffc7c7",
-            100, "#ffadad",
-            150, "#ff8f8f",
-            200, "#ff5c5c",
-            250, "#ff2e2e",
-            4653, "#d50101",
-          ],*/
-          "fill-opacity": 0.8,
-        },
-      });
-
-      // Add stroke
-      map.addLayer({
-        id: "regions-outline",
-        type: "line",
-        source: "regions",
-        // simple paint for outline
-        // paint: {
-        //   "line-color": "#ffffff",
-        //   "line-width": 1
-        // }
-
-        //complex paint for outline on hover effect
-        paint: {
-          //better to change fill color instead of line color on hover
-          // "line-color": [
-          //   "case",
-          //   ["boolean", ["feature-state", "hover"], false],
-          //   "#FF0000",  // red when hovered
-          //   "#ffffff"   // normal
-          // ],
-          "line-color": "#ffffff",
-          "line-width": [
-            "case",
-            ["boolean", ["feature-state", "hover"], false], 
-            3,          // thick on hover
-            1           // normal
-          ]
-        }
-      });
-
-      
-      // Add labels on a layer
-      map.addLayer({
-        id: "regions-labels",
-        type: "symbol",
-        source: "regions",
-        layout: {
-          "text-field": ["get", "NAME"],      // your label property
-          "text-size": 12,
-          "symbol-placement": "point"
-        },
-        paint: {
-          "text-color": "#000",
-          "text-halo-color": "#fff",
-          "text-halo-width": 1.5
-        }
-      });
-
-      // --- Base map raster sources & layers (Street and Satellite) ---
+      // --- Base map raster sources & layers (Street and Satellite) - ADD FIRST SO THEY'RE BELOW ---
       // Street (OpenStreetMap)
       map.addSource('basemap-street-source', {
         type: 'raster',
@@ -415,12 +344,12 @@
         attribution: 'Tiles © Esri'
       });
 
-      // Add street raster layer (visible by default) and place it beneath the regions
+      // Add street raster layer (visible by default)
       map.addLayer({
         id: 'basemap-street',
         type: 'raster',
         source: 'basemap-street-source'
-      }, 'regions-fill');
+      });
 
       // Add satellite raster layer (hidden by default)
       map.addLayer({
@@ -428,7 +357,127 @@
         type: 'raster',
         source: 'basemap-satellite-source',
         layout: { 'visibility': 'none' }
-      }, 'regions-fill');
+      });
+
+      map.addSource("amenities", {
+        type: "geojson",
+        data: "data/amenities.geojson"
+      });
+
+      map.addSource("buildings", {
+        type: "geojson",
+        data: "data/buildings.geojson"
+      });
+
+      map.addSource("railway", {
+        type: "geojson",
+        data: "data/railway.geojson"
+      });
+
+      map.addSource("salzburg-boundaries", {
+        type: "geojson",
+        data: "data/Salzburg_Boundaries.geojson"
+      });
+
+      map.addSource("streets", {
+        type: "geojson",
+        data: "data/streets.geojson"
+      });
+
+      map.addSource("train", {
+        type: "geojson",
+        data: "data/train.geojson"
+      });
+
+      // Add layers for amenities (points)
+      map.addLayer({
+        id: "amenities-layer",
+        type: "circle",
+        source: "amenities",
+        paint: {
+          "circle-radius": 6,
+          "circle-color": "#ff6b6b",
+          "circle-opacity": 0.7
+        }
+      });
+
+      // Add layers for buildings (polygons)
+      map.addLayer({
+        id: "buildings-layer",
+        type: "fill",
+        source: "buildings",
+        paint: {
+          "fill-color": "#e74c3c",
+          "fill-opacity": 0.5
+        }
+      });
+
+      // Add stroke for buildings
+      map.addLayer({
+        id: "buildings-outline",
+        type: "line",
+        source: "buildings",
+        paint: {
+          "line-color": "#c0392b",
+          "line-width": 1
+        }
+      });
+
+      // Add layers for railway (lines)
+      map.addLayer({
+        id: "railway-layer",
+        type: "line",
+        source: "railway",
+        paint: {
+          "line-color": "#3498db",
+          "line-width": 2
+        }
+      });
+
+      // Add layers for Salzburg boundaries (polygons)
+      map.addLayer({
+        id: "salzburg-boundaries-layer",
+        type: "fill",
+        source: "salzburg-boundaries",
+        paint: {
+          "fill-color": "#f39c12",
+          "fill-opacity": 0.3
+        }
+      });
+
+      // Add stroke for Salzburg boundaries
+      map.addLayer({
+        id: "salzburg-boundaries-outline",
+        type: "line",
+        source: "salzburg-boundaries",
+        paint: {
+          "line-color": "#d68910",
+          "line-width": 2
+        }
+      });
+
+      // Add layers for streets (lines)
+      map.addLayer({
+        id: "streets-layer",
+        type: "line",
+        source: "streets",
+        paint: {
+          "line-color": "#9b59b6",
+          "line-width": 1.5
+        }
+      });
+
+      // Add layers for train (points)
+      map.addLayer({
+        id: "train-layer",
+        type: "circle",
+        source: "train",
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "#2ecc71",
+          "circle-opacity": 0.8
+        }
+      });
 
       // Wire up radio buttons to toggle the base layers
       const basemapRadios = document.querySelectorAll('input[name="basemap"]');
@@ -556,65 +605,48 @@
         `;
     }
 
-    // Add click event to show popup    
-    map.on("click", "regions-fill", (e) => {
-    const props = e.features[0].properties;
+    // Add click events for all layers to show popups
+    const layersWithPopups = [
+      "amenities-layer",
+      "buildings-layer",
+      "railway-layer",
+      "salzburg-boundaries-layer",
+      "streets-layer",
+      "train-layer"
+    ];
 
-    new maplibregl.Popup({ closeButton: true })
-        .setLngLat(e.lngLat)
-        .setHTML(buildPopupHTML(props))
-        .addTo(map);
+    layersWithPopups.forEach(layerId => {
+      map.on("click", layerId, (e) => {
+        const props = e.features[0].properties;
+        new maplibregl.Popup({ closeButton: true })
+          .setLngLat(e.lngLat)
+          .setHTML(buildPopupHTML(props))
+          .addTo(map);
+      });
     });
 
 
     //--------------------------------mouseover effect------------------------------------  //
-    let hoveredFeatureId = null;
-
-    map.on("mousemove", "regions-fill", (e) => {
-      if (!e.features.length) return;
-
-      const feature = e.features[0];
-      if (hoveredFeatureId !== null && hoveredFeatureId !== feature.id) {
-        map.setFeatureState(
-          { source: "regions", id: hoveredFeatureId },
-          { hover: false }
-        );
-      }
-
-      hoveredFeatureId = feature.id;
-
-      map.setFeatureState(
-        { source: "regions", id: hoveredFeatureId },
-        { hover: true }
-      );
-    });
-
-    map.on("mouseleave", "regions-fill", () => {
-      if (hoveredFeatureId !== null) {
-        map.setFeatureState(
-          { source: "regions", id: hoveredFeatureId },
-          { hover: false }
-        );
-      }
-      hoveredFeatureId = null;
-    });
+    // Hover effects removed - old regions-fill layer no longer exists
 
 
 
     //--------------------------------cursor pointer on layers during hover------------------------------------  //
     // Change cursor to pointer when hovering over interactive layers
-    map.on("load", () => {
-      map.on("mousemove", (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ["regions-fill", "regions-outline", "regions-labels"]
-        });
-
-        if (features.length) {
-          map.getCanvas().style.cursor = "pointer";
-        } else {
-          map.getCanvas().style.cursor = "";
-        }
+    map.on("mousemove", (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ["amenities-layer", "buildings-layer", "railway-layer", "salzburg-boundaries-layer", "streets-layer", "train-layer"]
       });
+
+      if (features.length) {
+        map.getCanvas().style.cursor = "pointer";
+      } else {
+        map.getCanvas().style.cursor = "";
+      }
+    });
+
+    // Setup marker cursors after map load
+    map.on("load", () => {
 
     
       markerDefault.getElement().style.cursor = "pointer";
@@ -973,7 +1005,7 @@
                 'circle-stroke-color': '#1978c8',
                 'circle-stroke-width': 1
               }
-            }, 'regions-fill');
+            });
           } else {
             map.getSource(accuracySourceId).setData(pointGeoJSON);
           }
