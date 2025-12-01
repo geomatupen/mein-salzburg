@@ -11,11 +11,49 @@
     body { margin: 0; padding: 0; }
     #map { width: 100%; height: 100vh; }
     .popup-table tr:nth-child(even) { background: #fce0b0; }
+    /* Search box styles */
+    #search-container {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      z-index: 3;
+      width: 300px;
+      font-family: sans-serif;
+    }
+    #search-input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.2);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      outline: none;
+      font-size: 14px;
+    }
+    #search-results {
+      margin-top: 6px;
+      background: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      max-height: 220px;
+      overflow: auto;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .search-item {
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #222;
+    }
+    .search-item:hover { background: #f1f1f1 }
 </style>
 
 </head>
 <body>
   <div id="map"></div>
+  <div id="search-container">
+    <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off">
+    <div id="search-results"></div>
+  </div>
   <div id="layer-panel">
     <h3>Layers</h3>
 
@@ -72,13 +110,116 @@
       container: "map",
       style: "https://api.maptiler.com/maps/7ef13454-8f0d-4cf9-a061-d2f4cb08a76d/style.json?key=SWfpfQVfURyYQrAEj6J3", //you may change with your style json.
       center: [14.1, 47.75],
-      zoom: 6.8
+      zoom: 6.8,
+      pitch: 45
     });
+
+    // ------------------------- Simple Nominatim search -------------------------
+    let searchMarker = null;
+
+    // debounce helper
+    function debounce(fn, wait) {
+      let t = null;
+      return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
+    const input = document.getElementById('search-input');
+    const resultsDiv = document.getElementById('search-results');
+
+    async function doSearch(query) {
+      if (!query || query.length < 3) {
+        resultsDiv.innerHTML = '';
+        return;
+      }
+
+      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=6&q=${encodeURIComponent(query)}`;
+      try {
+        const res = await fetch(url, {
+          headers: { 'Accept-Language': 'en' }
+        });
+        const json = await res.json();
+        renderResults(json);
+      } catch (err) {
+        console.error('Search error', err);
+        resultsDiv.innerHTML = '';
+      }
+    }
+
+    function renderResults(items) {
+      if (!items || !items.length) {
+        resultsDiv.innerHTML = '';
+        return;
+      }
+
+      resultsDiv.innerHTML = items.map((it, i) =>
+        `<div class="search-item" data-lon="${it.lon}" data-lat="${it.lat}">${it.display_name}</div>`
+      ).join('');
+
+      // attach click handlers
+      Array.from(resultsDiv.querySelectorAll('.search-item')).forEach(el => {
+        el.addEventListener('click', () => {
+          const lon = parseFloat(el.getAttribute('data-lon'));
+          const lat = parseFloat(el.getAttribute('data-lat'));
+          // fly to place
+          map.flyTo({ center: [lon, lat], zoom: 13 });
+
+          // add or move marker
+          if (!searchMarker) {
+            searchMarker = new maplibregl.Marker({ color: '#ff5722' }).setLngLat([lon, lat]).addTo(map);
+          } else {
+            searchMarker.setLngLat([lon, lat]);
+          }
+
+          resultsDiv.innerHTML = '';
+          input.value = '';
+        });
+      });
+    }
+
+    const debouncedSearch = debounce((e) => doSearch(e.target.value), 300);
+    input.addEventListener('input', debouncedSearch);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        resultsDiv.innerHTML = '';
+        input.value = '';
+      }
+    });
+
 
     
     // ------------------------------------choropleth layer------------------------------------  //
-    // Add GeoJSON source and layers    
+    // Add DEM source + enable 3D terrain, then GeoJSON source and layers
     map.on("load", () => {
+      // Add a raster-dem source using the free Terrarium tiles hosted on S3.
+      // This source does not require an API key and uses the "terrarium" encoding.
+      map.addSource('dem', {
+        type: 'raster-dem',
+        tiles: [
+          'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
+        ],
+        tileSize: 256,
+        maxzoom: 15,
+        encoding: 'terrarium'
+      });
+
+      // Enable 3D terrain and raise exaggeration so relief is visible.
+      // Increase the `exaggeration` value if you want a stronger effect.
+      map.setTerrain({ source: 'dem', exaggeration: 2.5 });
+
+      // Add a simple sky layer for a nicer 3D appearance
+      map.addLayer({
+        id: 'sky',
+        type: 'sky',
+        paint: {
+          'sky-type': 'atmosphere',
+          'sky-atmosphere-sun': [0.0, 45.0],
+          'sky-atmosphere-sun-intensity': 15
+        }
+      });
+
       map.addSource("regions", {
         type: "geojson",
         data: "data/austria-demography-simplified-wgs84.geojson"
@@ -90,7 +231,7 @@
         type: "fill", 
         source: "regions",
         paint: {
-          "fill-color": "#ffc7c7", /*[
+          "fill-color": "#ff8f8f", /*[
             "interpolate",
             ["linear"],
             ["get", "POP_DENSIT"],    // property from  GeoJSON
