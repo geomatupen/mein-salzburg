@@ -54,6 +54,35 @@
     <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off">
     <div id="search-results"></div>
   </div>
+    <div id="proximity-btn-container" style="position:absolute; left:324px; top:12px; z-index:3;">
+      <button id="proximity-open" style="padding:8px 10px; border-radius:4px; border:1px solid rgba(0,0,0,0.12); background:#fff; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.08);">Proximity Analysis</button>
+    </div>
+
+    <div id="proximity-panel" style="display:none; position:absolute; left:12px; top:60px; z-index:4; width:340px; background:#fff; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,0.12); padding:12px; font-family:sans-serif;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <strong>Proximity Analysis</strong>
+        <button id="proximity-close" style="background:none;border:none;cursor:pointer;font-size:16px">✕</button>
+      </div>
+      <div style="margin-bottom:8px; color:#444; font-size:13px">Click <strong>Set center</strong> then click the map to pick the center point.</div>
+      <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <button id="proximity-set-center" style="flex:1;padding:8px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#fff;color:#333;cursor:pointer">Set center</button>
+      </div>
+      <div id="proximity-info" style="font-size:13px;color:#333;margin-bottom:8px">Center: —  Radius: —</div>
+      <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <input id="proximity-radius" type="number" min="10" value="5000" style="flex:1;padding:8px;border:1px solid rgba(0,0,0,0.12);border-radius:4px" />
+        <select id="proximity-units" style="padding:8px;border:1px solid rgba(0,0,0,0.12);border-radius:4px">
+          <option value="meters">m</option>
+          <option value="kilometers">km</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <button id="proximity-run" style="flex:1;padding:8px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#ccc;color:#999;cursor:not-allowed" disabled>Run</button>
+      </div>
+      <div id="proximity-summary" style="font-size:13px; color:#222; max-height:220px; overflow:auto; border-top:1px solid rgba(0,0,0,0.04); padding-top:8px"></div>
+      <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end">
+        <button id="proximity-clear" style="padding:6px 10px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#fff;cursor:pointer">Clear</button>
+      </div>
+    </div>
   <div id="layer-panel">
     <h3>Layers</h3>
 
@@ -104,6 +133,7 @@
 
 
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
   <script>
     //map initialization
     const map = new maplibregl.Map({
@@ -468,6 +498,184 @@
       markerDefault.getElement().style.cursor = "pointer";
       markerPNG.getElement().style.cursor = "pointer";  
       markerHTML.getElement().style.cursor = "pointer";
+    });
+
+    // ---------------------- Proximity analysis logic ----------------------
+    let regionsGeo = null;
+    fetch('data/austria-demography-simplified-wgs84.geojson')
+      .then(r => r.json())
+      .then(j => { regionsGeo = j; })
+      .catch(err => { console.warn('Could not load regions GeoJSON for proximity:', err); });
+
+    const proximityOpen = document.getElementById('proximity-open');
+    const proximityPanel = document.getElementById('proximity-panel');
+    const proximityClose = document.getElementById('proximity-close');
+    const setCenterBtn = document.getElementById('proximity-set-center');
+    const runBtn = document.getElementById('proximity-run');
+    const clearBtn = document.getElementById('proximity-clear');
+    const radiusInput = document.getElementById('proximity-radius');
+    const unitsSelect = document.getElementById('proximity-units');
+    const summaryDiv = document.getElementById('proximity-summary');
+    const infoDiv = document.getElementById('proximity-info');
+
+    let proximityCenter = null; // {lng, lat}
+
+    function updateProximityInfo() {
+      const val = parseFloat(radiusInput.value) || 0;
+      const units = unitsSelect.value === 'kilometers' ? 'km' : 'm';
+      const coords = proximityCenter ? `${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}` : '\u2014';
+      infoDiv.textContent = `Center: ${coords}  Radius: ${val} ${units}`;
+    }
+
+    function showPanel() { proximityPanel.style.display = 'block'; }
+    function hidePanel() { proximityPanel.style.display = 'none'; }
+
+    proximityOpen.addEventListener('click', () => {
+      showPanel();
+    });
+    proximityClose.addEventListener('click', () => { hidePanel(); });
+
+    function clearProximity() {
+      if (map.getLayer('proximity-fill')) map.removeLayer('proximity-fill');
+      if (map.getLayer('proximity-outline')) map.removeLayer('proximity-outline');
+      if (map.getSource('proximity')) map.removeSource('proximity');
+      summaryDiv.innerHTML = '';
+      proximityCenter = null;
+      updateProximityInfo();
+      // Disable Run button when clearing
+      runBtn.disabled = true;
+      runBtn.style.background = '#ccc';
+      runBtn.style.color = '#999';
+      runBtn.style.cursor = 'not-allowed';
+    }
+
+    clearBtn.addEventListener('click', () => { clearProximity(); });
+
+    // update info when radius or units change
+    radiusInput.addEventListener('input', () => updateProximityInfo());
+    unitsSelect.addEventListener('change', () => updateProximityInfo());
+
+    setCenterBtn.addEventListener('click', () => {
+      summaryDiv.innerHTML = '<div style="color:#666;font-size:13px">Click on the map to set the center point...</div>';
+      map.getCanvas().style.cursor = 'crosshair';
+      map.once('click', (e) => {
+        map.getCanvas().style.cursor = '';
+        proximityCenter = e.lngLat;
+        updateProximityInfo();
+        drawProximityCircle();
+        // Enable Run button after center is selected
+        runBtn.disabled = false;
+        runBtn.style.background = '#1978c8';
+        runBtn.style.color = '#fff';
+        runBtn.style.cursor = 'pointer';
+      });
+    });
+
+    function drawProximityCircle() {
+      if (!proximityCenter) return;
+      const val = parseFloat(radiusInput.value) || 0;
+      const units = unitsSelect.value === 'kilometers' ? 'kilometers' : 'meters';
+      const radiusKm = units === 'kilometers' ? val : val / 1000;
+
+      const centerCoord = [proximityCenter.lng, proximityCenter.lat];
+      const circle = turf.circle(centerCoord, radiusKm, { steps: 128, units: 'kilometers' });
+
+      if (map.getSource('proximity')) {
+        map.getSource('proximity').setData(circle);
+      } else {
+        map.addSource('proximity', { type: 'geojson', data: circle });
+        map.addLayer({
+          id: 'proximity-fill',
+          type: 'fill',
+          source: 'proximity',
+          paint: { 'fill-color': '#1978c8', 'fill-opacity': 0.18 }
+        });
+        map.addLayer({
+          id: 'proximity-outline',
+          type: 'line',
+          source: 'proximity',
+          paint: { 'line-color': '#1978c8', 'line-width': 2 }
+        });
+      }
+      updateProximityInfo();
+    }
+
+    runBtn.addEventListener('click', () => {
+      if (!proximityCenter) {
+        summaryDiv.innerHTML = '<div style="color:#b00">Set a center point first.</div>';
+        return;
+      }
+
+      // ensure circle is drawn/updated
+      drawProximityCircle();
+
+      const val = parseFloat(radiusInput.value) || 0;
+      const units = unitsSelect.value === 'kilometers' ? 'kilometers' : 'meters';
+      const radiusKm = units === 'kilometers' ? val : val / 1000;
+
+      const centerPt = turf.point([proximityCenter.lng, proximityCenter.lat]);
+      const circlePoly = turf.circle([proximityCenter.lng, proximityCenter.lat], radiusKm, { steps: 128, units: 'kilometers' });
+
+      // markers: markerDefault, markerPNG, markerHTML
+      const markerCounts = [];
+      const markers = [
+        { id: 'Default Marker', obj: markerDefault },
+        { id: 'PNG Marker', obj: markerPNG },
+        { id: 'HTML Marker', obj: markerHTML }
+      ];
+
+      markers.forEach(m => {
+        let inside = false;
+        try {
+          const ll = m.obj.getLngLat();
+          const mp = turf.point([ll.lng, ll.lat]);
+          const dist = turf.distance(centerPt, mp, { units: 'kilometers' });
+          if (dist <= radiusKm) inside = true;
+        } catch (e) {
+          inside = false;
+        }
+        markerCounts.push({ id: m.id, inside });
+      });
+
+      // regions
+      let regionsInside = [];
+      if (regionsGeo && regionsGeo.features) {
+        regionsGeo.features.forEach(f => {
+          try {
+            if (turf.booleanIntersects(circlePoly, f)) {
+              regionsInside.push(f);
+            }
+          } catch (e) {
+            // ignore
+          }
+        });
+      }
+
+      // Build summary HTML
+      const lines = [];
+      lines.push(`<div style="font-weight:600;margin-bottom:6px">Summary</div>`);
+      lines.push(`<div style="font-size:13px;margin-bottom:6px">Center: ${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)} — Radius: ${val} ${units === 'kilometers' ? 'km' : 'm'}</div>`);
+
+      // markers
+      lines.push('<div style="margin-top:6px"><strong>Markers</strong></div>');
+      markerCounts.forEach(m => {
+        lines.push(`<div style="font-size:13px;padding:3px 0">${m.id}: <strong style="color:${m.inside ? '#1978c8' : '#777'}">${m.inside ? 'inside' : 'outside'}</strong></div>`);
+      });
+
+      // regions
+      lines.push('<div style="margin-top:8px"><strong>Regions</strong></div>');
+      lines.push(`<div style="font-size:13px;padding:3px 0">Count inside: <strong>${regionsInside.length}</strong></div>`);
+      if (regionsInside.length) {
+        lines.push('<div style="max-height:120px; overflow:auto; border-top:1px solid rgba(0,0,0,0.03); margin-top:6px; padding-top:6px">');
+        regionsInside.slice(0,50).forEach(r => {
+          const name = r.properties && (r.properties.NAME || r.properties.name || '')
+          lines.push(`<div style="font-size:13px;padding:4px 0;border-bottom:1px dashed rgba(0,0,0,0.04)">${name}</div>`);
+        });
+        if (regionsInside.length > 50) lines.push(`<div style="font-size:12px;color:#666;padding:6px 0">+${regionsInside.length-50} more</div>`);
+        lines.push('</div>');
+      }
+
+      summaryDiv.innerHTML = lines.join('');
     });
 
 
