@@ -1,3 +1,39 @@
+  <!-- Welcome Popup -->
+  <div id="welcome-popup" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(30,40,60,0.18);display:flex;align-items:center;justify-content:center;">
+    <div style="background:rgba(255,255,255,0.32);max-width:600px;width:99vw;padding:24px 32px 22px 32px;border-radius:16px;box-shadow:0 8px 32px rgba(30,40,60,0.18);font-family:sans-serif;color:#263238;position:relative;font-size:0.92rem;backdrop-filter:blur(8px) saturate(180%);overflow-y:auto;max-height:78vh;">
+      <button id="welcome-close" aria-label="Close welcome popup" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
+      <h2 style="margin-top:0;font-size:0.98rem;font-weight:700;letter-spacing:0.01em;">Welcome to MeinSalzburg!</h2>
+      <img src="logo/Salzburg.jpg" alt="Salzburg" style="display:block;margin:8px 0 12px 0;width:100%;border-radius:8px;box-shadow:0 2px 12px rgba(30,40,60,0.10);object-fit:cover;" />
+      <div style="font-size:0.98em;margin-bottom:8px;">This interactive map is your gateway to exploring and analyzing public services and amenities throughout the city of Salzburg.</div>
+      <div style="margin-bottom:8px;font-size:1em;"><strong>What you can do here:</strong></div>
+      <ul style="margin-top:0;margin-bottom:8px;padding-left:18px;font-size:0.96em;">
+        <li><strong>Explore:</strong> Click on any point of interest – schools, hospitals, parks, parking lots, libraries, tourist attraction and more – to see its details.</li>
+        <li><strong>Analyze:</strong> Use our proximity tools to find all amenities within your desired walking or driving distance from any location. Perfect for finding neighborhoods with specific services.</li>
+        <li><strong>Plan:</strong> Looking for an apartment? Need the nearest grocery store? Planning a day out? This tool helps you understand what's around you and make informed decisions.</li>
+      </ul>
+      <div style="margin-bottom:8px;font-size:1em;"><strong>How to use it:</strong></div>
+      <ul style="margin-top:0;margin-bottom:8px;padding-left:18px;font-size:0.96em;">
+        <li>Search for an address or simply pan the map.</li>
+        <li>Select an amenity type (e.g., "Schools") from the menu.</li>
+        <li>Use the "Draw Area" or "Nearest Search" tool to define your distance (e.g., "500m walk").</li>
+        <li>View the results and interact with the highlighted locations!</li>
+      </ul>
+      <div style="margin-top:8px;font-size:0.93em;color:#444;">This application is built on open data to support residents, visitors, researchers, and urban planners in experiencing Salzburg more connectedly.</div>
+      <!-- Side scrollbar for popup -->
+    </div>
+  </div>
+  <script>
+    // Welcome popup logic
+    window.addEventListener('DOMContentLoaded', function() {
+      var popup = document.getElementById('welcome-popup');
+      var closeBtn = document.getElementById('welcome-close');
+      if (popup && closeBtn) {
+        closeBtn.addEventListener('click', function() {
+          popup.style.display = 'none';
+        });
+      }
+    });
+  </script>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -126,6 +162,10 @@
         <button id="proximity-clear" style="padding:6px 10px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#fff;cursor:pointer">Clear</button>
       </div>
     </div>
+  <!-- Webmap Title: top right, above layer panel -->
+  <div style="position:absolute;top:16px;right:12px;z-index:100;font-family:sans-serif;font-size:1.25rem;font-weight:600;color:#263238;background:rgba(255,255,255,0.96);padding:10px 22px 10px 18px;border-radius:10px 10px 0 0;box-shadow:0 4px 16px rgba(14,30,37,0.10);letter-spacing:0.01em;max-width:420px;text-align:right;">
+    MeinSalzburg | Salzburg Urban Toolkit
+  </div>
   <div id="layer-panel">
     <h3>Layers</h3>
 
