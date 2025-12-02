@@ -1108,12 +1108,15 @@
       wrapper.style.display = 'inline-block';
       wrapper.style.pointerEvents = 'none'; // let clicks pass through to map if needed
 
-      // SVG teardrop marker: blue pin with white center and inner blue dot
+      // Circular location marker: subtle red glow, white border, red core
       wrapper.innerHTML = `
-        <svg width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#1978c8"/>
-          <circle cx="12" cy="9" r="3" fill="#fff"/>
-          <circle cx="12" cy="9" r="1.5" fill="#1978c8"/>
+        <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <!-- white border ring -->
+          <circle cx="18" cy="18" r="11" fill="#ffffff" />
+          <!-- red inner ring -->
+          <circle cx="18" cy="18" r="7.5" fill="#ff4d4d" />
+          <!-- darker red core -->
+          <circle cx="18" cy="18" r="3" fill="#b30000" />
         </svg>
       `;
       return wrapper;
@@ -1137,8 +1140,9 @@
       const btn = triggerButton || null;
       if (btn) {
         btn.disabled = true;
-        var originalText = btn.textContent;
-        btn.textContent = 'Locating...';
+        // preserve the button icon HTML and show a small busy indicator (keep icon visible)
+        var originalHTML = btn.innerHTML;
+        btn.innerHTML = originalHTML + ' <span aria-hidden="true">⏳</span>';
       }
 
       navigator.geolocation.getCurrentPosition(
@@ -1175,18 +1179,18 @@
               type: 'circle',
               source: accuracySourceId,
               paint: {
-                'circle-color': '#1978c8',
-                'circle-opacity': 0.12,
-                'circle-stroke-color': '#1978c8',
-                'circle-stroke-width': 1
-              }
+                  // keep a subtle red fill only (remove the outer stroke) and make it small by default
+                  'circle-color': '#ff6b5c',
+                  'circle-opacity': 0.12
+                }
             });
           } else {
             map.getSource(accuracySourceId).setData(pointGeoJSON);
           }
 
           // compute and set radius in pixels for the current zoom
-          const pix = metersToPixelsAtZoom(accuracy, lat, map.getZoom());
+          // reduce the visible accuracy buffer size so the outer buffer is much smaller
+          const pix = metersToPixelsAtZoom(accuracy, lat, map.getZoom()) * 0.5;
           if (map.getLayer(accuracyLayerId)) {
             map.setPaintProperty(accuracyLayerId, 'circle-radius', pix);
           }
@@ -1199,7 +1203,8 @@
             map._locationAccuracyHandler = function () {
               const a = window._locationAccuracy;
               if (!a) return;
-              const newPix = metersToPixelsAtZoom(a.accuracy, a.lat, map.getZoom());
+              // apply same reduced scale when zooming so buffer remains smaller
+              const newPix = metersToPixelsAtZoom(a.accuracy, a.lat, map.getZoom()) * 0.5;
               if (map.getLayer(accuracyLayerId)) {
                 map.setPaintProperty(accuracyLayerId, 'circle-radius', newPix);
               }
@@ -1209,7 +1214,7 @@
 
           if (btn) {
             btn.disabled = false;
-            btn.textContent = originalText;
+            btn.innerHTML = originalHTML;
           }
         },
         (err) => {
@@ -1217,7 +1222,7 @@
           alert('Unable to retrieve your location: ' + (err.message || err.code));
           if (btn) {
             btn.disabled = false;
-            btn.textContent = originalText;
+            btn.innerHTML = originalHTML;
           }
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -1318,7 +1323,7 @@
         btnLocate.className = 'ctrl-btn';
         const lLabel = document.createElement('span');
         lLabel.className = 'visually-hidden';
-        lLabel.textContent = 'Find my location';
+        
         btnLocate.appendChild(lLabel);
         btnLocate.addEventListener('click', () => findMyLocation(btnLocate));
 
