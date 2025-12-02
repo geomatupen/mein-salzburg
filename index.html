@@ -66,6 +66,12 @@
   .export-menu button:hover{background:#f6f9fc}
     /* hide the panel buttons (we'll add controls on the map) */
     #layer-panel .panel-control-hidden{display:none}
+    /* Legend */
+    .map-legend{position:absolute; right:12px; top:12px; z-index:6; background:#fff; padding:10px; border-radius:8px; box-shadow:0 6px 20px rgba(14,30,37,0.12); font-family:sans-serif; font-size:13px; color:#222; min-width:170px}
+    .map-legend h4{margin:0 0 8px 0; font-size:13px}
+    .legend-item{display:flex; align-items:center; gap:8px; margin:6px 0}
+    .legend-swatch{width:18px; height:12px; border-radius:3px; flex:0 0 18px; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06)}
+    .legend-label{flex:1}
 </style>
 
 </head>
@@ -78,6 +84,22 @@
     <div id="proximity-btn-container" style="position:absolute; left:324px; top:12px; z-index:3;">
       <button id="proximity-open" style="padding:8px 10px; border-radius:4px; border:1px solid rgba(0,0,0,0.12); background:#fff; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.08);">Proximity Analysis</button>
     </div>
+
+  <!-- Legend -->
+  <div class="map-legend" id="map-legend" aria-hidden="false">
+    <h4>Map legend</h4>
+    <div class="legend-item"><div class="legend-swatch" style="background:#e74c3c"></div><div class="legend-label">Motorway / Train</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#ff6b00"></div><div class="legend-label">Primary roads</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#ffb400"></div><div class="legend-label">Secondary roads</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#f39c12"></div><div class="legend-label">Tertiary roads</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#6c5ce7"></div><div class="legend-label">Residential</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#00b894"></div><div class="legend-label">Living street / Service</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#00cec9"></div><div class="legend-label">Cycleway / Unclassified</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#0984e3"></div><div class="legend-label">Paths / Pedestrian</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#1abc9c"></div><div class="legend-label">Amenities (points)</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#e67e22"></div><div class="legend-label">Buildings (extruded)</div></div>
+    <div class="legend-item"><div class="legend-swatch" style="background:#34495e"></div><div class="legend-label">Salzburg boundary</div></div>
+  </div>
 
     <div id="proximity-panel" style="display:none; position:absolute; left:12px; top:60px; z-index:4; width:340px; background:#fff; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,0.12); padding:12px; font-family:sans-serif;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -206,8 +228,8 @@
         sources: {},
         layers: []
       },
-      center: [14.1, 47.75],
-      zoom: 6.8,
+      center: [13.0449, 48.2699],
+      zoom: 12,
       pitch: 45
     });
 
@@ -384,41 +406,54 @@
         data: "data/streets.geojson"
       });
 
-      map.addSource("train", {
+      /*map.addSource("train", {
         type: "geojson",
         data: "data/train.geojson"
-      });
+      });*/
 
-      // Add layers for amenities (points)
+      // Add layers for amenities (points) - new color theme
       map.addLayer({
         id: "amenities-layer",
         type: "circle",
         source: "amenities",
         paint: {
           "circle-radius": 6,
-          "circle-color": "#ff6b6b",
-          "circle-opacity": 0.7
+          "circle-color": "#1abc9c",
+          "circle-opacity": 0.9
         }
       });
 
-      // Add layers for buildings (polygons)
+      // Add extruded buildings (small height) to give subtle 3D
       map.addLayer({
         id: "buildings-layer",
-        type: "fill",
+        type: "fill-extrusion",
         source: "buildings",
         paint: {
-          "fill-color": "#e74c3c",
-          "fill-opacity": 0.5
+          "fill-extrusion-color": "#e67e22",
+          // Compute height from building:levels (levels * 3m). Use a higher
+          // fallback (3 levels) and enforce a visible minimum height (6m).
+          // Expression: max( coalesce(to-number(get('building:levels')), 3) * 3, 6 )
+          "fill-extrusion-height": [
+            "max",
+            [
+              "*",
+              ["coalesce", ["to-number", ["get", "building:levels"]], 3],
+              3
+            ],
+            6
+          ],
+          "fill-extrusion-base": 0,
+          "fill-extrusion-opacity": 0.95
         }
       });
 
-      // Add stroke for buildings
+      // Add stroke/outline for buildings (keeps map readable at low zoom)
       map.addLayer({
         id: "buildings-outline",
         type: "line",
         source: "buildings",
         paint: {
-          "line-color": "#c0392b",
+          "line-color": "#d35400",
           "line-width": 1
         }
       });
@@ -430,52 +465,92 @@
         source: "railway",
         paint: {
           "line-color": "#3498db",
-          "line-width": 2
+          "line-width": 1
         }
       });
 
-      // Add layers for Salzburg boundaries (polygons)
+      // Add layers for Salzburg boundaries: transparent interior, visible border only
       map.addLayer({
         id: "salzburg-boundaries-layer",
         type: "fill",
         source: "salzburg-boundaries",
         paint: {
-          "fill-color": "#f39c12",
-          "fill-opacity": 0.3
+          // keep interior fully transparent so it doesn't interfere with popups
+          "fill-color": "rgba(0,0,0,0)",
+          "fill-opacity": 0
         }
       });
 
-      // Add stroke for Salzburg boundaries
+      // Outline for Salzburg boundaries (visible)
       map.addLayer({
         id: "salzburg-boundaries-outline",
         type: "line",
         source: "salzburg-boundaries",
         paint: {
-          "line-color": "#d68910",
+          "line-color": "#34495e",
           "line-width": 2
         }
       });
 
-      // Add layers for streets (lines)
+      // Streets types Coloring - IMPORTANT theme
       map.addLayer({
         id: "streets-layer",
         type: "line",
         source: "streets",
         paint: {
-          "line-color": "#9b59b6",
-          "line-width": 1.5
+          // Color by highway type (lively palette). Default gray if not matched.
+          "line-color": [
+            "match",
+            ["get", "highway"],
+            "motorway", "#e74c3c",
+            "motorway_link", "#e74c3c",
+            "primary", "#ff6b00",
+            "secondary", "#ffb400",
+            "tertiary", "#f39c12",
+            "primary_link", "#ff6b00",
+            "tertiary_link", "#f39c12",
+            "residential", "#6c5ce7",
+            "living_street", "#00b894",
+            "service", "#00b894",
+            "unclassified", "#00cec9",
+            "cycleway", "#00cec9",
+            "path", "#0984e3",
+            "pedestrian", "#0984e3",
+            "#95a5a6"
+          ],
+          // Widths: larger for main roads, smaller for paths
+          "line-width": [
+            "match",
+            ["get", "highway"],
+            "motorway", 5,
+            "motorway_link", 4.5,
+            "primary", 4,
+            "primary_link", 3.8,
+            "secondary", 3,
+            "tertiary", 2.4,
+            "tertiary_link", 2.2,
+            "residential", 1.8,
+            "living_street", 1.6,
+            "service", 1.4,
+            "unclassified", 1.2,
+            "cycleway", 1.2,
+            "path", 1,
+            "pedestrian", 1,
+            1.2
+          ]
         }
       });
 
-      // Add layers for train (points)
       map.addLayer({
         id: "train-layer",
         type: "circle",
         source: "train",
         paint: {
           "circle-radius": 8,
-          "circle-color": "#2ecc71",
-          "circle-opacity": 0.8
+          "circle-color": "#e74c3c",
+          "circle-opacity": 0.95,
+          "circle-stroke-color": "#b03a2e",
+          "circle-stroke-width": 1
         }
       });
 
@@ -605,12 +680,11 @@
         `;
     }
 
-    // Add click events for all layers to show popups
+    // Add click events for layers to show popups (excluding salzburg-boundaries-layer)
     const layersWithPopups = [
       "amenities-layer",
       "buildings-layer",
       "railway-layer",
-      "salzburg-boundaries-layer",
       "streets-layer",
       "train-layer"
     ];
@@ -625,6 +699,107 @@
       });
     });
 
+    // Handle clicks for all layers with layer selection if multiple layers at click point
+    // Exclude Salzburg boundary layers from interactive queries so the transparent interior
+    // does not appear in popups or the layer dropdown.
+    const allInteractiveLayers = [
+      "amenities-layer",
+      "buildings-layer",
+      "railway-layer",
+      "streets-layer",
+      "train-layer"
+    ];
+
+    map.on("click", (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: allInteractiveLayers
+      });
+
+      if (features.length > 0) {
+        // Get unique layers at this point
+        const uniqueLayers = [...new Set(features.map(f => f.layer.id))];
+        
+        // Find the top layer (first in the list)
+        const topLayerId = uniqueLayers[0];
+        const topFeature = features.find(f => f.layer.id === topLayerId);
+        
+        // Only show popup if top layer is not salzburg boundaries
+        if (topLayerId !== "salzburg-boundaries-layer" && topLayerId !== "salzburg-boundaries-outline") {
+          let popupHTML = buildPopupHTML(topFeature.properties);
+          
+          // Add dropdown if multiple layers
+          if (uniqueLayers.length > 1) {
+            const dropdownOptions = uniqueLayers.map((layerId, idx) => `
+              <option value="${idx}" ${idx === 0 ? 'selected' : ''}>
+                ${layerId.replace('-layer', '').replace('-outline', ' outline')}
+              </option>
+            `).join('');
+            
+            popupHTML += `
+              <div style="margin-top:10px; padding-top:10px; border-top:1px solid #ddd;">
+                <label style="font-size:12px; display:block; margin-bottom:4px;"><strong>Other layers:</strong></label>
+                <select class="layer-dropdown" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+                  ${dropdownOptions}
+                </select>
+              </div>
+            `;
+          }
+          
+          const popup = new maplibregl.Popup({ closeButton: true })
+            .setLngLat(e.lngLat)
+            .setHTML(popupHTML)
+            .addTo(map);
+          
+          // Add dropdown change handler if multiple layers
+          if (uniqueLayers.length > 1) {
+            setTimeout(() => {
+              const dropdown = document.querySelector('.layer-dropdown');
+              if (dropdown) {
+                dropdown.addEventListener('change', (evt) => {
+                  const selectedIdx = parseInt(evt.target.value);
+                  const selectedLayerId = uniqueLayers[selectedIdx];
+                  const selectedFeature = features.find(f => f.layer.id === selectedLayerId);
+                  
+                  if (selectedFeature && selectedLayerId !== "salzburg-boundaries-layer" && selectedLayerId !== "salzburg-boundaries-outline") {
+                    popup.remove();
+                    let newPopupHTML = buildPopupHTML(selectedFeature.properties);
+                    
+                    // Re-add dropdown with updated selection
+                    const dropdownOptions = uniqueLayers.map((layerId, idx) => `
+                      <option value="${idx}" ${idx === selectedIdx ? 'selected' : ''}>
+                        ${layerId.replace('-layer', '').replace('-outline', ' outline')}
+                      </option>
+                    `).join('');
+                    
+                    newPopupHTML += `
+                      <div style="margin-top:10px; padding-top:10px; border-top:1px solid #ddd;">
+                        <label style="font-size:12px; display:block; margin-bottom:4px;"><strong>Other layers:</strong></label>
+                        <select class="layer-dropdown" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+                          ${dropdownOptions}
+                        </select>
+                      </div>
+                    `;
+                    
+                    const newPopup = new maplibregl.Popup({ closeButton: true })
+                      .setLngLat(e.lngLat)
+                      .setHTML(newPopupHTML)
+                      .addTo(map);
+                    
+                    setTimeout(() => {
+                      const newDropdown = document.querySelector('.layer-dropdown');
+                      if (newDropdown) {
+                        newDropdown.addEventListener('change', arguments.callee);
+                      }
+                    }, 0);
+                  }
+                });
+              }
+            }, 0);
+          }
+        }
+      }
+    });
+
 
     //--------------------------------mouseover effect------------------------------------  //
     // Hover effects removed - old regions-fill layer no longer exists
@@ -635,7 +810,7 @@
     // Change cursor to pointer when hovering over interactive layers
     map.on("mousemove", (e) => {
       const features = map.queryRenderedFeatures(e.point, {
-        layers: ["amenities-layer", "buildings-layer", "railway-layer", "salzburg-boundaries-layer", "streets-layer", "train-layer"]
+        layers: ["amenities-layer", "buildings-layer", "railway-layer", "streets-layer", "train-layer"]
       });
 
       if (features.length) {
