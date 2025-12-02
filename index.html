@@ -24,6 +24,7 @@
         <button id="welcome-no-show" style="background:#1978c8;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.92rem">Don't show again</button>
       </div>
     </div>
+    </div>
   </div>
   <script>
     // Welcome popup logic
@@ -62,7 +63,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Choropleth with MapLibre GL JS</title>
+  <title>Salzburg</title>
   <link
     href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css"
     rel="stylesheet"
@@ -113,7 +114,7 @@
     /* Top-left map control styling */
   .map-control-container{background:rgba(255,255,255,0.95);padding:8px;border-radius:8px;box-shadow:0 6px 20px rgba(14,30,37,0.12);display:flex;flex-direction:column;gap:8px;position:relative;z-index:9}
     /* base button style */
-    .map-control-container .ctrl-btn{background:#fff;border:1px solid rgba(16,24,32,0.08);padding:8px;border-radius:8px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:all 180ms ease}
+    .map-control-container .ctrl-btn{background:#fff;border:1px solid rgba(16,24,32,0.08);padding:0px;border-radius:8px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;min-width:30px;min-height:30px;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:all 180ms ease}
     .map-control-container .ctrl-btn:focus{outline:none;box-shadow:0 0 0 3px rgba(25,120,200,0.14)}
     .map-control-container .ctrl-btn:hover{background:#f4f8fb}
     /* icons inside the control buttons */
@@ -163,14 +164,18 @@
     .draggable-panel.dragging{opacity:0.95}
 
     /* Layer panel default placement and sizing (use percentages for responsiveness) */
-    #layer-panel{right:2%; top:3%; width:26%; max-width:420px; z-index:12}
+    /* make the whole panel full viewport height but only the body scrolls */
+    #layer-panel{ right:2%; top:3%; width:26%; max-width:420px; z-index:12; height:100vh; display:flex; flex-direction:column }
+    .layer-panel-body { overflow:auto; padding:10px; }
 
     /* Legend placement (bottom-right) using percentages; smaller width */
     .map-legend{right:2%; bottom:3%; width:18%; max-width:300px; min-width:160px; z-index:10}
 
     /* Drag handle removed - panels are fixed to the right; only minimize is available */
     .drag-handle{display:none}
-</style>
+    /* Prevent the layer panel from overflowing the viewport */
+    #layer-panel { max-height: calc(100vh - 48px); overflow: auto; }
+  </style>
 
 </head>
 <body>
@@ -215,14 +220,14 @@
     </div>
   </div>
 
-    <div id="proximity-panel" style="display:none; position:absolute; left:12px; top:60px; z-index:4; width:340px; background:#fff; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,0.12); padding:12px; font-family:sans-serif;">
+    <div id="proximity-panel" style="display:none; position:absolute; left:156px; top:60px; z-index:4; width:340px; background:#fff; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,0.12); padding:12px; font-family:sans-serif;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
         <strong>Proximity Analysis</strong>
         <button id="proximity-close" style="background:none;border:none;cursor:pointer;font-size:16px">✕</button>
       </div>
       <div style="margin-bottom:8px; color:#444; font-size:13px">Click <strong>Set center</strong> then click the map to pick the center point.</div>
       <div style="display:flex; gap:8px; margin-bottom:8px;">
-        <button id="proximity-set-center" style="flex:1;padding:8px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#fff;color:#333;cursor:pointer">Set center</button>
+        <button id="proximity-set-center" style="flex:1;padding:8px;border-radius:4px;border:1px solid rgba(0,0,0,0.22);background:#fff;color:#333;cursor:pointer">Set center</button>
       </div>
       <div id="proximity-info" style="font-size:13px;color:#333;margin-bottom:8px">Center: —  Radius: —</div>
       <div style="display:flex; gap:8px; margin-bottom:8px;">
@@ -241,11 +246,11 @@
       </div>
     </div>
   <!-- Webmap Title: top right, above layer panel -->
-  <div style="position:absolute;top:16px;right:12px;z-index:100;font-family:sans-serif;font-size:1.25rem;font-weight:600;color:#263238;background:rgba(255,255,255,0.96);padding:10px 22px 10px 18px;border-radius:10px 10px 0 0;box-shadow:0 4px 16px rgba(14,30,37,0.10);letter-spacing:0.01em;max-width:420px;text-align:right;">
-    MeinSalzburg | Salzburg Urban Toolkit
-  </div>
+  
   <div id="layer-panel">
-    <h3>Layers</h3>
+    <div style="top:16px;right:12px;z-index:100;font-family:sans-serif;font-size:1.25rem;font-weight:600;color:#263238;background:rgba(255,255,255,0.96);padding:10px 22px 10px 18px;border-radius:10px 10px 0 0;box-shadow:0 4px 16px rgba(14,30,37,0.10);letter-spacing:0.01em;max-width:420px;text-align:right;">MeinSalzburg | Salzburg Urban Toolkit</div>
+    <div class="layer-panel-body">
+    <h3>Base Layers</h3>
 
     <!-- Base maps -->
     <div class="layer-group">
@@ -273,24 +278,149 @@
       </div>
     </div>
 
-    <!-- Export / Controls (moved to map top-left) -->
-
-    <!-- Regions -->
+    <h3>Overlay Layers</h3>
+    <!-- Per-layer controls: visibility checkbox, Labels toggle (OFF by default), opacity slider -->
     <div class="layer-group">
       <div class="layer-header">
-        <input type="checkbox" id="regions-visible" checked>
-        <label for="regions-visible" class="layer-title">Regions</label>
+        <input type="checkbox" id="layer-amenities-visible" checked>
+        <label for="layer-amenities-visible" class="layer-title">Amenities</label>
       </div>
-
       <div class="layer-sub">
-        <label class="sub-toggle">
-          <input type="checkbox" id="regions-labels-visible" checked>
-          Labels
-        </label>
+        <label class="sub-toggle"><input type="checkbox" id="layer-amenities-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-amenities-opacity" min="0" max="1" step="0.05" value="0.9">
+        </div>
+      </div>
+    </div>
 
-        <div class="opacity-row">
-          <span>Opacity</span>
-          <input type="range" id="regions-opacity" min="0" max="1" step="0.05" value="1">
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-buildings-visible" checked>
+        <label for="layer-buildings-visible" class="layer-title">Buildings (extruded)</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-buildings-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-buildings-opacity" min="0" max="1" step="0.05" value="0.95">
+        </div>
+      </div>
+    </div>
+
+    <!-- Buildings outline is part of the buildings layer; controlled together to avoid duplication in the sidebar -->
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-streets-visible" checked>
+        <label for="layer-streets-visible" class="layer-title">Streets</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-streets-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-streets-opacity" min="0" max="1" step="0.05" value="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-railway-visible" checked>
+        <label for="layer-railway-visible" class="layer-title">Railway</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-railway-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-railway-opacity" min="0" max="1" step="0.05" value="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-rivers-visible" checked>
+        <label for="layer-rivers-visible" class="layer-title">Rivers</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-rivers-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-rivers-opacity" min="0" max="1" step="0.05" value="1">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-education-visible" checked>
+        <label for="layer-education-visible" class="layer-title">Education</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-education-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-education-opacity" min="0" max="1" step="0.05" value="0.85">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-health-visible" checked>
+        <label for="layer-health-visible" class="layer-title">Health</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-health-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-health-opacity" min="0" max="1" step="0.05" value="0.85">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-restaurants-visible" checked>
+        <label for="layer-restaurants-visible" class="layer-title">Restaurants</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-restaurants-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-restaurants-opacity" min="0" max="1" step="0.05" value="0.85">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-tourism-visible" checked>
+        <label for="layer-tourism-visible" class="layer-title">Tourism</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-tourism-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-tourism-opacity" min="0" max="1" step="0.05" value="0.85">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-transportation-visible" checked>
+        <label for="layer-transportation-visible" class="layer-title">Transportation</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-transportation-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-transportation-opacity" min="0" max="1" step="0.05" value="0.85">
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-header">
+        <input type="checkbox" id="layer-salzburg-boundaries-visible" checked>
+        <label for="layer-salzburg-boundaries-visible" class="layer-title">Salzburg boundary</label>
+      </div>
+      <div class="layer-sub">
+        <label class="sub-toggle"><input type="checkbox" id="layer-salzburg-boundaries-labels"> Labels</label>
+        <div class="opacity-row"><span>Opacity</span>
+          <input type="range" id="layer-salzburg-boundaries-opacity" min="0" max="1" step="0.05" value="1">
         </div>
       </div>
     </div>
@@ -300,22 +430,10 @@
       <div class="layer-header">
         <span class="layer-title">Markers</span>
       </div>
-
       <div class="layer-sub">
-        <label class="sub-toggle">
-          <input type="checkbox" id="marker-default-visible" checked>
-          Default Marker
-        </label>
-
-        <label class="sub-toggle">
-          <input type="checkbox" id="marker-png-visible" checked>
-          PNG Marker
-        </label>
-
-        <label class="sub-toggle">
-          <input type="checkbox" id="marker-html-visible" checked>
-          HTML Marker
-        </label>
+        <label class="sub-toggle"><input type="checkbox" id="marker-default-visible" checked> Default Marker</label>
+        <label class="sub-toggle"><input type="checkbox" id="marker-png-visible" checked> PNG Marker</label>
+        <label class="sub-toggle"><input type="checkbox" id="marker-html-visible" checked> HTML Marker</label>
       </div>
     </div>
     
@@ -1738,6 +1856,135 @@
         }
       });
     })();
+
+    // --- Layer switcher wiring: visibility, labels (off by default), opacity ---
+    // Runs once the map is idle so all sources/layers are available.
+    map.once('idle', () => {
+      const configs = [
+        { layers: [{ id: 'amenities-layer', paintKey: 'circle-opacity' }], source: 'amenities', ui: 'amenities', defaultOpacity: 0.9 },
+        { layers: [{ id: 'buildings-layer', paintKey: 'fill-extrusion-opacity' }, { id: 'buildings-outline', paintKey: 'line-opacity' }], source: 'buildings', ui: 'buildings', defaultOpacity: 0.95 },
+        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1 },
+        { layers: [{ id: 'railway-layer', paintKey: 'line-opacity' }], source: 'railway', ui: 'railway', defaultOpacity: 1 },
+        { layers: [{ id: 'rivers-layer', paintKey: 'line-opacity' }], source: 'rivers', ui: 'rivers', defaultOpacity: 1 },
+        { layers: [{ id: 'education-layer', paintKey: 'circle-opacity' }], source: 'education', ui: 'education', defaultOpacity: 0.85 },
+        { layers: [{ id: 'health-layer', paintKey: 'circle-opacity' }], source: 'health', ui: 'health', defaultOpacity: 0.85 },
+        { layers: [{ id: 'restaurants-layer', paintKey: 'circle-opacity' }], source: 'restaurants', ui: 'restaurants', defaultOpacity: 0.85 },
+        { layers: [{ id: 'tourism-layer', paintKey: 'circle-opacity' }], source: 'tourism', ui: 'tourism', defaultOpacity: 0.85 },
+        { layers: [{ id: 'transportation-layer', paintKey: 'circle-opacity' }], source: 'transportation', ui: 'transportation', defaultOpacity: 0.85 },
+        { layers: [{ id: 'salzburg-boundaries-outline', paintKey: 'line-opacity' }], source: 'salzburg-boundaries', ui: 'salzburg-boundaries', defaultOpacity: 1 }
+      ];
+
+      function applyLayout(layersDef, visible) {
+        try {
+          layersDef.forEach(l => {
+            const id = (typeof l === 'string') ? l : l.id;
+            if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+          });
+        } catch (e) {}
+      }
+
+      function applyPaint(layersDef, value) {
+        try {
+          layersDef.forEach(l => {
+            const id = (typeof l === 'string') ? l : l.id;
+            const paintKey = (typeof l === 'string') ? null : l.paintKey;
+            if (paintKey && map.getLayer(id)) map.setPaintProperty(id, paintKey, Number(value));
+          });
+        } catch (e) {}
+      }
+
+      // Create lightweight label symbol layers (initially hidden)
+      configs.forEach(cfg => {
+        const labelId = `${cfg.ui}-labels-layer`;
+        if (!map.getLayer(labelId) && map.getSource(cfg.source)) {
+          try {
+            map.addLayer({
+              id: labelId,
+              type: 'symbol',
+              source: cfg.source,
+              layout: {
+                'text-field': ['coalesce', ['get', 'name'], ['get', 'NAME'], ''],
+                'text-size': 12,
+                'visibility': 'none',
+                'text-allow-overlap': false
+              },
+              paint: {
+                'text-color': '#17202A',
+                'text-halo-color': '#ffffff',
+                'text-halo-width': 1,
+                'text-opacity': 1
+              }
+            });
+          } catch (e) {
+            console.warn('Could not add label layer', labelId, e);
+          }
+        }
+      });
+
+      // Hook up UI controls
+      configs.forEach(cfg => {
+        const uiBase = cfg.ui;
+        const visibleEl = document.getElementById(`layer-${uiBase}-visible`);
+        const labelsEl = document.getElementById(`layer-${uiBase}-labels`);
+        const opacityEl = document.getElementById(`layer-${uiBase}-opacity`);
+        const labelLayerId = `${uiBase}-labels-layer`;
+        const layersDef = cfg.layers || [];
+
+        if (visibleEl) {
+          try {
+            const firstLayerId = layersDef[0] && layersDef[0].id;
+            const vis = firstLayerId ? map.getLayoutProperty(firstLayerId, 'visibility') : 'visible';
+            visibleEl.checked = (vis !== 'none');
+          } catch (e) { visibleEl.checked = true; }
+          visibleEl.addEventListener('change', (ev) => {
+            applyLayout(layersDef, ev.target.checked);
+            if (!ev.target.checked && labelsEl && labelsEl.checked) {
+              labelsEl.checked = false;
+              applyLayout([labelLayerId], false);
+            }
+          });
+        }
+
+        if (opacityEl) {
+          opacityEl.value = cfg.defaultOpacity !== undefined ? cfg.defaultOpacity : 1;
+          opacityEl.addEventListener('input', (ev) => {
+            applyPaint(layersDef, Number(ev.target.value));
+          });
+          try {
+            const first = layersDef[0];
+            const p = first && map.getPaintProperty(first.id, first.paintKey);
+            if (p !== undefined && p !== null) opacityEl.value = p;
+          } catch (e) {}
+        }
+
+        if (labelsEl) {
+          labelsEl.checked = false; // labels off by default
+          labelsEl.addEventListener('change', (ev) => {
+            applyLayout([labelLayerId], ev.target.checked);
+          });
+        }
+      });
+
+      // Ensure Salzburg fill stays invisible (only outline used)
+      try { applyLayout(['salzburg-boundaries-layer'], false); } catch (e) {}
+
+      // Wire marker show/hide
+      function setMarkerDisplay(markerObj, visible) {
+        try {
+          const el = markerObj && markerObj.getElement && markerObj.getElement();
+          if (el) el.style.display = visible ? '' : 'none';
+        } catch (e) {}
+      }
+
+      const mDefault = document.getElementById('marker-default-visible');
+      const mPng = document.getElementById('marker-png-visible');
+      const mHtml = document.getElementById('marker-html-visible');
+
+      if (mDefault) mDefault.addEventListener('change', (e) => { if (typeof markerDefault !== 'undefined') setMarkerDisplay(markerDefault, e.target.checked); });
+      if (mPng) mPng.addEventListener('change', (e) => { if (typeof markerPNG !== 'undefined') setMarkerDisplay(markerPNG, e.target.checked); });
+      if (mHtml) mHtml.addEventListener('change', (e) => { if (typeof markerHTML !== 'undefined') setMarkerDisplay(markerHTML, e.target.checked); });
+
+    });
 
 
 
