@@ -196,8 +196,17 @@
 
     <!-- Base maps -->
     <div class="layer-group">
-      <div class="layer-header">
+      <div class="layer-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <span class="layer-title">Base Maps</span>
+        <label style="display:inline-flex;align-items:center;gap:10px;font-size:0.95rem;color:#555;">
+          <span style="font-size:0.9rem">3D</span>
+          <!-- visually-hidden native checkbox kept for logic; we'll style it as a switch using adjacent spans and JS -->
+          <span style="display:inline-block;position:relative;width:40px;height:22px;">
+            <input type="checkbox" id="toggle-3d" aria-label="Toggle 3D view" style="position:absolute;opacity:0;width:100%;height:100%;margin:0;left:0;top:0;cursor:pointer;z-index:3;" />
+            <span class="switch-bg" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:999px;background:#cfd8dc;transition:background .18s, box-shadow .18s;z-index:1;"></span>
+            <span class="switch-knob" style="position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left .18s, transform .18s;z-index:2;"></span>
+          </span>
+        </label>
       </div>
       <div class="layer-sub">
         <label style="display:block; margin-bottom:6px;">
@@ -631,6 +640,49 @@
           map.setLayoutProperty('basemap-satellite', 'visibility', 'visible');
         }
       }));
+
+      // 2D / 3D toggle: wire the checkbox placed in the Base Maps header
+      const toggle3d = document.getElementById('toggle-3d');
+      if (toggle3d) {
+        const switchBg = toggle3d.parentElement.querySelector('.switch-bg');
+        const switchKnob = toggle3d.parentElement.querySelector('.switch-knob');
+
+        function updateSwitchVisual(checked) {
+          if (!switchBg || !switchKnob) return;
+          if (checked) {
+            switchBg.style.background = '#1978c8';
+            switchBg.style.boxShadow = '0 2px 6px rgba(25,120,200,0.28)';
+            switchKnob.style.left = '21px';
+            switchKnob.style.transform = 'translateX(0)';
+          } else {
+            switchBg.style.background = '#cfd8dc';
+            switchBg.style.boxShadow = 'none';
+            switchKnob.style.left = '3px';
+            switchKnob.style.transform = 'none';
+          }
+        }
+
+        // default: map was initialized with terrain enabled earlier; reflect that in the switch
+        try { toggle3d.checked = true; } catch (e) {}
+        updateSwitchVisual(toggle3d.checked);
+
+        toggle3d.addEventListener('change', function() {
+          updateSwitchVisual(this.checked);
+          if (this.checked) {
+            // enable terrain and set a pleasing pitch
+            try {
+              map.setTerrain({ source: 'dem', exaggeration: 1.2 });
+            } catch (e) {}
+            map.easeTo({ pitch: 45, duration: 600 });
+          } else {
+            // disable terrain and reset to flat 2D
+            try {
+              map.setTerrain(null);
+            } catch (e) {}
+            map.easeTo({ pitch: 0, duration: 600 });
+          }
+        });
+      }
 
     }); 
 
