@@ -1,3 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Web Carto - Map</title>
+    <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      html,body { height:100%; margin:0 }
+      #map { width:100%; height:100vh }
+      /* Small left panel for controls/credits */
+      #layer-panel { position: absolute; left:12px; top:12px; z-index:1100; background:#fff; padding:10px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.08); width:230px }
+      #layer-panel h4 { margin:0 0 8px 0 }
+      .map-control-container{ background: rgba(255,255,255,0.95); padding:6px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.12); display:flex; flex-direction:column; gap:6px }
+      .map-control-container button{ background:#fff; border:1px solid #ccc; padding:6px 8px; border-radius:4px; cursor:pointer; font-size:13px }
+      .data-logos img{ height:28px; margin-right:6px }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <aside id="layer-panel" aria-label="Layers panel">
+      <h4>Controls</h4>
+
+      <div style="margin-bottom:8px">
+        <strong>Base maps</strong>
+        <div style="margin-top:6px">
+          <label><input type="radio" name="basemap" value="street" checked> Street (OSM)</label><br>
+          <label><input type="radio" name="basemap" value="satellite"> Satellite (Esri)</label>
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px">
+        <strong>Regions</strong>
+        <div style="margin-top:6px">
+          <label><input id="regions-visible" type="checkbox" checked> Show regions</label><br>
+          <label><input id="regions-labels-visible" type="checkbox" checked> Show labels</label>
+          <div style="margin-top:6px">Opacity: <input id="regions-opacity" type="range" min="0" max="1" step="0.05" value="1"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px">
+        <strong>Markers</strong>
+        <div style="margin-top:6px">
+          <label><input id="marker-default-visible" type="checkbox" checked> Default</label><br>
+          <label><input id="marker-png-visible" type="checkbox" checked> PNG</label><br>
+          <label><input id="marker-html-visible" type="checkbox" checked> HTML</label>
+        </div>
+      </div>
+
+      <div style="margin-top:6px; font-size:12px; color:#444">
+        <div class="data-logos">
+          <img src="logo/logo_cde.jpg" alt="logo 1">
+          <img src="logo/uni-sbg-logo.png" alt="logo 2">
+          <img src="logo/upol_logo.png" alt="logo 3">
+        </div>
+        <div style="margin-top:6px">Tiles © OSM / Esri — Data: Austria demography</div>
+      </div>
+    </aside>
+
+    <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+
+    <script>
+      // --------------------- Map init ---------------------
+      const map = new maplibregl.Map({
+        container: 'map',
+        style: { version: 8, sources: {}, layers: [] },
+        center: [14.1, 47.75],
+        zoom: 6.8
+      });
+
+      // sources & layers on load
+      map.on('load', () => {
+        map.addSource('regions', { type: 'geojson', data: 'data/austria-demography-simplified-wgs84.geojson' });
+
+        map.addLayer({ id: 'regions-fill', type: 'fill', source: 'regions', paint: { 'fill-color': '#ffc7c7', 'fill-opacity': 0.8 } });
+        map.addLayer({ id: 'regions-outline', type: 'line', source: 'regions', paint: { 'line-color': '#fff', 'line-width': 1 } });
+        map.addLayer({ id: 'regions-labels', type: 'symbol', source: 'regions', layout: { 'text-field':['get','NAME'], 'text-size': 12 }, paint: { 'text-color':'#000', 'text-halo-color':'#fff', 'text-halo-width':1 } });
+
+        map.addSource('basemap-street-source',{ type:'raster', tiles:['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png','https://b.tile.openstreetmap.org/{z}/{x}/{y}.png','https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize:256 });
+        map.addSource('basemap-satellite-source',{ type:'raster', tiles:['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize:256 });
+        map.addLayer({ id:'basemap-street', type:'raster', source:'basemap-street-source' }, 'regions-fill');
+        map.addLayer({ id:'basemap-satellite', type:'raster', source:'basemap-satellite-source', layout:{ 'visibility': 'none' } }, 'regions-fill');
+
+        // add scale
+        map.addControl(new maplibregl.ScaleControl({ maxWidth: 140, unit: 'metric' }), 'bottom-left');
+      });
+
+      // --------------------- Markers ---------------------
+      const markerDefault = new maplibregl.Marker().setLngLat([16.3725,48.2084]).addTo(map);
+
+      const pngEl = document.createElement('div');
+      const pngImg = document.createElement('img'); pngImg.src = './marker.png'; pngImg.style.width = '25px'; pngImg.style.height = '40px'; pngEl.appendChild(pngImg);
+      const markerPNG = new maplibregl.Marker({ element: pngEl }).setLngLat([16.0725,48.0084]).addTo(map);
+
+      const htmlEl = document.createElement('div'); htmlEl.innerHTML = '<div style="background:#ff5722;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px">HTML Marker</div>';
+      const markerHTML = new maplibregl.Marker({ element: htmlEl }).setLngLat([15.8725,48.2084]).addTo(map);
+
+      let locationMarker = null;
+
+      // ---------------------- Popups ---------------------
+      function buildPopupHTML(properties){
+        const name = properties.NAME || properties.name || '';
+        const rows = Object.entries(properties).filter(([k]) => k.toLowerCase() !== 'name').map(([k,v],i)=>`<tr style="background:${i%2? '#f5ecec':'#fff'}"><td style="padding:4px 6px"><strong>${k}</strong></td><td style="padding:4px 6px">${v}</td></tr>`).join('');
+        return `<div style="max-width:260px;font-family:sans-serif">${name?`<h3 style="margin:0 0 8px 0;padding:7px;background:#eccaca;color:#272727;font-size:14px">${name}</h3>`:''}<div style="max-height:150px;overflow:auto;border:1px solid #ddd;border-radius:4px"><table style="width:100%;border-collapse:collapse;font-size:13px"><tbody>${rows}</tbody></table></div></div>`;
+      }
+
+      map.on('click','regions-fill',(e)=>{
+        const props = e.features && e.features[0] && e.features[0].properties ? e.features[0].properties : {};
+        new maplibregl.Popup({ closeButton:true }).setLngLat(e.lngLat).setHTML(buildPopupHTML(props)).addTo(map);
+      });
+
+      // -------------------- Utilities --------------------
+      function metersToPixelsAtZoom(meters, latitude, zoom){
+        const earthCircumference = 40075016.686;
+        const latRad = latitude * Math.PI / 180;
+        const metersPerPixel = earthCircumference * Math.cos(latRad) / Math.pow(2, zoom + 8);
+        return meters / metersPerPixel;
+      }
+
+      // create location marker element
+      function createLocationMarkerElement(){
+        const wrapper = document.createElement('div'); wrapper.style.width='36px'; wrapper.style.height='36px'; wrapper.innerHTML = `<svg width="36" height="36" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#1978c8"/><circle cx="12" cy="9" r="3" fill="#fff"/><circle cx="12" cy="9" r="1.5" fill="#1978c8"/></svg>`; return wrapper;
+      }
+
+      // ------------------ Find my location ------------------
+      async function findMyLocation(btn){
+        if (!('geolocation' in navigator)) { alert('Geolocation not available'); return; }
+
+        const originalHTML = btn ? btn.innerHTML : null;
+        if (btn) { btn.disabled = true; btn.innerHTML = (originalHTML || '') + ' <span aria-hidden="true">⏳</span>'; }
+
+        navigator.geolocation.getCurrentPosition((pos)=>{
+          const lng = pos.coords.longitude, lat = pos.coords.latitude, accuracy = pos.coords.accuracy || 0;
+          map.flyTo({ center:[lng,lat], zoom:14 });
+          if (locationMarker) locationMarker.setLngLat([lng,lat]); else { locationMarker = new maplibregl.Marker({ element: createLocationMarkerElement(), anchor:'bottom' }).setLngLat([lng,lat]).addTo(map); }
+
+          // accuracy circle
+          const aid = 'location-accuracy-src', lid = 'location-accuracy-layer';
+          const pointGeoJSON = { type:'Feature', geometry:{ type:'Point', coordinates:[lng,lat] }, properties:{ accuracy } };
+          if (!map.getSource(aid)) { map.addSource(aid, { type:'geojson', data: pointGeoJSON }); map.addLayer({ id: lid, type:'circle', source: aid, paint:{ 'circle-color':'#1978c8','circle-opacity':0.12,'circle-stroke-color':'#1978c8','circle-stroke-width':1 } }); }
+          else map.getSource(aid).setData(pointGeoJSON);
+
+          const pix = metersToPixelsAtZoom(accuracy, lat, map.getZoom()); if (map.getLayer(lid)) map.setPaintProperty(lid, 'circle-radius', pix);
+          window._locationAccuracy = { lat, accuracy };
+          if (!map._locationAccuracyHandler){ map._locationAccuracyHandler = ()=>{ const a = window._locationAccuracy; if (!a) return; const newPix = metersToPixelsAtZoom(a.accuracy, a.lat, map.getZoom()); if (map.getLayer(lid)) map.setPaintProperty(lid,'circle-radius',newPix); }; map.on('zoom', map._locationAccuracyHandler); }
+
+          if (btn) { btn.disabled = false; btn.innerHTML = originalHTML; }
+        }, (err)=>{ console.error('Geolocation error', err); alert('Unable to get location: '+ (err.message || err.code)); if (btn){ btn.disabled = false; btn.innerHTML = originalHTML; } }, { enableHighAccuracy:true, timeout:10000, maximumAge:0 });
+      }
+
+      // ------------------ Top-left control ------------------
+      class MapTopLeftControl{
+        onAdd(mapInstance){ this._map = mapInstance; this._container = document.createElement('div'); this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container';
+          const btnZoom = document.createElement('button'); btnZoom.title='Zoom to extent'; btnZoom.innerText='▢'; btnZoom.addEventListener('click', ()=>zoomToExtent());
+          const btnLocate = document.createElement('button'); btnLocate.title='Find my location'; btnLocate.innerText='📍'; btnLocate.addEventListener('click', ()=>findMyLocation(btnLocate));
+          const btnExport = document.createElement('button'); btnExport.title='Export PNG'; btnExport.innerText='⬇'; btnExport.addEventListener('click', ()=>exportMapPNG());
+          this._container.appendChild(btnZoom); this._container.appendChild(btnLocate); this._container.appendChild(btnExport);
+          return this._container;
+        }
+        onRemove(){ this._container.parentNode.removeChild(this._container); this._map = undefined; }
+      }
+
+      map.addControl(new MapTopLeftControl(),'top-left');
+
+      // ------------------ Export ------------------
+      function exportMapPNG(){ try{ const canvas = map.getCanvas(); if (canvas.toBlob){ canvas.toBlob((blob)=>{ if (!blob) throw new Error('no blob'); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'map.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1000); }, 'image/png'); } else { const data = canvas.toDataURL('image/png'); const a = document.createElement('a'); a.href = data; a.download = 'map.png'; document.body.appendChild(a); a.click(); a.remove(); } } catch(e){ console.error('Export fail', e); alert('Export failed (CORS/no-cors). See console.'); } }
+
+      // ------------------ Zoom to extent ------------------
+      async function zoomToExtent(){ try{ const resp = await fetch('data/austria-demography-simplified-wgs84.geojson'); if (!resp.ok) throw new Error('fetch failed'); const gj = await resp.json(); const bbox=[Infinity,Infinity,-Infinity,-Infinity]; function update(coords){ if(typeof coords[0] === 'number'){ const lng=coords[0], lat=coords[1]; if (lng < bbox[0]) bbox[0]=lng; if (lat < bbox[1]) bbox[1]=lat; if (lng > bbox[2]) bbox[2]=lng; if (lat > bbox[3]) bbox[3]=lat; } else coords.forEach(c=>update(c)); } if (gj.type === 'FeatureCollection') gj.features.forEach(f=> f.geometry && update(f.geometry.coordinates)); else if (gj.coordinates) update(gj.coordinates); if (bbox[0]===Infinity){ alert('Cannot compute bounds'); return; } map.fitBounds([[bbox[0],bbox[1]],[bbox[2],bbox[3]]],{ padding: 20, maxZoom: 14 }); } catch(err){ console.error(err); alert('Zoom to extent failed'); } }
+    </script>
+
+    <!-- UI wiring expects the elements and global vars above -->
+    <script src="main.js"></script>
+  </body>
+</html>
 <html>
 <head>
   <meta charset="utf-8" />
