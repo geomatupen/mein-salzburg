@@ -1,3 +1,64 @@
+  <!-- Welcome Popup -->
+  <div id="welcome-popup" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(30,40,60,0.18);display:flex;align-items:center;justify-content:center;">
+    <div style="background:rgba(255,255,255,0.32);max-width:600px;width:99vw;padding:24px 32px 22px 32px;border-radius:16px;box-shadow:0 8px 32px rgba(30,40,60,0.18);font-family:sans-serif;color:#263238;position:relative;font-size:0.92rem;backdrop-filter:blur(8px) saturate(180%);overflow-y:auto;max-height:78vh;">
+      <button id="welcome-close" aria-label="Close welcome popup" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
+      <h2 style="margin-top:0;font-size:0.98rem;font-weight:700;letter-spacing:0.01em;">Welcome to MeinSalzburg!</h2>
+      <img src="logo/Salzburg.jpg" alt="Salzburg" style="display:block;margin:8px 0 12px 0;width:100%;border-radius:8px;box-shadow:0 2px 12px rgba(30,40,60,0.10);object-fit:cover;" />
+      <div style="font-size:0.98em;margin-bottom:8px;">This interactive map is your gateway to exploring and analyzing public services and amenities throughout the city of Salzburg.</div>
+      <div style="margin-bottom:8px;font-size:1em;"><strong>What you can do here:</strong></div>
+      <ul style="margin-top:0;margin-bottom:8px;padding-left:18px;font-size:0.96em;">
+        <li><strong>Explore:</strong> Click on any point of interest – schools, hospitals, parks, parking lots, libraries, tourist attraction and more – to see its details.</li>
+        <li><strong>Analyze:</strong> Use our proximity tools to find all amenities within your desired walking or driving distance from any location. Perfect for finding neighborhoods with specific services.</li>
+        <li><strong>Plan:</strong> Looking for an apartment? Need the nearest grocery store? Planning a day out? This tool helps you understand what's around you and make informed decisions.</li>
+      </ul>
+      <div style="margin-bottom:8px;font-size:1em;"><strong>How to use it:</strong></div>
+      <ul style="margin-top:0;margin-bottom:8px;padding-left:18px;font-size:0.96em;">
+        <li>Search for an address or simply pan the map.</li>
+        <li>Select an amenity type (e.g., "Schools") from the menu.</li>
+        <li>Use the "Draw Area" or "Nearest Search" tool to define your distance (e.g., "500m walk").</li>
+        <li>View the results and interact with the highlighted locations!</li>
+      </ul>
+      <div style="margin-top:8px;font-size:0.93em;color:#444;">This application is built on open data to support residents, visitors, researchers, and urban planners in experiencing Salzburg more connectedly.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">
+        <button id="welcome-skip" style="background:#f1f3f4;border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.92rem;color:#222">Skip</button>
+        <button id="welcome-no-show" style="background:#1978c8;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.92rem">Don't show again</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Welcome popup logic
+    window.addEventListener('DOMContentLoaded', function() {
+      var popup = document.getElementById('welcome-popup');
+      var closeBtn = document.getElementById('welcome-close');
+      var skipBtn = document.getElementById('welcome-skip');
+      var noShowBtn = document.getElementById('welcome-no-show');
+
+      // If user previously chose 'don't show again', hide immediately
+      try {
+        if (localStorage && localStorage.getItem && localStorage.getItem('welcome_dont_show') === '1') {
+          if (popup) popup.style.display = 'none';
+          return;
+        }
+      } catch (e) {
+        // ignore localStorage errors
+      }
+
+      if (popup) {
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function() { popup.style.display = 'none'; });
+        }
+        if (skipBtn) {
+          skipBtn.addEventListener('click', function() { popup.style.display = 'none'; });
+        }
+        if (noShowBtn) {
+          noShowBtn.addEventListener('click', function() {
+            try { localStorage.setItem('welcome_dont_show', '1'); } catch (e) {}
+            popup.style.display = 'none';
+          });
+        }
+      }
+    });
+  </script>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -126,13 +187,26 @@
         <button id="proximity-clear" style="padding:6px 10px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#fff;cursor:pointer">Clear</button>
       </div>
     </div>
+  <!-- Webmap Title: top right, above layer panel -->
+  <div style="position:absolute;top:16px;right:12px;z-index:100;font-family:sans-serif;font-size:1.25rem;font-weight:600;color:#263238;background:rgba(255,255,255,0.96);padding:10px 22px 10px 18px;border-radius:10px 10px 0 0;box-shadow:0 4px 16px rgba(14,30,37,0.10);letter-spacing:0.01em;max-width:420px;text-align:right;">
+    MeinSalzburg | Salzburg Urban Toolkit
+  </div>
   <div id="layer-panel">
     <h3>Layers</h3>
 
     <!-- Base maps -->
     <div class="layer-group">
-      <div class="layer-header">
+      <div class="layer-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <span class="layer-title">Base Maps</span>
+        <label style="display:inline-flex;align-items:center;gap:10px;font-size:0.95rem;color:#555;">
+          <span style="font-size:0.9rem">3D</span>
+          <!-- visually-hidden native checkbox kept for logic; we'll style it as a switch using adjacent spans and JS -->
+          <span style="display:inline-block;position:relative;width:40px;height:22px;">
+            <input type="checkbox" id="toggle-3d" aria-label="Toggle 3D view" style="position:absolute;opacity:0;width:100%;height:100%;margin:0;left:0;top:0;cursor:pointer;z-index:3;" />
+            <span class="switch-bg" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:999px;background:#cfd8dc;transition:background .18s, box-shadow .18s;z-index:1;"></span>
+            <span class="switch-knob" style="position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left .18s, transform .18s;z-index:2;"></span>
+          </span>
+        </label>
       </div>
       <div class="layer-sub">
         <label style="display:block; margin-bottom:6px;">
@@ -566,6 +640,49 @@
           map.setLayoutProperty('basemap-satellite', 'visibility', 'visible');
         }
       }));
+
+      // 2D / 3D toggle: wire the checkbox placed in the Base Maps header
+      const toggle3d = document.getElementById('toggle-3d');
+      if (toggle3d) {
+        const switchBg = toggle3d.parentElement.querySelector('.switch-bg');
+        const switchKnob = toggle3d.parentElement.querySelector('.switch-knob');
+
+        function updateSwitchVisual(checked) {
+          if (!switchBg || !switchKnob) return;
+          if (checked) {
+            switchBg.style.background = '#1978c8';
+            switchBg.style.boxShadow = '0 2px 6px rgba(25,120,200,0.28)';
+            switchKnob.style.left = '21px';
+            switchKnob.style.transform = 'translateX(0)';
+          } else {
+            switchBg.style.background = '#cfd8dc';
+            switchBg.style.boxShadow = 'none';
+            switchKnob.style.left = '3px';
+            switchKnob.style.transform = 'none';
+          }
+        }
+
+        // default: map was initialized with terrain enabled earlier; reflect that in the switch
+        try { toggle3d.checked = true; } catch (e) {}
+        updateSwitchVisual(toggle3d.checked);
+
+        toggle3d.addEventListener('change', function() {
+          updateSwitchVisual(this.checked);
+          if (this.checked) {
+            // enable terrain and set a pleasing pitch
+            try {
+              map.setTerrain({ source: 'dem', exaggeration: 1.2 });
+            } catch (e) {}
+            map.easeTo({ pitch: 45, duration: 600 });
+          } else {
+            // disable terrain and reset to flat 2D
+            try {
+              map.setTerrain(null);
+            } catch (e) {}
+            map.easeTo({ pitch: 0, duration: 600 });
+          }
+        });
+      }
 
     }); 
 
@@ -1024,74 +1141,106 @@
     // Unified export function supporting png, jpeg and pdf
     async function exportMap(format = 'png') {
       try {
+        // Prefer capturing the full page using html2canvas (works even when map canvas is tainted)
+        if (window.html2canvas) {
+          try {
+            const opts = { useCORS: true, logging: false, scale: Math.max(1, window.devicePixelRatio || 1) };
+            const pageCanvas = await html2canvas(document.body, opts);
+
+            if (format === 'pdf') {
+              const dataUrl = pageCanvas.toDataURL('image/png');
+              const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
+              if (!jsPDFClass) {
+                alert('PDF export requires jsPDF. Please check your internet connection.');
+                return;
+              }
+              const img = new Image();
+              img.src = dataUrl;
+              img.onload = () => {
+                const imgW = img.width;
+                const imgH = img.height;
+                const imgRatio = imgW / imgH;
+                const pdf = new jsPDFClass({ unit: 'pt', format: 'a4' });
+                const pageW = pdf.internal.pageSize.getWidth();
+                const pageH = pdf.internal.pageSize.getHeight();
+                let renderW = pageW;
+                let renderH = pageW / imgRatio;
+                if (renderH > pageH) { renderH = pageH; renderW = pageH * imgRatio; }
+                const marginX = (pageW - renderW) / 2;
+                const marginY = (pageH - renderH) / 2;
+                pdf.addImage(dataUrl, 'PNG', marginX, marginY, renderW, renderH);
+                pdf.save('map.pdf');
+              };
+              img.onerror = (e) => { console.error('PDF image load error', e); alert('PDF export failed (image load).'); };
+              return;
+            }
+
+            // PNG / JPEG
+            const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+            const quality = format === 'jpeg' ? 0.92 : undefined;
+            if (pageCanvas.toBlob) {
+              pageCanvas.toBlob((blob) => {
+                if (!blob) throw new Error('Failed to generate image blob');
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+              }, mime, quality);
+            } else {
+              const dataUrl = mime === 'image/png' ? pageCanvas.toDataURL('image/png') : pageCanvas.toDataURL('image/jpeg', quality);
+              const link = document.createElement('a');
+              link.href = dataUrl;
+              link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+            }
+            return;
+          } catch (e) {
+            console.warn('html2canvas capture failed, falling back to map canvas capture', e);
+            // fallthrough to map canvas approach below
+          }
+        }
+
+        // Fallback: export map canvas (may fail if canvas is tainted by cross-origin tiles)
         const canvas = map.getCanvas();
         if (!canvas) throw new Error('Map canvas not available');
 
         if (format === 'pdf') {
-          // convert canvas to dataURL and use jsPDF to create a PDF
           const dataUrl = canvas.toDataURL('image/png');
-          // ensure jsPDF is loaded
-          const jspdf = window.jspdf || window.jspdf === undefined ? window.jspdf : window.jspdf;
           const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
-          if (!jsPDFClass) {
-            alert('PDF export requires jsPDF. Please check your internet connection.');
-            return;
-          }
+          if (!jsPDFClass) { alert('PDF export requires jsPDF. Please check your internet connection.'); return; }
           const img = new Image();
           img.src = dataUrl;
           img.onload = () => {
-            // create pdf with orientation based on image aspect
-            const imgW = img.width;
-            const imgH = img.height;
-            const imgRatio = imgW / imgH;
+            const imgW = img.width; const imgH = img.height; const imgRatio = imgW / imgH;
             const pdf = new jsPDFClass({ unit: 'pt', format: 'a4' });
-            const pageW = pdf.internal.pageSize.getWidth();
-            const pageH = pdf.internal.pageSize.getHeight();
-            // fit image into page while preserving aspect ratio
-            let renderW = pageW;
-            let renderH = pageW / imgRatio;
-            if (renderH > pageH) {
-              renderH = pageH;
-              renderW = pageH * imgRatio;
-            }
-            const marginX = (pageW - renderW) / 2;
-            const marginY = (pageH - renderH) / 2;
-            pdf.addImage(dataUrl, 'PNG', marginX, marginY, renderW, renderH);
-            pdf.save('map.pdf');
+            const pageW = pdf.internal.pageSize.getWidth(); const pageH = pdf.internal.pageSize.getHeight();
+            let renderW = pageW; let renderH = pageW / imgRatio;
+            if (renderH > pageH) { renderH = pageH; renderW = pageH * imgRatio; }
+            const marginX = (pageW - renderW) / 2; const marginY = (pageH - renderH) / 2;
+            pdf.addImage(dataUrl, 'PNG', marginX, marginY, renderW, renderH); pdf.save('map.pdf');
           };
-          img.onerror = (e) => {
-            console.error('Image load error for PDF export', e);
-            alert('PDF export failed (image load).');
-          };
+          img.onerror = (e) => { console.error('Image load error for PDF export', e); alert('PDF export failed (image load).'); };
           return;
         }
 
-        // for png and jpeg
         const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
         const quality = format === 'jpeg' ? 0.92 : undefined;
-
         if (canvas.toBlob) {
           canvas.toBlob((blob) => {
-            if (!blob) {
-              throw new Error('Failed to generate image blob');
-            }
+            if (!blob) throw new Error('Failed to generate image blob');
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = url;
-            link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            link.href = url; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
           }, mime, quality);
         } else {
           const dataUrl = mime === 'image/png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', quality);
-          const link = document.createElement('a');
-          link.href = dataUrl;
-          link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
+          const link = document.createElement('a'); link.href = dataUrl; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove();
         }
       } catch (err) {
         console.error('Export failed:', err);
@@ -1417,6 +1566,8 @@
   </script>
   <!-- jsPDF for client-side PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- html2canvas for full-page screenshot export -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <!-- main.js includes the layers and other map logic--> 
   <script src="main.js"></script>
 </body>
