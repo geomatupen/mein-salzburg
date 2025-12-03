@@ -1,66 +1,55 @@
-  <!-- Welcome Popup -->
-  <div id="welcome-popup" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(30,40,60,0.18);display:flex;align-items:center;justify-content:center;">
-    <div style="background:rgba(255,255,255,0.32);max-width:600px;width:99vw;padding:24px 32px 22px 32px;border-radius:16px;box-shadow:0 8px 32px rgba(30,40,60,0.18);font-family:sans-serif;color:#263238;position:relative;font-size:0.92rem;backdrop-filter:blur(8px) saturate(180%);overflow-y:auto;max-height:78vh;">
-      <button id="welcome-close" aria-label="Close welcome popup" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#888;">&times;</button>
-      <h2 style="margin-top:0;font-size:0.98rem;font-weight:700;letter-spacing:0.01em;">Welcome to MeinSalzburg!</h2>
-      <img src="logo/Salzburg.jpg" alt="Salzburg" style="display:block;margin:8px 0 12px 0;width:100%;border-radius:8px;box-shadow:0 2px 12px rgba(30,40,60,0.10);object-fit:cover;" />
-      <div style="font-size:0.98em;margin-bottom:8px;">This interactive map is your gateway to exploring and analyzing public services and amenities throughout the city of Salzburg.</div>
-      <div style="margin-bottom:8px;font-size:1em;"><strong>What you can do here:</strong></div>
-      <ul style="margin-top:0;margin-bottom:8px;padding-left:18px;font-size:0.96em;">
-        <li><strong>Explore:</strong> Click on any point of interest – schools, hospitals, parks, parking lots, libraries, tourist attraction and more – to see its details.</li>
-        <li><strong>Analyze:</strong> Use our proximity tools to find all amenities within your desired walking or driving distance from any location. Perfect for finding neighborhoods with specific services.</li>
-        <li><strong>Plan:</strong> Looking for an apartment? Need the nearest grocery store? Planning a day out? This tool helps you understand what's around you and make informed decisions.</li>
+  <!-- Welcome Popup (Tailwind) -->
+  <div id="welcome-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+    <div class="bg-white/80 backdrop-blur-md max-w-2xl w-full p-6 rounded-xl shadow-2xl relative text-slate-800 overflow-auto max-h-screen text-xxs">
+      <button id="welcome-close" aria-label="Close welcome popup" class="btn-tertiary w-8 h-8 p-0 absolute top-3 right-3">&times;</button>
+      <h2 class="text-sm font-semibold mb-3">Welcome to MeinSalzburg!</h2>
+      <img src="logo/Salzburg.jpg" alt="Salzburg" class="w-full rounded-md shadow-sm object-cover mb-4" />
+      <p class="text-xxs mb-3">This interactive map is your gateway to exploring and analyzing public services and amenities throughout the city of Salzburg.</p>
+      <h3 class="font-semibold text-xxs">What you can do here</h3>
+      <ul class="list-disc pl-5 text-xxs space-y-1 mb-3">
+        <li><strong>Explore:</strong> Click on points of interest to see details.</li>
+        <li><strong>Analyze:</strong> Use proximity tools for walking/driving radii.</li>
+        <li><strong>Plan:</strong> Find nearby services and plan routes.</li>
       </ul>
-      <div style="margin-bottom:8px;font-size:1em;"><strong>How to use it:</strong></div>
-      <ul style="margin-top:0;margin-bottom:8px;padding-left:18px;font-size:0.96em;">
-        <li>Search for an address or simply pan the map.</li>
-        <li>Select an amenity type (e.g., "Schools") from the menu.</li>
-        <li>Use the "Draw Area" or "Nearest Search" tool to define your distance (e.g., "500m walk").</li>
-        <li>View the results and interact with the highlighted locations!</li>
+      <h3 class="font-semibold text-xxs">How to use it</h3>
+      <ul class="list-disc pl-5 text-xxs space-y-1 mb-4">
+        <li>Search for an address or pan the map.</li>
+        <li>Select an amenity type from the menu.</li>
+        <li>Use "Draw Area" or "Nearest Search" to define distance.</li>
       </ul>
-      <div style="margin-top:8px;font-size:0.93em;color:#444;">This application is built on open data to support residents, visitors, researchers, and urban planners in experiencing Salzburg more connectedly.</div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">
-        <button id="welcome-skip" style="background:#f1f3f4;border:1px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.92rem;color:#222">Skip</button>
-        <button id="welcome-no-show" style="background:#1978c8;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:0.92rem">Don't show again</button>
+      <p class="text-xxs text-gray-500 mb-4">Built on open data to support residents, visitors, researchers, and urban planners.</p>
+        <div class="flex justify-end gap-3">
+        <button id="welcome-skip" class="btn-tertiary text-xs">Skip</button>
+        <button id="welcome-no-show" class="btn-primary text-xs">Don't show again</button>
       </div>
     </div>
-    </div>
+  </div>
   </div>
   <script>
-    // Welcome popup logic
+    // Welcome popup logic — do not auto-hide on load (user requested persistent welcome)
     window.addEventListener('DOMContentLoaded', function() {
       var popup = document.getElementById('welcome-popup');
       var closeBtn = document.getElementById('welcome-close');
       var skipBtn = document.getElementById('welcome-skip');
       var noShowBtn = document.getElementById('welcome-no-show');
 
-      // If user previously chose 'don't show again', hide immediately
-      try {
-        if (localStorage && localStorage.getItem && localStorage.getItem('welcome_dont_show') === '1') {
-          if (popup) popup.style.display = 'none';
-          return;
-        }
-      } catch (e) {
-        // ignore localStorage errors
-      }
-
       if (popup) {
         if (closeBtn) {
-          closeBtn.addEventListener('click', function() { popup.style.display = 'none'; });
+          closeBtn.addEventListener('click', function() { popup.classList.add('hidden'); });
         }
         if (skipBtn) {
-          skipBtn.addEventListener('click', function() { popup.style.display = 'none'; });
+          skipBtn.addEventListener('click', function() { popup.classList.add('hidden'); });
         }
         if (noShowBtn) {
           noShowBtn.addEventListener('click', function() {
             try { localStorage.setItem('welcome_dont_show', '1'); } catch (e) {}
-            popup.style.display = 'none';
+            popup.classList.add('hidden');
           });
         }
       }
     });
   </script>
-<html>
+<html class="h-full">
 <head>
   <meta charset="utf-8" />
   <title>Salzburg</title>
@@ -68,396 +57,532 @@
     href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="style.css"  />
+  <!-- Tailwind CSS (CDN for rapid prototyping) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind config: project palette and Inter font (b1) -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2A77ED',
+            secondary: '#EDA02A',
+            tertiary: '#ED2AD8',
+            accent: '#16a085'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial']
+          }
+        }
+      }
+    };
+  </script>
   <style>
-    body { margin: 0; padding: 0; }
-    #map { width: 100%; height: 100vh; }
-    .popup-table tr:nth-child(even) { background: #fce0b0; }
-    /* Search box styles: positioned below top-left control to avoid overlap */
-    #search-container {
-      position: absolute;
-      left: 80px;
-      top: 12px;
-      z-index: 3;
-      width: 300px;
-      font-family: sans-serif;
-    }
-    #search-input {
-      width: 100%;
-      padding: px 10px;
-      border-radius: 4px;
-      border: 1px solid rgba(0,0,0,0.2);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      outline: none;
-      font-size: 14px;
-      height: 35px;
-    }
-    #search-results {
-      margin-top: 6px;
-      background: #fff;
-      border-radius: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-      max-height: 220px;
-      overflow: auto;
-      /*border: 1px solid rgba(0,0,0,0.06);*/
-    }
-    .search-item {
-      padding: 8px 10px;
+    /* Lightweight button styles so we don't need @apply or runtime mapping.
+       Keeps styles local and simple; colors match the Tailwind config tokens. */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem;
+      background: #2A77ED; color: #ffffff; border: 1px solid rgba(0,0,0,0.05);
       cursor: pointer;
-      font-size: 13px;
-      color: #222;
     }
-    .search-item:hover { background: #f1f1f1 }
-    /* Data sources logos inside side panel */
-    #layer-panel .data-logos { display:flex; gap:8px; align-items:center; margin-top:6px; }
-    #layer-panel .data-logos img { height:34px; width:auto; display:block; border-radius:4px; background:#fff; padding:4px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
-    /* Top-left map control styling */
-  .map-control-container{background:rgba(255,255,255,0.95);padding:8px;border-radius:8px;box-shadow:0 6px 20px rgba(14,30,37,0.12);display:flex;flex-direction:column;gap:8px;position:relative;z-index:9}
-    /* base button style */
-    .map-control-container .ctrl-btn{background:#fff;border:1px solid rgba(16,24,32,0.08);padding:0px;border-radius:8px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;min-width:30px;min-height:30px;box-shadow:0 1px 2px rgba(0,0,0,0.04);transition:all 180ms ease}
-    .map-control-container .ctrl-btn:focus{outline:none;box-shadow:0 0 0 3px rgba(25,120,200,0.14)}
-    .map-control-container .ctrl-btn:hover{background:#f4f8fb}
-    /* icons inside the control buttons */
-  .map-control-container .ctrl-btn svg { width: 18px; height: 18px; display: block; margin: 0 auto; fill: #263238; transition:fill 160ms ease }
-  .map-control-container .ctrl-btn:hover svg { fill: #1978c8 }
-  /* visually hidden text for screen readers */
-  .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px}
-  /* export menu */
-  .export-menu{display:none;position:absolute;left:0;top:calc(100% + 8px);background:#fff;border:1px solid #eee;border-radius:8px;padding:6px;box-shadow:0 10px 30px rgba(14,30,37,0.12);min-width:150px;z-index:10}
-  .export-menu.show{display:block}
-  .export-menu button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;padding:8px;border-radius:6px;border:none;background:transparent;cursor:pointer;font-size:14px}
-  .export-menu button:hover{background:#f6f9fc}
-    /* hide the panel buttons (we'll add controls on the map) */
-    #layer-panel .panel-control-hidden{display:none}
-    /* Legend */
-    .map-legend{position:absolute; left: 12px; bottom: 12px; z-index:6; background:#fff; padding:10px; border-radius:8px; box-shadow:0 6px 20px rgba(14,30,37,0.12); font-family:sans-serif; font-size:13px; color:#222; min-width:170px}
-    .map-legend h4{margin:0 0 8px 0; font-size:13px}
-    .legend-item{display:flex; align-items:center; gap:8px; margin:6px 0}
-    .legend-swatch{width:18px; height:12px; border-radius:3px; flex:0 0 18px; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.06)}
-    .legend-label{flex:1}
-    /* Draggable / minimizable panel styles */
-    .draggable-panel{position:absolute; background:#fff; border-radius:8px; box-shadow:0 6px 20px rgba(14,30,37,0.12); z-index:11; min-width:200px; font-family:sans-serif; transition:width 180ms ease, height 180ms ease, top 180ms ease, right 180ms ease}
-    .draggable-panel .panel-header{display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-top-left-radius:8px; border-top-right-radius:8px; background:linear-gradient(0deg, rgba(0,0,0,0.02), rgba(0,0,0,0.00));}
-    .draggable-panel .panel-header strong{font-size:14px}
-    .draggable-panel .panel-controls{display:flex; gap:6px; align-items:center}
-    .draggable-panel .minimize-btn{background:#fff;border:1px solid rgba(0,0,0,0.08);padding:4px 8px;border-radius:6px;cursor:pointer;font-size:13px}
-    .draggable-panel .minimize-btn:focus{outline:none;box-shadow:0 0 0 3px rgba(25,120,200,0.12)}
-    .draggable-panel .panel-body{padding:10px; max-height:60vh; overflow:auto}
-    .draggable-panel.collapsed{width:140px}
-    .draggable-panel.collapsed .panel-body{display:none}
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Small icon used when collapsed */
-    .draggable-panel .panel-icon{display:none}
-    .draggable-panel.collapsed{ width:44px; height:44px; padding:0; overflow:hidden }
-    .draggable-panel.collapsed .panel-body{display:none}
-    .draggable-panel.collapsed strong{display:none}
-    .draggable-panel.collapsed .minimize-btn{display:none}
-    .draggable-panel.collapsed .panel-icon{display:flex; align-items:center; justify-content:center; width:100%; height:100%}
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem;
+      background: #EDA02A; color: #ffffff; border: 1px solid rgba(0,0,0,0.05);
+      cursor: pointer;
+    }
+    .btn-secondary:hover { opacity: 0.92; }
+    .btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* When panels are minimized, position them in the top-right corner stacked as icons */
-    #layer-panel.collapsed{ right:2%; top:3%; bottom:auto; width:44px; height:44px }
-    #map-legend.collapsed{ right:2%; top:calc(3% + 52px); bottom:auto; width:44px; height:44px }
+    .btn-accent {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem;
+      background: #16a085; color: #ffffff; border: 1px solid rgba(0,0,0,0.05);
+      cursor: pointer;
+    }
+    .btn-accent:hover { opacity: 0.92; }
+    .btn-accent:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Ensure expanded panels do not overlap: place legend below the layers panel */
-    #layer-panel{ right:2%; top:3%; width:26%; max-width:420px }
-    #map-legend{ right:2%; top:calc(3% + 36vh); width:18%; max-width:300px; min-width:160px }
-    .draggable-panel.dragging{opacity:0.95}
+    .btn-tertiary {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem;
+      background: transparent; color: #334155; border: 1px solid #f1f5f9;
+      cursor: pointer;
+    }
+    .btn-tertiary:hover { background: #f8fafc; }
+    .btn-tertiary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    /* Layer panel default placement and sizing (use percentages for responsiveness) */
-    /* make the whole panel full viewport height but only the body scrolls */
-    #layer-panel{ right:2%; top:3%; width:26%; max-width:420px; z-index:12; height:100vh; display:flex; flex-direction:column }
-    .layer-panel-body { overflow:auto; padding:10px; }
-
-    /* Legend placement (bottom-right) using percentages; smaller width */
-    .map-legend{right:2%; bottom:3%; width:18%; max-width:300px; min-width:160px; z-index:10}
-
-    /* Drag handle removed - panels are fixed to the right; only minimize is available */
-    .drag-handle{display:none}
-    /* Prevent the layer panel from overflowing the viewport */
-    #layer-panel { max-height: calc(100vh - 48px); overflow: auto; }
+    /* Small utility helpers used by JS for compact icon buttons */
+    .icon-btn { display:inline-flex; align-items:center; justify-content:center; min-width:2rem; height:2rem; padding:1rem; border-radius:0.375rem; }
+     /* Switch styles: small/xs/md sizes and checked state handling
+       Use CSS variables to make knob positioning precise and consistent across sizes.
+       Markup pattern used in the UI:
+       <label class="switch switch-sm"><input type="checkbox" class="sr-only" /><div class="switch-track"><div class="switch-knob"></div></div></label>
+    */
+    .switch {
+      --switch-track-width: 42px;
+      --switch-track-height: 22px;
+      --switch-knob-size: 14px;
+      --switch-padding: 4px; /* distance from left edge */
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .switch .switch-track {
+      position: relative;
+      background: #d9d9d9 !important; /* neutral gray when off - force override */
+      border-radius: 9999px;
+      transition: background .15s ease;
+      width: var(--switch-track-width);
+      height: var(--switch-track-height);
+    }
+    .switch .switch-knob {
+      position: absolute;
+      top: 50%;
+      left: var(--switch-padding);
+      transform: translateY(-50%);
+      width: var(--switch-knob-size);
+      height: var(--switch-knob-size);
+      background: #D6D9DE !important; /* adjusted gray-200 (darker for visibility) */
+      border: 1px solid rgba(15,23,42,0.08) !important; /* stronger subtle border */
+      border-radius: 9999px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+      transition: left .15s ease, transform .15s ease, background .1s ease;
+      box-sizing: border-box;
+    }
+    /* size presets */
+    .switch-xs { --switch-track-width: 34px; --switch-track-height: 18px; --switch-knob-size: 12px; --switch-padding: 3px; }
+    .switch-sm { --switch-track-width: 42px; --switch-track-height: 22px; --switch-knob-size: 14px; --switch-padding: 4px; }
+    .switch-md { --switch-track-width: 56px; --switch-track-height: 28px; --switch-knob-size: 18px; --switch-padding: 5px; }
+    /* hide the native checkbox but keep it in the DOM order for + selector */
+    .switch input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; }
+    /* checked state: move knob precisely accounting for knob size + padding (visual color enforced by specific selector below) */
+    .switch input[type="checkbox"]:checked + .switch-track .switch-knob { left: calc(100% - var(--switch-knob-size) - var(--switch-padding)); background: #ffffff !important; border-color: rgba(0,0,0,0.06) !important; box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important; }
+    /* Compatibility for older markup patterns where .relative wrapper is used */
+    label input[type="checkbox"]:checked + .relative .switch-bg { background: #2A77ED !important; }
+    label input[type="checkbox"]:checked + .relative .switch-knob { transform: translateX(1.5rem) !important; }
+     /* Ensure the off-state track is visible even if other styles try to override it.
+       Use more specific selectors and cover pseudo-elements; also clear background-image
+       so gradients or other utilities don't mask the color. */
+      /* Limit enforced track background rules to the layer panel only to avoid
+        duplicating the general .switch definition above. */
+      #layer-panel .switch .switch-track,
+      #layer-panel .switch .switch-track::before,
+      #layer-panel .switch .switch-track::after {
+      background: #d9d9d9 !important;
+      background-color: #d9d9d9 !important;
+      background-image: none !important;
+      }
+    /* Explicit input+track selectors with highest local specificity to enforce states
+       without JS. These should win over generic utility classes from Tailwind. */
+    #layer-panel .switch input[type="checkbox"] + .switch-track { background: #d9d9d9 !important; background-image: none !important; }
+    /* Keep the color-binding rule only inside #layer-panel (higher specificity). */
+    #layer-panel .switch input[type="checkbox"]:checked + .switch-track { background: #2A77ED !important; background-image: none !important; }
+    label input[type="checkbox"] + .relative .switch-bg { background: #d9d9d9 !important; background-image: none !important; }
+     /* Position helper for proximity button placed to the right of the search box.
+       Calculation: left offset of search container (left-20 = 5rem) + width (w-80 = 20rem) + gap 0.5rem = 25.5rem */
+     .proximity-right { left: calc(25.5rem); }
   </style>
+  <style>
+    /* Override MapLibre's ctrl button background so our Tailwind utility colors show */
+    .maplibregl-ctrl-group button.bg-primary { background-color: #2A77ED !important; color: #fff !important; }
+    .maplibregl-ctrl-group button.bg-secondary { background-color: #EDA02A !important; color: #fff !important; }
+    .maplibregl-ctrl-group button.bg-tertiary { background-color: #ED2AD8 !important; color: #fff !important; }
+    /* Ensure control container doesn't clip absolute children and buttons */
+    .map-control-container { overflow: visible !important; }
+    .maplibregl-ctrl-group button { overflow: visible !important; }
 
+    /* Provide a few utility classes that our JS toggles — keep them small and explicit so they work without JIT
+       These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
+    .max-h-80 { max-height: 20rem !important; }
+    .opacity-100 { opacity: 1 !important; }
+    .translate-y-0 { transform: translateY(0) !important; }
+    .pointer-events-auto { pointer-events: auto !important; }
+    .p-2 { padding: 0.5rem !important; }
+    /* Styled range inputs to match Tailwind look and project palette */
+    .layer-menu input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: transparent;
+      border-radius: 9999px;
+      outline: none;
+      display: block;
+    }
+    /* WebKit track
+       Make the native track transparent so the input's background (a gradient
+       applied by JS) shows the filled portion. Provide a fallback background
+       color on the input itself for environments with JS disabled. */
+    .layer-menu input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      background: transparent;
+      border-radius: 9999px;
+    }
+    /* Fallback color when JS hasn't run yet — use our gray palette (light track) */
+    .layer-menu input[type="range"] { background-color: #D6D9DE; }
+    /* WebKit thumb */
+    .layer-menu input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: -4px; /* center thumb on track */
+      width: 14px;
+      height: 14px;
+      border-radius: 9999px;
+      background: #9CA3AF; /* use bg-gray-400 for the circular thumb */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+    }
+    .layer-menu input[type="range"]:focus::-webkit-slider-thumb {
+      box-shadow: 0 0 0 4px rgba(42,119,237,0.12);
+    }
+    /* Firefox track & thumb */
+    .layer-menu input[type="range"]::-moz-range-track {
+      height: 6px;
+      background: #D6D9DE;
+      border-radius: 9999px;
+    }
+    .layer-menu input[type="range"]::-moz-range-thumb {
+      width: 14px; height:14px; border-radius:9999px; background:#9CA3AF; border:0; box-shadow:0 1px 3px rgba(0,0,0,0.15);
+    }
+    /* Firefox: color the filled portion (progress) separately */
+    .layer-menu input[type="range"]::-moz-range-progress {
+      background: #9CA3AF;
+      height: 6px;
+      border-radius: 9999px;
+    }
+    /* Ensure range inputs inside the layer menu size correctly when Tailwind utilities are missing
+       or when they're left as `w-full` from earlier edits. Make them behave like flexible children. */
+    .layer-menu label { display: flex; align-items: center; }
+    .layer-menu input[type="range"].w-full,
+    .layer-menu input[type="range"].flex-1 {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
+    }
+  </style>
+  <!-- Font Awesome for professional icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Ensure Font Awesome solid glyphs render even if loaded late or overridden */
+    .fa, .fas, .fa-solid {
+      font-family: "Font Awesome 6 Free" !important;
+      font-weight: 900 !important;
+      /* inherit size from the parent element so icons scale with surrounding text */
+      font-size: inherit !important;
+      display: inline-block !important;
+      line-height: 1 !important;
+      vertical-align: middle !important;
+      color: inherit !important;
+    }
+    .fa::before, .fas::before, .fa-solid::before {
+      font-family: "Font Awesome 6 Free" !important;
+      font-weight: 900 !important;
+      display: inline-block !important;
+      font-size: inherit !important;
+      line-height: 1 !important;
+      vertical-align: middle !important;
+      color: inherit !important;
+    }
+    /* Target icons inside compact controls so they appear proportional to buttons */
+    .maplibregl-ctrl-group button i,
+    .btn-tertiary i,
+    .btn-primary i,
+    .icon-btn i,
+    .layer-menu-btn i,
+    .panel-controls i,
+    .minimize-btn i {
+      font-size: 0.95rem !important;
+      line-height: 1 !important;
+      vertical-align: middle !important;
+    }
+    /* Make chevrons and small directional glyphs slightly smaller to fit tight controls */
+    .fa-chevron-down, .fa-chevron-up, .fa-chevron-left, .fa-chevron-right,
+    .layer-menu-btn i.fa-chevron-down, .layer-menu-btn i.fa-chevron-up,
+    .layer-row i.fa-chevron-down, .panel-controls i.fa-chevron-down {
+      font-size: 0.65rem !important;
+      line-height: 1 !important;
+      vertical-align: middle !important;
+      transform: none !important;
+      /* reduce grayness: lighter, less prominent chevrons */
+      color: #9CA3AF !important; /* matches .text-gray-400 */
+      opacity: 0.9 !important;
+    }
+    /* Slightly larger icons when explicitly using text-lg or larger utility classes should still work */
+    /* (removed map-control-specific overrides to avoid unintended visibility issues) */
+  </style>
+  <style>
+    /* Tailwind-like gray utility fallbacks (single-file / no build) */
+    .bg-gray-100 { background-color: #F3F4F6 !important; }
+    .bg-gray-200 { background-color: #D6D9DE !important; }
+    .bg-gray-300 { background-color: #D1D5DB !important; }
+    .bg-gray-400 { background-color: #9CA3AF !important; color: #111827 !important; }
+    .bg-gray-500 { background-color: #6B7280 !important; color: #fff !important; }
+
+    /* Text and background utility fallbacks (single-file) */
+
+    .bg-white { background-color: #ffffff !important; }
+    /* Additional text-gray utilities for later use */
+    .text-gray-200 { color: #D6D9DE !important; }
+    .text-gray-400 { color: #9CA3AF !important; }
+    .text-gray-500 { color: #6B7280 !important; }
+    .text-gray-600 { color: #4B5563 !important; }
+    .text-gray-800 { color: #1F2937 !important; }
+
+    /* Text size utilities (keep `text-sm` as the sidebar title reference) */
+    .text-sm { font-size: 0.875rem !important; }
+    .text-xs { font-size: 0.75rem !important; }
+    .text-xxs { font-size: 0.6875rem !important; }
+    .text-xxxs { font-size: 0.625rem !important; }
+
+  </style>
+  <link rel="stylesheet" href="style.css"  />
+  <!-- Inter: compact UI font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
 </head>
-<body>
-  <div id="map"></div>
-  <div id="search-container">
-    <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off">
-    <div id="search-results"></div>
-  </div>
-    <div id="proximity-btn-container" style="position:absolute; left:392px; top:12px; z-index:3;">
-      <button id="proximity-open" style="padding:8px 10px; border-radius:4px; border:1px solid rgba(0,0,0,0.12); background:#fff; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.08);">Proximity Analysis</button>
+<body class="h-full overflow-hidden font-sans">
+  <div id="map" class="w-full h-screen"></div>
+  <div id="search-container" class="absolute left-20 top-3 z-30 w-80">
+    <div class="relative">
+      <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3" />
     </div>
+    <div id="search-results" class="mt-2 bg-white rounded-md shadow-lg max-h-56 overflow-auto"></div>
+  </div>
+
+  <!-- Proximity button placed to the right of the search container (whole button) -->
+  <div id="proximity-btn-container" class="absolute top-3 z-30 proximity-right">
+    <button id="proximity-open" class="btn-secondary icon-btn text-xs" title="Open proximity analysis">Proximity</button>
+  </div>
 
   <!-- Legend (draggable + minimizable) -->
-  <div class="draggable-panel map-legend" id="map-legend" role="dialog" aria-label="Map legend">
-    <div class="panel-header">
-      <strong>Map legend</strong>
-      <div class="panel-controls">
-        <span class="panel-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M3 13h18v-2H3v2zm0-6h18V5H3v2zM3 19h18v-2H3v2z" fill="#333"/></svg>
-        </span>
-        <button class="minimize-btn" data-target="map-legend" aria-label="Minimize legend">−</button>
+  <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 w-56 max-w-xs z-20 bg-white rounded-lg shadow-lg" role="dialog" aria-label="Map legend">
+    <div class="panel-header flex items-center justify-between p-3 border-b border-gray-100">
+      <strong class="text-xs">Map legend</strong>
+      <div class="panel-controls flex items-center gap-2">
+        <span class="panel-icon hidden" aria-hidden="true"><i class="fa-solid fa-bars text-lg text-slate-800"></i></span>
+        <button class="minimize-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" data-target="map-legend" aria-label="Minimize legend"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
       </div>
     </div>
-    <div class="panel-body">
-      <div class="legend-item"><div class="legend-swatch" style="background:#e74c3c"></div><div class="legend-label">Motorway / Train</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#ff6b00"></div><div class="legend-label">Primary roads</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#ffb400"></div><div class="legend-label">Secondary roads</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#f39c12"></div><div class="legend-label">Tertiary roads</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#6c5ce7"></div><div class="legend-label">Residential</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#00b894"></div><div class="legend-label">Living street / Service</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#00cec9"></div><div class="legend-label">Cycleway / Unclassified</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#0984e3"></div><div class="legend-label">Paths / Pedestrian</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#1abc9c"></div><div class="legend-label">Amenities (points)</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#e67e22"></div><div class="legend-label">Buildings (extruded)</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#34495e"></div><div class="legend-label">Salzburg boundary</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#3498db"></div><div class="legend-label">Rivers</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#f39c12"></div><div class="legend-label">Education</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#e74c3c"></div><div class="legend-label">Health</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#d35400"></div><div class="legend-label">Restaurants</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#9b59b6"></div><div class="legend-label">Tourism</div></div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#16a085"></div><div class="legend-label">Transportation</div></div>
+    <div class="panel-body p-3 space-y-2 max-h-64 overflow-auto">
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-red-500"></div><div class="flex-1 text-xxs text-gray-600">Motorway / Train</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-orange-500"></div><div class="flex-1 text-xxs text-gray-600">Primary roads</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-amber-400"></div><div class="flex-1 text-xxs text-gray-600">Secondary roads</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-amber-600"></div><div class="flex-1 text-xxs text-gray-600">Tertiary roads</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-violet-500"></div><div class="flex-1 text-xxs text-gray-600">Residential</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-emerald-500"></div><div class="flex-1 text-xxs text-gray-600">Living street / Service</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-teal-400"></div><div class="flex-1 text-xxs text-gray-600">Cycleway / Unclassified</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-sky-600"></div><div class="flex-1 text-xxs text-gray-600">Paths / Pedestrian</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-teal-500"></div><div class="flex-1 text-xxs text-gray-600">Amenities (points)</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-orange-500"></div><div class="flex-1 text-xxs text-gray-600">Buildings (extruded)</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-slate-700"></div><div class="flex-1 text-xxs text-gray-600">Salzburg boundary</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-sky-500"></div><div class="flex-1 text-xxs text-gray-600">Rivers</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-amber-600"></div><div class="flex-1 text-xxs text-gray-600">Education</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-red-500"></div><div class="flex-1 text-xxs text-gray-600">Health</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-orange-600"></div><div class="flex-1 text-xxs text-gray-600">Restaurants</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-purple-500"></div><div class="flex-1 text-xxs text-gray-600">Tourism</div></div>
+      <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-teal-600"></div><div class="flex-1 text-xxs text-gray-600">Transportation</div></div>
     </div>
   </div>
 
-    <div id="proximity-panel" style="display:none; position:absolute; left:156px; top:60px; z-index:4; width:340px; background:#fff; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,0.12); padding:12px; font-family:sans-serif;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <strong>Proximity Analysis</strong>
-        <button id="proximity-close" style="background:none;border:none;cursor:pointer;font-size:16px">✕</button>
+    <div id="proximity-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxs">
+      <div class="flex justify-between items-center mb-2">
+        <strong class="text-xs">Proximity Analysis</strong>
+        <button id="proximity-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
       </div>
-      <div style="margin-bottom:8px; color:#444; font-size:13px">Click <strong>Set center</strong> then click the map to pick the center point.</div>
-      <div style="display:flex; gap:8px; margin-bottom:8px;">
-        <button id="proximity-set-center" style="flex:1;padding:8px;border-radius:4px;border:1px solid rgba(0,0,0,0.22);background:#fff;color:#333;cursor:pointer">Set center</button>
+      <div class="text-xxs text-gray-500 mb-2">Click <strong>Set center</strong> then click the map to pick the center point.</div>
+      <div class="mb-2">
+        <button id="proximity-set-center" class="btn-tertiary w-full justify-center text-xs">Set center</button>
       </div>
-      <div id="proximity-info" style="font-size:13px;color:#333;margin-bottom:8px">Center: —  Radius: —</div>
-      <div style="display:flex; gap:8px; margin-bottom:8px;">
-        <input id="proximity-radius" type="number" min="10" value="5000" style="flex:1;padding:8px;border:1px solid rgba(0,0,0,0.12);border-radius:4px" />
-        <select id="proximity-units" style="padding:8px;border:1px solid rgba(0,0,0,0.12);border-radius:4px">
+      <div id="proximity-info" class="text-xxs text-gray-600 mb-2">Center: —  Radius: —</div>
+      <div class="flex gap-2 mb-2">
+        <input id="proximity-radius" type="number" min="10" value="5000" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 flex-1" />
+        <select id="proximity-units" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200">
           <option value="meters">m</option>
           <option value="kilometers">km</option>
         </select>
       </div>
-      <div style="display:flex; gap:8px; margin-bottom:8px;">
-        <button id="proximity-run" style="flex:1;padding:8px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#ccc;color:#999;cursor:not-allowed" disabled>Run</button>
+      <div class="mb-2">
+        <button id="proximity-run" class="btn-primary w-full justify-center text-xs" disabled>Run</button>
       </div>
-      <div id="proximity-summary" style="font-size:13px; color:#222; max-height:220px; overflow:auto; border-top:1px solid rgba(0,0,0,0.04); padding-top:8px"></div>
-      <div style="display:flex; gap:8px; margin-top:8px; justify-content:flex-end">
-        <button id="proximity-clear" style="padding:6px 10px;border-radius:4px;border:1px solid rgba(0,0,0,0.12);background:#fff;cursor:pointer">Clear</button>
+      <div id="proximity-summary" class="text-xxs text-gray-700 max-h-56 overflow-auto border-t pt-2"></div>
+        <div class="flex justify-end mt-3">
+        <button id="proximity-clear" class="btn-tertiary text-xs">Clear</button>
       </div>
     </div>
   <!-- Webmap Title: top right, above layer panel -->
   
-  <div id="layer-panel">
-    <div style="top:16px;right:12px;z-index:100;font-family:sans-serif;font-size:1.25rem;font-weight:600;color:#263238;background:rgba(255,255,255,0.96);padding:10px 22px 10px 18px;border-radius:10px 10px 0 0;box-shadow:0 4px 16px rgba(14,30,37,0.10);letter-spacing:0.01em;max-width:420px;text-align:right;">MeinSalzburg | Salzburg Urban Toolkit</div>
-    <div class="layer-panel-body">
-    <h3>Base Layers</h3>
-
-    <!-- Base maps -->
-    <div class="layer-group">
-      <div class="layer-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-        <span class="layer-title">Base Maps</span>
-        <label style="display:inline-flex;align-items:center;gap:10px;font-size:0.95rem;color:#555;">
-          <span style="font-size:0.9rem">3D</span>
-          <!-- visually-hidden native checkbox kept for logic; we'll style it as a switch using adjacent spans and JS -->
-          <span style="display:inline-block;position:relative;width:40px;height:22px;">
-            <input type="checkbox" id="toggle-3d" aria-label="Toggle 3D view" style="position:absolute;opacity:0;width:100%;height:100%;margin:0;left:0;top:0;cursor:pointer;z-index:3;" />
-            <span class="switch-bg" style="position:absolute;left:0;top:0;width:100%;height:100%;border-radius:999px;background:#cfd8dc;transition:background .18s, box-shadow .18s;z-index:1;"></span>
-            <span class="switch-knob" style="position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:left .18s, transform .18s;z-index:2;"></span>
-          </span>
-        </label>
-      </div>
-      <div class="layer-sub">
-        <label style="display:block; margin-bottom:6px;">
-          <input type="radio" name="basemap" value="street" checked>
-          Street
-        </label>
-        <label style="display:block;">
-          <input type="radio" name="basemap" value="satellite">
-          Satellite
-        </label>
+  <div id="layer-panel" class="draggable-panel layer-panel absolute right-5 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-lg">
+    <div class="panel-header flex items-center justify-between p-3 border-b bg-white/90 border-gray-100">
+      <div class="text-sm font-semibold">MeinSalzburg | Salzburg Urban Toolkit</div>
+      <div class="panel-controls flex items-center gap-2">
+        <button class="minimize-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" data-target="layer-panel" aria-label="Minimize layers"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
       </div>
     </div>
+    <div class="layer-panel-body overflow-auto p-2">
+      <div class="mb-3">
+        <div class="flex items-center justify-between mb-2">
+          <h4 class="text-xs font-medium text-slate-600">Base Layers</h4>
+          <div class="flex items-center gap-3">
+            <label class="text-xxs text-gray-600 mr-2">3D</label>
+            <label id="switch-3d" class="switch switch-xs inline-flex items-center gap-3 cursor-pointer">
+              <input id="toggle-3d" type="checkbox" class="sr-only" aria-label="Toggle 3D view" />
+              <div class="switch-track">
+                <div class="switch-knob"></div>
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio" checked> <span class="text-xs">Street</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="satellite" id="basemap-sat-radio"> <span class="text-xs">Satellite</span></label>
+          </div>
+        </div>
 
-    <h3>Overlay Layers</h3>
-    <!-- Per-layer controls: visibility checkbox, Labels toggle (OFF by default), opacity slider -->
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-amenities-visible" checked>
-        <label for="layer-amenities-visible" class="layer-title">Amenities</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-amenities-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-amenities-opacity" min="0" max="1" step="0.05" value="0.9">
+      <h4 class="text-xs font-medium text-slate-600 mt-3 mb-2">Overlay Layers</h4>
+      <div class="space-y-1">
+        <!-- Amenities -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-amenities-visible" checked><label for="layer-amenities-visible" class="text-xs text-gray-600">Amenities</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-amenities-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-amenities-opacity" min="0" max="1" step="0.05" value="0.9" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Buildings (controls both extrusion and outline) -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-buildings-visible" checked><label for="layer-buildings-visible" class="text-xs text-gray-600">Buildings</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-buildings-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-buildings-opacity" min="0" max="1" step="0.05" value="0.95" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Streets -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-streets-visible" checked><label for="layer-streets-visible" class="text-xs text-gray-600">Streets</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-streets-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-streets-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Railway -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-railway-visible" checked><label for="layer-railway-visible" class="text-xs text-gray-600">Railway</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-railway-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-railway-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Rivers -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-rivers-visible" checked><label for="layer-rivers-visible" class="text-xs text-gray-600">Rivers</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-rivers-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-rivers-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Education -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-education-visible" checked><label for="layer-education-visible" class="text-xs text-gray-600">Education</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-education-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-education-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Health -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-health-visible" checked><label for="layer-health-visible" class="text-xs text-gray-600">Health</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-health-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-health-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Restaurants -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-restaurants-visible" checked><label for="layer-restaurants-visible" class="text-xs text-gray-600">Restaurants</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-restaurants-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-restaurants-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Tourism -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-tourism-visible" checked><label for="layer-tourism-visible" class="text-xs text-gray-600">Tourism</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-tourism-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-tourism-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Transportation -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-transportation-visible" checked><label for="layer-transportation-visible" class="text-xs text-gray-600">Transportation</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-transportation-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-transportation-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Salzburg boundary -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition" >
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-salzburg-boundaries-visible" checked><label for="layer-salzburg-boundaries-visible" class="text-xs text-gray-600">Salzburg boundary</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu hidden mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-salzburg-boundaries-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-salzburg-boundaries-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
         </div>
       </div>
-    </div>
 
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-buildings-visible" checked>
-        <label for="layer-buildings-visible" class="layer-title">Buildings (extruded)</label>
+      <div class="panel-sep my-3 border-t pt-3"></div>
+
+      <h4 class="text-xs font-medium text-slate-600 mb-2">Markers</h4>
+      <div class="space-y-2">
+        <label class="flex items-center gap-3"><input type="checkbox" id="marker-default-visible" checked> <span class="text-xs text-gray-600">Default marker</span></label>
+        <label class="flex items-center gap-3"><input type="checkbox" id="marker-png-visible" checked> <span class="text-xs text-gray-600">PNG marker</span></label>
+        <label class="flex items-center gap-3"><input type="checkbox" id="marker-html-visible" checked> <span class="text-xs text-gray-600">HTML marker</span></label>
       </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-buildings-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-buildings-opacity" min="0" max="1" step="0.05" value="0.95">
+
+      <div class="panel-sep my-4 border-t pt-3"></div>
+      <div class="text-xs text-slate-600">Data sources</div>
+      <div class="mt-2 text-xs text-slate-700">
+        <div class="data-logos flex gap-2 items-center mt-2">
+          <img src="logo/logo_cde.jpg" alt="Copernicus Master in Digital Earth logo" class="h-8 rounded bg-white p-1 shadow-sm" />
+          <img src="logo/uni-sbg-logo.png" alt="Paris Lodron University Salzburg logo" class="h-8 rounded bg-white p-1 shadow-sm" />
+          <img src="logo/upol_logo.png" alt="Palacký University Olomouc logo" class="h-8 rounded bg-white p-1 shadow-sm" />
         </div>
-      </div>
-    </div>
-
-    <!-- Buildings outline is part of the buildings layer; controlled together to avoid duplication in the sidebar -->
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-streets-visible" checked>
-        <label for="layer-streets-visible" class="layer-title">Streets</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-streets-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-streets-opacity" min="0" max="1" step="0.05" value="1">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-railway-visible" checked>
-        <label for="layer-railway-visible" class="layer-title">Railway</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-railway-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-railway-opacity" min="0" max="1" step="0.05" value="1">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-rivers-visible" checked>
-        <label for="layer-rivers-visible" class="layer-title">Rivers</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-rivers-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-rivers-opacity" min="0" max="1" step="0.05" value="1">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-education-visible" checked>
-        <label for="layer-education-visible" class="layer-title">Education</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-education-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-education-opacity" min="0" max="1" step="0.05" value="0.85">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-health-visible" checked>
-        <label for="layer-health-visible" class="layer-title">Health</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-health-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-health-opacity" min="0" max="1" step="0.05" value="0.85">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-restaurants-visible" checked>
-        <label for="layer-restaurants-visible" class="layer-title">Restaurants</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-restaurants-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-restaurants-opacity" min="0" max="1" step="0.05" value="0.85">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-tourism-visible" checked>
-        <label for="layer-tourism-visible" class="layer-title">Tourism</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-tourism-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-tourism-opacity" min="0" max="1" step="0.05" value="0.85">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-transportation-visible" checked>
-        <label for="layer-transportation-visible" class="layer-title">Transportation</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-transportation-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-transportation-opacity" min="0" max="1" step="0.05" value="0.85">
-        </div>
-      </div>
-    </div>
-
-    <div class="layer-group">
-      <div class="layer-header">
-        <input type="checkbox" id="layer-salzburg-boundaries-visible" checked>
-        <label for="layer-salzburg-boundaries-visible" class="layer-title">Salzburg boundary</label>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="layer-salzburg-boundaries-labels"> Labels</label>
-        <div class="opacity-row"><span>Opacity</span>
-          <input type="range" id="layer-salzburg-boundaries-opacity" min="0" max="1" step="0.05" value="1">
-        </div>
-      </div>
-    </div>
-
-    <!-- Markers -->
-    <div class="layer-group">
-      <div class="layer-header">
-        <span class="layer-title">Markers</span>
-      </div>
-      <div class="layer-sub">
-        <label class="sub-toggle"><input type="checkbox" id="marker-default-visible" checked> Default Marker</label>
-        <label class="sub-toggle"><input type="checkbox" id="marker-png-visible" checked> PNG Marker</label>
-        <label class="sub-toggle"><input type="checkbox" id="marker-html-visible" checked> HTML Marker</label>
-      </div>
-    </div>
-    
-    <!-- Data sources / credits -->
-    <div class="layer-group" style="margin-top:10px; font-size:13px;">
-      <div class="layer-header">
-        <span class="layer-title">Data sources</span>
-      </div>
-      <div class="layer-sub" style="padding:6px 4px; color:#333;">
-        <!-- Logos: your files were detected in the local 'logo/' folder; update names here if needed -->
-        <div class="data-logos">
-          <img src="logo/logo_cde.jpg" alt="Copernicus Master in Digital Earth logo">
-          <img src="logo/uni-sbg-logo.png" alt="Paris Lodron University Olomouc logo">
-          <img src="logo/upol_logo.png" alt="Palacký University Olomouc logo">
-        </div>
-        <div class="data-credit" style="margin-top:8px; color:#333; font-size:13px;">
-          Map tiles © <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap contributors</a>
+        <div class="data-credit mt-2 text-xs text-slate-700">Map tiles © <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap contributors</a>
           &nbsp;|&nbsp; Satellite © <a href="https://www.esri.com/en-us/home" target="_blank" rel="noopener">Esri</a>
           &nbsp;|&nbsp; Data: <a href="data/austria-demography-simplified-wgs84.geojson" target="_blank">Austria demography (GeoJSON)</a>
           &nbsp;|&nbsp; Icons: <code>marker.png</code>
         </div>
-        <div style="margin-top:6px; color:#666; font-size:12px;">Please respect each provider's terms of use and attribution requirements.</div>
+        <div class="mt-2 text-xs text-slate-500">Please respect each provider's terms of use and attribution requirements.</div>
       </div>
-    </div>
     </div>
   </div>
 
@@ -474,7 +599,7 @@
         sources: {},
         layers: []
       },
-      center: [13.0449, 48.2699],
+      center: [13.033229, 47.811195],
       zoom: 12,
       pitch: 45
     });
@@ -577,16 +702,8 @@
       // Increase the `exaggeration` value if you want a stronger effect.
       map.setTerrain({ source: 'dem', exaggeration: 1.2});
 
-      // Add a simple sky layer for a nicer 3D appearance
-      map.addLayer({
-        id: 'sky',
-        type: 'sky',
-        paint: {
-          'sky-type': 'atmosphere',
-          'sky-atmosphere-sun': [0.0, 45.0],
-          'sky-atmosphere-sun-intensity': 15
-        }
-      });
+      // Note: removed sky layer because this MapLibre build may not support 'sky' layer type.
+      // Leaving terrain enabled but skipping the sky layer to avoid style validation errors.
 
       // --- Base map raster sources & layers (Street and Satellite) - ADD FIRST SO THEY'RE BELOW ---
       // Street (OpenStreetMap)
@@ -897,43 +1014,18 @@
       }));
 
       // 2D / 3D toggle: wire the checkbox placed in the Base Maps header
-      const toggle3d = document.getElementById('toggle-3d');
+          const toggle3d = document.getElementById('toggle-3d');
       if (toggle3d) {
-        const switchBg = toggle3d.parentElement.querySelector('.switch-bg');
-        const switchKnob = toggle3d.parentElement.querySelector('.switch-knob');
-
-        function updateSwitchVisual(checked) {
-          if (!switchBg || !switchKnob) return;
-          if (checked) {
-            switchBg.style.background = '#1978c8';
-            switchBg.style.boxShadow = '0 2px 6px rgba(25,120,200,0.28)';
-            switchKnob.style.left = '21px';
-            switchKnob.style.transform = 'translateX(0)';
-          } else {
-            switchBg.style.background = '#cfd8dc';
-            switchBg.style.boxShadow = 'none';
-            switchKnob.style.left = '3px';
-            switchKnob.style.transform = 'none';
-          }
-        }
-
-        // default: map was initialized with terrain enabled earlier; reflect that in the switch
+        // New switch markup: rely on CSS for visual state (checked + sibling .switch-track).
+        // Ensure the checkbox reflects the initial terrain state and keep JS only for behavior.
         try { toggle3d.checked = true; } catch (e) {}
-        updateSwitchVisual(toggle3d.checked);
 
         toggle3d.addEventListener('change', function() {
-          updateSwitchVisual(this.checked);
           if (this.checked) {
-            // enable terrain and set a pleasing pitch
-            try {
-              map.setTerrain({ source: 'dem', exaggeration: 1.2 });
-            } catch (e) {}
+            try { map.setTerrain({ source: 'dem', exaggeration: 1.2 }); } catch (e) {}
             map.easeTo({ pitch: 45, duration: 600 });
           } else {
-            // disable terrain and reset to flat 2D
-            try {
-              map.setTerrain(null);
-            } catch (e) {}
+            try { map.setTerrain(null); } catch (e) {}
             map.easeTo({ pitch: 0, duration: 600 });
           }
         });
@@ -954,8 +1046,7 @@
       const el = document.createElement("div");
       const img = document.createElement("img");
       img.src = "./marker.png";
-      img.style.width = "25px";
-      img.style.height = "40px";
+      img.className = 'w-6 h-10';
       el.appendChild(img);
 
       const markerPNG  = new maplibregl.Marker({ element: el })
@@ -967,13 +1058,7 @@
       //html marker start
       const el1 = document.createElement("div");
       el1.innerHTML = `
-        <div style="
-            background:#ff5722;
-            color:white;
-            padding:4px 8px;
-            border-radius:6px;
-            font-size:12px;
-        ">HTML Marker</div>
+        <div class="bg-orange-500 text-white px-2 py-1 rounded text-xs">HTML Marker</div>
       `;
       const markerHTML = new maplibregl.Marker({ element: el1 })
         .setLngLat([15.8725, 48.2084])
@@ -1008,9 +1093,9 @@
         .filter(([key]) => key.toLowerCase() !== "name")
         .map(
           ([key, value], i) => `
-            <tr style="background:${i % 2 ? "#eddbdb" : "#ffffff"}">
-              <td style="padding:4px 6px; color: #272727"><strong>${key}</strong></td>
-              <td style="padding:4px 6px;">${value}</td>
+              <tr class="${i % 2 ? 'bg-rose-50' : 'bg-white'}">
+              <td class="px-2 py-1 text-slate-800"><strong>${key}</strong></td>
+              <td class="px-2 py-1">${value}</td>
             </tr>
           `
         )
@@ -1018,31 +1103,11 @@
 
 
         return `
-          <div style="
-            max-width: 260px;
-            font-family: sans-serif;
-          ">
-            ${name ? `<h3 style="
-                margin: 0 0 8px 0;
-                font-size: 16px;
-                font-weight: bold;
-                border-bottom: 1px solid #ccc;
-                padding: 7px;
-                background: #eccaca;
-                color: #272727;
-            ">${name}</h3>` : ""}
+              <div class="max-w-xs font-sans">
+            ${name ? `<h3 class="m-0 mb-2 text-base font-bold border-b border-gray-300 p-2 bg-amber-100 text-slate-800">${name}</h3>` : ""}
 
-            <div style="
-              max-height: 150px;
-              overflow-y: auto;
-              border: 1px solid #ddd;
-              border-radius: 4px;
-            ">
-              <table style="
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 13px;
-              ">
+            <div class="max-h-40 overflow-y-auto border border-gray-300 rounded">
+              <table class="w-full border-collapse text-xs">
                 <tbody>
                   ${rows}
                 </tbody>
@@ -1118,9 +1183,9 @@
             `).join('');
             
             popupHTML += `
-              <div style="margin-top:10px; padding-top:10px; border-top:1px solid #ddd;">
-                <label style="font-size:12px; display:block; margin-bottom:4px;"><strong>Other layers:</strong></label>
-                <select class="layer-dropdown" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+              <div class="mt-2 pt-2 border-t border-gray-300">
+                <label class="text-xs block mb-1"><strong>Other layers:</strong></label>
+                <select class="layer-dropdown w-full p-1.5 border border-gray-300 rounded text-xs">
                   ${dropdownOptions}
                 </select>
               </div>
@@ -1154,9 +1219,9 @@
                     `).join('');
                     
                     newPopupHTML += `
-                      <div style="margin-top:10px; padding-top:10px; border-top:1px solid #ddd;">
-                        <label style="font-size:12px; display:block; margin-bottom:4px;"><strong>Other layers:</strong></label>
-                        <select class="layer-dropdown" style="width:100%; padding:6px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+                      <div class="mt-2 pt-2 border-t border-gray-300">
+                        <label class="text-xs block mb-1"><strong>Other layers:</strong></label>
+                        <select class="layer-dropdown w-full p-1.5 border border-gray-300 rounded text-xs">
                           ${dropdownOptions}
                         </select>
                       </div>
@@ -1196,9 +1261,9 @@
       });
 
       if (features.length) {
-        map.getCanvas().style.cursor = "pointer";
+        map.getCanvas().classList.add('cursor-pointer');
       } else {
-        map.getCanvas().style.cursor = "";
+        map.getCanvas().classList.remove('cursor-pointer','cursor-crosshair');
       }
     });
 
@@ -1206,9 +1271,9 @@
     map.on("load", () => {
 
     
-      markerDefault.getElement().style.cursor = "pointer";
-      markerPNG.getElement().style.cursor = "pointer";  
-      markerHTML.getElement().style.cursor = "pointer";
+      const mdEl = markerDefault.getElement(); if (mdEl) mdEl.classList.add('cursor-pointer');
+      const mpEl = markerPNG.getElement(); if (mpEl) mpEl.classList.add('cursor-pointer');
+      const mhEl = markerHTML.getElement(); if (mhEl) mhEl.classList.add('cursor-pointer');
 
 
 
@@ -1247,8 +1312,8 @@
       infoDiv.textContent = `Center: ${coords}  Radius: ${val} ${units}`;
     }
 
-    function showPanel() { proximityPanel.style.display = 'block'; }
-    function hidePanel() { proximityPanel.style.display = 'none'; }
+    function showPanel() { proximityPanel.classList.remove('hidden'); }
+    function hidePanel() { proximityPanel.classList.add('hidden'); }
 
     proximityOpen.addEventListener('click', () => {
       showPanel();
@@ -1264,9 +1329,10 @@
       updateProximityInfo();
       // Disable Run button when clearing
       runBtn.disabled = true;
-      runBtn.style.background = '#ccc';
-      runBtn.style.color = '#999';
-      runBtn.style.cursor = 'not-allowed';
+      // swap to tertiary look (Tailwind utilities)
+      runBtn.classList.remove('bg-primary','text-white','hover:opacity-90','cursor-pointer');
+      runBtn.classList.add('bg-transparent','text-slate-700','border','border-gray-100','hover:bg-gray-50');
+      runBtn.setAttribute('disabled', '');
     }
 
     clearBtn.addEventListener('click', () => { clearProximity(); });
@@ -1276,18 +1342,19 @@
     unitsSelect.addEventListener('change', () => updateProximityInfo());
 
     setCenterBtn.addEventListener('click', () => {
-      summaryDiv.innerHTML = '<div style="color:#666;font-size:13px">Click on the map to set the center point...</div>';
-      map.getCanvas().style.cursor = 'crosshair';
+      summaryDiv.innerHTML = '<div class="text-slate-600 text-xs">Click on the map to set the center point...</div>';
+      map.getCanvas().classList.add('cursor-crosshair');
       map.once('click', (e) => {
-        map.getCanvas().style.cursor = '';
+        map.getCanvas().classList.remove('cursor-crosshair','cursor-pointer');
         proximityCenter = e.lngLat;
         updateProximityInfo();
         drawProximityCircle();
         // Enable Run button after center is selected
         runBtn.disabled = false;
-        runBtn.style.background = '#1978c8';
-        runBtn.style.color = '#fff';
-        runBtn.style.cursor = 'pointer';
+        // swap to primary action appearance (Tailwind utilities)
+        runBtn.classList.remove('bg-transparent','text-slate-700','border','border-gray-100','hover:bg-gray-50');
+        runBtn.classList.add('bg-primary','text-white','hover:opacity-90','cursor-pointer');
+        runBtn.removeAttribute('disabled');
       });
     });
 
@@ -1322,7 +1389,7 @@
 
     runBtn.addEventListener('click', () => {
       if (!proximityCenter) {
-        summaryDiv.innerHTML = '<div style="color:#b00">Set a center point first.</div>';
+        summaryDiv.innerHTML = '<div class="text-red-700">Set a center point first.</div>';
         return;
       }
 
@@ -1373,25 +1440,25 @@
 
       // Build summary HTML
       const lines = [];
-      lines.push(`<div style="font-weight:600;margin-bottom:6px">Summary</div>`);
-      lines.push(`<div style="font-size:13px;margin-bottom:6px">Center: ${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)} — Radius: ${val} ${units === 'kilometers' ? 'km' : 'm'}</div>`);
+      lines.push(`<div class="font-semibold mb-1">Summary</div>`);
+      lines.push(`<div class="text-xs mb-1">Center: ${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)} — Radius: ${val} ${units === 'kilometers' ? 'km' : 'm'}</div>`);
 
       // markers
-      lines.push('<div style="margin-top:6px"><strong>Markers</strong></div>');
+      lines.push('<div class="mt-1"><strong>Markers</strong></div>');
       markerCounts.forEach(m => {
-        lines.push(`<div style="font-size:13px;padding:3px 0">${m.id}: <strong style="color:${m.inside ? '#1978c8' : '#777'}">${m.inside ? 'inside' : 'outside'}</strong></div>`);
+        lines.push(`<div class="text-xs py-0.5">${m.id}: <strong class="${m.inside ? 'text-sky-600' : 'text-slate-500'}">${m.inside ? 'inside' : 'outside'}</strong></div>`);
       });
 
       // regions
-      lines.push('<div style="margin-top:8px"><strong>Regions</strong></div>');
-      lines.push(`<div style="font-size:13px;padding:3px 0">Count inside: <strong>${regionsInside.length}</strong></div>`);
+      lines.push('<div class="mt-2"><strong>Regions</strong></div>');
+      lines.push(`<div class="text-xs py-0.5">Count inside: <strong>${regionsInside.length}</strong></div>`);
       if (regionsInside.length) {
-        lines.push('<div style="max-height:120px; overflow:auto; border-top:1px solid rgba(0,0,0,0.03); margin-top:6px; padding-top:6px">');
+        lines.push('<div class="max-h-32 overflow-auto border-t border-slate-200 mt-1 pt-1">');
         regionsInside.slice(0,50).forEach(r => {
           const name = r.properties && (r.properties.NAME || r.properties.name || '')
-          lines.push(`<div style="font-size:13px;padding:4px 0;border-bottom:1px dashed rgba(0,0,0,0.04)">${name}</div>`);
+          lines.push(`<div class="text-xs py-1 border-b border-dashed border-slate-200">${name}</div>`);
         });
-        if (regionsInside.length > 50) lines.push(`<div style="font-size:12px;color:#666;padding:6px 0">+${regionsInside.length-50} more</div>`);
+        if (regionsInside.length > 50) lines.push(`<div class="text-xs text-slate-600 py-1">+${regionsInside.length-50} more</div>`);
         lines.push('</div>');
       }
 
@@ -1517,10 +1584,7 @@
     // Create a Google-like location marker (SVG teardrop with white center)
     function createLocationMarkerElement() {
       const wrapper = document.createElement('div');
-      wrapper.style.width = '36px';
-      wrapper.style.height = '36px';
-      wrapper.style.display = 'inline-block';
-      wrapper.style.pointerEvents = 'none'; // let clicks pass through to map if needed
+      wrapper.className = 'w-9 h-9 inline-block pointer-events-none';
 
       // Circular location marker: subtle red glow, white border, red core
       wrapper.innerHTML = `
@@ -1708,20 +1772,18 @@
       onAdd(mapInstance) {
         this._map = mapInstance;
         this._container = document.createElement('div');
-        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container';
+        // add Tailwind utility classes for a clean, compact control panel
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container bg-white/95 p-2 rounded-lg shadow-md flex flex-col gap-2';
 
         const btnZoom = document.createElement('button');
         btnZoom.type = 'button';
         btnZoom.title = 'Zoom to extent';
-        // fit/extent icon (corner brackets)
-        btnZoom.innerHTML = `
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M3 3h8v2H5v6H3V3zm18 0v8h-2V5h-6V3h8zM3 21v-8h2v6h6v2H3zm18 0h-8v-2h6v-6h2v8z"/>
-          </svg>`;
-        btnZoom.className = 'ctrl-btn';
+        // fit/extent icon (Font Awesome)
+        btnZoom.innerHTML = `<i class="fa-solid fa-expand text-gray-500" aria-hidden="true"></i>`;
+        btnZoom.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
         // accessible label
         const zLabel = document.createElement('span');
-        zLabel.className = 'visually-hidden';
+        zLabel.className = 'sr-only';
         zLabel.textContent = 'Zoom to extent';
         btnZoom.appendChild(zLabel);
         btnZoom.addEventListener('click', () => zoomToExtent());
@@ -1729,14 +1791,11 @@
         const btnLocate = document.createElement('button');
         btnLocate.type = 'button';
         btnLocate.title = 'Find my location';
-        // crosshair / locate icon
-        btnLocate.innerHTML = `
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M11 2h2v3.07A7.001 7.001 0 0118.93 11H22v2h-3.07A7.001 7.001 0 0113 18.93V22h-2v-3.07A7.001 7.001 0 015.07 13H2v-2h3.07A7.001 7.001 0 0111 5.07V2zm1 7a4 4 0 100 8 4 4 0 000-8z"/>
-          </svg>`;
-        btnLocate.className = 'ctrl-btn';
+        // crosshair / locate icon (Font Awesome)
+        btnLocate.innerHTML = `<i class="fa-solid fa-location-dot text-gray-500" aria-hidden="true"></i>`;
+        btnLocate.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
         const lLabel = document.createElement('span');
-        lLabel.className = 'visually-hidden';
+        lLabel.className = 'sr-only';
         
         btnLocate.appendChild(lLabel);
         btnLocate.addEventListener('click', () => findMyLocation(btnLocate));
@@ -1744,24 +1803,23 @@
         const btnExport = document.createElement('button');
         btnExport.type = 'button';
         btnExport.title = 'Export map';
-        // download arrow icon (downward arrow)
-        btnExport.innerHTML = `
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M5 20h14v-2H5v2zm7-12l5 5h-3v4h-4v-4H7l5-5z"/>
-          </svg>`;
-        btnExport.className = 'ctrl-btn';
+        // download arrow icon (Font Awesome)
+        btnExport.innerHTML = `<i class="fa-solid fa-download text-gray-500" aria-hidden="true"></i>`;
+        btnExport.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
         const eLabel = document.createElement('span');
-        eLabel.className = 'visually-hidden';
+        eLabel.className = 'sr-only';
         eLabel.textContent = 'Export map';
         btnExport.appendChild(eLabel);
 
         // create export menu (PNG / JPEG / PDF)
         const exportMenu = document.createElement('div');
-        exportMenu.className = 'export-menu';
+        // hidden by default; toggle visibility when export button is clicked
+        exportMenu.className = 'absolute left-0 top-full mt-2 bg-white border border-gray-100 rounded-md p-1 shadow-lg w-40 z-10 hidden';
 
         const btnPng = document.createElement('button');
         btnPng.type = 'button';
         btnPng.textContent = 'Download PNG';
+        btnPng.className = 'w-full text-left px-3 py-2 text-xs bg-transparent text-slate-700 border border-transparent hover:bg-accent/10 rounded-md';
         btnPng.addEventListener('click', (e) => {
           e.stopPropagation();
           exportMap('png');
@@ -1771,6 +1829,7 @@
         const btnJpeg = document.createElement('button');
         btnJpeg.type = 'button';
         btnJpeg.textContent = 'Download JPEG';
+        btnJpeg.className = 'w-full text-left px-3 py-2 text-xs bg-transparent text-slate-700 border border-transparent hover:bg-accent/10 rounded-md';
         btnJpeg.addEventListener('click', (e) => {
           e.stopPropagation();
           exportMap('jpeg');
@@ -1780,6 +1839,7 @@
         const btnPdf = document.createElement('button');
         btnPdf.type = 'button';
         btnPdf.textContent = 'Download PDF';
+        btnPdf.className = 'w-full text-left px-3 py-2 text-xs bg-transparent text-slate-700 border border-transparent hover:bg-accent/10 rounded-md';
         btnPdf.addEventListener('click', (e) => {
           e.stopPropagation();
           exportMap('pdf');
@@ -1793,13 +1853,13 @@
         // toggle menu on export button click
         btnExport.addEventListener('click', (e) => {
           e.stopPropagation();
-          exportMenu.classList.toggle('show');
+          exportMenu.classList.toggle('hidden');
         });
 
         // close export menu when clicking outside
         document.addEventListener('click', (ev) => {
           if (!exportMenu.contains(ev.target) && ev.target !== btnExport) {
-            exportMenu.classList.remove('show');
+            exportMenu.classList.add('hidden');
           }
         });
 
@@ -1831,31 +1891,150 @@
 
       panels.forEach(panel => {
         const minBtn = panel.querySelector('.minimize-btn');
+        const panelBody = panel.querySelector('.panel-body');
+        // ensure initial icon state matches collapsed class
+        if (minBtn) {
+          const iconInit = minBtn.querySelector('i');
+          const isCollapsedInit = panel.classList.contains('collapsed');
+          if (iconInit) {
+            iconInit.classList.toggle('fa-plus', isCollapsedInit);
+            iconInit.classList.toggle('fa-minus', !isCollapsedInit);
+          }
+        }
 
-        // minimize / restore toggle
+        // sync initial body visibility
+        if (panelBody) {
+          if (panel.classList.contains('collapsed')) panelBody.classList.add('hidden'); else panelBody.classList.remove('hidden');
+        }
+
+        // minimize / restore toggle: use Tailwind utility toggles instead of relying on CSS rules
         if (minBtn) {
           minBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            panel.classList.toggle('collapsed');
-            minBtn.textContent = panel.classList.contains('collapsed') ? '+' : '−';
+            const isCollapsed = panel.classList.toggle('collapsed');
+            if (panelBody) panelBody.classList.toggle('hidden', isCollapsed);
+            // visually compress the panel when collapsed
+            panel.classList.toggle('h-12', isCollapsed);
+            panel.classList.toggle('overflow-hidden', isCollapsed);
+            const iconEl = minBtn.querySelector('i');
+            if (iconEl) {
+              iconEl.classList.toggle('fa-plus', isCollapsed);
+              iconEl.classList.toggle('fa-minus', !isCollapsed);
+            } else {
+              minBtn.textContent = isCollapsed ? '+' : '−';
+            }
           });
         }
 
         // allow clicking the small icon when collapsed to restore/expand
         const icon = panel.querySelector('.panel-icon');
         if (icon) {
-          icon.style.cursor = 'pointer';
+          icon.classList.add('cursor-pointer');
           icon.addEventListener('click', (e) => {
             e.stopPropagation();
-            // if currently collapsed, restore; otherwise collapse
-            const isCollapsed = panel.classList.contains('collapsed');
-            panel.classList.toggle('collapsed');
-            // update corresponding minimize button text if present
-            if (minBtn) minBtn.textContent = panel.classList.contains('collapsed') ? '+' : '−';
+            const isCollapsed = panel.classList.toggle('collapsed');
+            if (panelBody) panelBody.classList.toggle('hidden', isCollapsed);
+            panel.classList.toggle('h-12', isCollapsed);
+            panel.classList.toggle('overflow-hidden', isCollapsed);
+            if (minBtn) {
+              const iconEl = minBtn.querySelector('i');
+              if (iconEl) {
+                iconEl.classList.toggle('fa-plus', isCollapsed);
+                iconEl.classList.toggle('fa-minus', !isCollapsed);
+              } else {
+                minBtn.textContent = isCollapsed ? '+' : '−';
+              }
+            }
           });
         }
       });
     })();
+
+
+      // Simple per-row toggle: click row or chevron toggles only that menu
+      (function wireLayerRowClicks() {
+        const rows = Array.from(document.querySelectorAll('#layer-panel .layer-row'));
+
+        function setExpanded(btn, open) {
+          if (!btn) return;
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          const icon = btn.querySelector('i');
+          if (icon) {
+            icon.classList.remove('fa-ellipsis-vertical', 'fa-chevron-down', 'fa-chevron-up');
+            icon.classList.add(open ? 'fa-chevron-up' : 'fa-chevron-down');
+          }
+        }
+
+        function toggleMenu(menu, btn, open) {
+          if (!menu) return;
+          const openClasses = ['max-h-80','opacity-100','translate-y-0','pointer-events-auto','p-2'];
+          const closedClasses = ['max-h-0','opacity-0','-translate-y-1','pointer-events-none','p-0'];
+          if (open) {
+            // remove closed state, force reflow, add open state
+            menu.classList.remove(...closedClasses);
+            // force reflow
+            // eslint-disable-next-line no-unused-expressions
+            menu.offsetHeight;
+            menu.classList.add(...openClasses);
+            // Fallback: also set inline styles so the menu becomes visible even if classes are overridden
+            try {
+              menu.style.opacity = '1';
+              menu.style.maxHeight = '20rem';
+              menu.style.transform = 'translateY(0)';
+              menu.style.pointerEvents = 'auto';
+              menu.style.padding = '0.5rem';
+            } catch (e) {}
+            setExpanded(btn, true);
+          } else {
+            menu.classList.remove(...openClasses);
+            menu.classList.add(...closedClasses);
+            // Fallback: reset inline styles to hide
+            try {
+              menu.style.opacity = '0';
+              menu.style.maxHeight = '0';
+              menu.style.transform = 'translateY(-0.25rem)';
+              menu.style.pointerEvents = 'none';
+              menu.style.padding = '0';
+            } catch (e) {}
+            setExpanded(btn, false);
+          }
+        }
+
+        rows.forEach(row => {
+          const menu = row.nextElementSibling;
+          if (!menu || !menu.classList.contains('layer-menu')) return;
+
+          const btn = row.querySelector('.layer-menu-btn');
+          setExpanded(btn, false);
+
+          if (btn) {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              // Use the button's aria-expanded state as the single source of truth
+              // for whether the menu is currently open. This avoids relying on
+              // CSS classes that might be overridden elsewhere.
+              const isOpen = btn.getAttribute('aria-expanded') === 'true';
+              toggleMenu(menu, btn, !isOpen);
+            });
+          }
+
+          row.addEventListener('click', (ev) => {
+              // prevent the document-level click handler from immediately closing menus
+              ev.stopPropagation();
+              // ignore clicks on interactive controls and the chevron button itself
+              if (ev.target.closest('input, select, button') && !ev.target.closest('button.layer-menu-btn')) return;
+            // Prefer the aria-expanded attribute (kept in sync by setExpanded)
+            const isOpen = btn && btn.getAttribute('aria-expanded') === 'true';
+            toggleMenu(menu, btn, !isOpen);
+          });
+
+          // keep display state in sync after transition
+          menu.addEventListener('transitionend', (ev) => {
+            if (ev.target !== menu) return;
+            // visual state controlled via 'open' and 'menu-hidden' classes; no inline display tweaks
+          });
+        });
+      })();
 
     // --- Layer switcher wiring: visibility, labels (off by default), opacity ---
     // Runs once the map is idle so all sources/layers are available.
@@ -1893,33 +2072,48 @@
         } catch (e) {}
       }
 
-      // Create lightweight label symbol layers (initially hidden)
-      configs.forEach(cfg => {
+      // Defer creating label symbol layers until user requests them (glyphs may not be present).
+      // We provide an on-demand helper that creates a labels layer if possible.
+      function ensureLabelLayer(cfg) {
         const labelId = `${cfg.ui}-labels-layer`;
-        if (!map.getLayer(labelId) && map.getSource(cfg.source)) {
-          try {
-            map.addLayer({
-              id: labelId,
-              type: 'symbol',
-              source: cfg.source,
-              layout: {
-                'text-field': ['coalesce', ['get', 'name'], ['get', 'NAME'], ''],
-                'text-size': 12,
-                'visibility': 'none',
-                'text-allow-overlap': false
-              },
-              paint: {
-                'text-color': '#17202A',
-                'text-halo-color': '#ffffff',
-                'text-halo-width': 1,
-                'text-opacity': 1
-              }
-            });
-          } catch (e) {
-            console.warn('Could not add label layer', labelId, e);
-          }
+        if (map.getLayer(labelId)) return true; // already exists
+
+        // If style doesn't declare glyphs, we cannot safely add text-field symbol layers.
+        const style = map.getStyle && map.getStyle();
+        if (!style || !style.glyphs) {
+          console.warn('Map style missing `glyphs` property; cannot create labels for', cfg.ui);
+          return false;
         }
-      });
+
+        if (!map.getSource(cfg.source)) {
+          console.warn('Source not available for labels:', cfg.source);
+          return false;
+        }
+
+        try {
+          map.addLayer({
+            id: labelId,
+            type: 'symbol',
+            source: cfg.source,
+            layout: {
+              'text-field': ['coalesce', ['get', 'name'], ['get', 'NAME'], ''],
+              'text-size': 12,
+              'visibility': 'none',
+              'text-allow-overlap': false
+            },
+            paint: {
+              'text-color': '#17202A',
+              'text-halo-color': '#ffffff',
+              'text-halo-width': 1,
+              'text-opacity': 1
+            }
+          });
+          return true;
+        } catch (e) {
+          console.warn('Could not add label layer', labelId, e);
+          return false;
+        }
+      }
 
       // Hook up UI controls
       configs.forEach(cfg => {
@@ -1959,7 +2153,17 @@
 
         if (labelsEl) {
           labelsEl.checked = false; // labels off by default
+          // if glyphs are not available, disable the checkbox and inform user via console
           labelsEl.addEventListener('change', (ev) => {
+            const created = ensureLabelLayer(cfg);
+            if (!created) {
+              // creation failed (likely missing glyphs) — revert checkbox and notify
+              ev.target.checked = false;
+              ev.target.disabled = true;
+              ev.target.title = 'Label rendering requires a style with `glyphs` configured.';
+              console.warn('Labels unavailable for', cfg.ui, '- style missing glyphs or source unavailable');
+              return;
+            }
             applyLayout([labelLayerId], ev.target.checked);
           });
         }
@@ -1972,7 +2176,7 @@
       function setMarkerDisplay(markerObj, visible) {
         try {
           const el = markerObj && markerObj.getElement && markerObj.getElement();
-          if (el) el.style.display = visible ? '' : 'none';
+          if (el) el.classList.toggle('hidden', !visible);
         } catch (e) {}
       }
 
@@ -1986,6 +2190,118 @@
 
     });
 
+    // --- UI enhancement: convert each `.layer-sub` into a three-dot popover menu ---
+    (function enhanceLayerUI() {
+      const layerGroups = document.querySelectorAll('#layer-panel .layer-group');
+      layerGroups.forEach(group => {
+        // If the new layout already contains a layer-menu-btn, skip creating one
+        if (group.querySelector('.layer-menu-btn')) return;
+
+        const header = group.querySelector('.layer-header');
+        const sub = group.querySelector('.layer-sub');
+        if (!header || !sub) return;
+
+        // create menu button (three dots) for older layouts only
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'layer-menu-btn btn-tertiary';
+        btn.setAttribute('aria-haspopup', 'true');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.innerHTML = '<span class="sr-only">Open layer options</span>▾';
+
+        // mark sub as popover for older layout compatibility
+        sub.classList.add('popover');
+
+        // attach click handler to toggle popover
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          const open = sub.classList.toggle('open');
+          btn.setAttribute('aria-expanded', String(open));
+          document.querySelectorAll('#layer-panel .layer-sub.popover.open').forEach(o => { if (o !== sub) o.classList.remove('open'); });
+        });
+
+        header.appendChild(btn);
+
+        // click outside to close
+        document.addEventListener('click', (e) => {
+          if (!sub.contains(e.target) && !btn.contains(e.target)) {
+            sub.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        
+      });
+    })();
+
+    // Wire up any .layer-menu-btn created in the new Tailwind layout
+    (function wireLayerMenuButtons() {
+      // Only wire buttons that belong to the older "layer-sub" layout.
+      // Buttons that are inside a `.layer-row` are handled by `wireLayerRowClicks()`
+      // and should be skipped to avoid duplicate/conflicting handlers.
+      const buttons = Array.from(document.querySelectorAll('#layer-panel .layer-menu-btn')).filter(b => !b.closest('.layer-row'));
+      const closedClasses = ['max-h-0','opacity-0','-translate-y-1','pointer-events-none','p-0'];
+      const openClasses = ['max-h-80','opacity-100','translate-y-0','pointer-events-auto','p-2'];
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          // Prefer the menu as the immediate next sibling (new layout). Fall back to searching inside parent for older layouts.
+          const row = btn.parentElement || btn.closest('div');
+          let menu = null;
+          if (row && row.nextElementSibling && row.nextElementSibling.classList.contains('layer-menu')) {
+            menu = row.nextElementSibling;
+          } else if (row) {
+            menu = row.querySelector('.layer-menu') || row.parentElement && row.parentElement.querySelector('.layer-menu');
+          }
+          if (!menu) return;
+
+          // Close other menus first so only one is open at a time
+          document.querySelectorAll('#layer-panel .layer-menu').forEach(m => { if (m !== menu) { m.classList.remove(...openClasses); m.classList.add(...closedClasses); } });
+
+          // Toggle current menu
+          const willShow = menu.classList.contains('pointer-events-none');
+          if (willShow) {
+            menu.classList.remove(...closedClasses);
+            // force reflow
+            menu.offsetHeight;
+            menu.classList.add(...openClasses);
+            btn.setAttribute('aria-expanded', 'true');
+          } else {
+            menu.classList.remove(...openClasses);
+            menu.classList.add(...closedClasses);
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+
+      // close menus on outside click (ignore clicks on menu buttons)
+      document.addEventListener('click', (e) => {
+        const isBtn = e.target.closest && e.target.closest('.layer-menu-btn');
+        if (isBtn) return; // clicks on buttons are handled above
+
+        document.querySelectorAll('#layer-panel .layer-menu').forEach(menu => {
+          if (!menu.contains(e.target)) {
+            menu.classList.remove(...openClasses);
+            menu.classList.add(...closedClasses);
+          }
+        });
+        // Only update aria-expanded for the buttons this helper manages
+        buttons.forEach(b => b.setAttribute('aria-expanded', 'false'));
+      });
+
+      // close menus on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+          document.querySelectorAll('#layer-panel .layer-menu').forEach(menu => {
+            menu.classList.remove(...openClasses);
+            menu.classList.add(...closedClasses);
+          });
+          buttons.forEach(b => b.setAttribute('aria-expanded', 'false'));
+        }
+      });
+    })();
+
 
 
 
@@ -1997,5 +2313,41 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <!-- main.js includes the layers and other map logic--> 
   <script src="main.js"></script>
+</script>
+  <script>
+    // Paint range inputs' filled portion using CSS background gradient
+    (function paintRangeFills() {
+      const FILL = '#9CA3AF'; // bg-gray-400
+      const TRACK = '#D6D9DE'; // bg-gray-200
+
+      function update(el) {
+        const min = parseFloat(el.min) || 0;
+        const max = parseFloat(el.max) || 1;
+        const val = parseFloat(el.value);
+        const pct = Math.round(((val - min) / (max - min)) * 100);
+        el.style.background = `linear-gradient(90deg, ${FILL} ${pct}%, ${TRACK} ${pct}%)`;
+      }
+
+      function wire(el) {
+        update(el);
+        el.addEventListener('input', () => update(el));
+        el.addEventListener('change', () => update(el));
+      }
+
+      document.querySelectorAll('.layer-menu input[type="range"]').forEach(wire);
+
+      // Observe DOM for dynamically added range inputs inside layer-menu
+      const observer = new MutationObserver(muts => {
+        muts.forEach(m => {
+          m.addedNodes && m.addedNodes.forEach(n => {
+            if (!(n instanceof HTMLElement)) return;
+            n.querySelectorAll && n.querySelectorAll('.layer-menu input[type="range"]').forEach(wire);
+            if (n.matches && n.matches('.layer-menu input[type="range"]')) wire(n);
+          });
+        });
+      });
+      observer.observe(document.getElementById('layer-panel') || document.body, { childList: true, subtree: true });
+    })();
+  </script>
 </body>
 </html>
