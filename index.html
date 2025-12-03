@@ -383,14 +383,14 @@
 
   <!-- Legend (draggable + minimizable) -->
   <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 w-56 max-w-xs z-20 bg-white rounded-lg shadow-lg" role="dialog" aria-label="Map legend">
-    <div class="panel-header flex items-center justify-between p-3 border-b border-gray-100">
+    <div class="panel-header flex items-center justify-between p-3 pb-1 pt-1 border-b border-gray-100">
       <strong class="text-xs">Map legend</strong>
       <div class="panel-controls flex items-center gap-2">
         <span class="panel-icon hidden" aria-hidden="true"><i class="fa-solid fa-bars text-lg text-slate-800"></i></span>
         <button class="minimize-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" data-target="map-legend" aria-label="Minimize legend"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
       </div>
     </div>
-    <div class="panel-body p-3 space-y-2 max-h-64 overflow-auto">
+    <div class="panel-body p-3 pt-0 space-y-2 max-h-64 overflow-auto">
       <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-red-500"></div><div class="flex-1 text-xxs text-gray-600">Motorway / Train</div></div>
       <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-orange-500"></div><div class="flex-1 text-xxs text-gray-600">Primary roads</div></div>
       <div class="flex items-center gap-3"><div class="w-4 h-3 rounded-sm shadow-inner bg-amber-400"></div><div class="flex-1 text-xxs text-gray-600">Secondary roads</div></div>
@@ -448,7 +448,7 @@
     <div class="layer-panel-body overflow-auto p-2">
       <div class="mb-3">
         <div class="flex items-center justify-between mb-2">
-          <h4 class="text-xs font-medium text-slate-600">Base Layers</h4>
+          <h4 class="text-xs font-semibold text-slate-600">Base Layers</h4>
           <div class="flex items-center gap-3">
             <label class="text-xxs text-gray-600 mr-2">3D</label>
             <label id="switch-3d" class="switch switch-xs inline-flex items-center gap-3 cursor-pointer">
@@ -461,12 +461,12 @@
         </div>
         <div class="mb-3">
           <div class="flex flex-col gap-2">
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio" checked> <span class="text-xs">Street</span></label>
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="satellite" id="basemap-sat-radio"> <span class="text-xs">Satellite</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio" checked> <span class="text-xxs text-gray-600">Street</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="satellite" id="basemap-sat-radio"> <span class="text-xxs text-gray-600">Satellite</span></label>
           </div>
         </div>
 
-      <h4 class="text-xs font-medium text-slate-600 mt-3 mb-2">Overlay Layers</h4>
+      <h4 class="text-xs font-semibold text-slate-600 mt-3 mb-2">Overlay Layers</h4>
       <div class="space-y-xs">
         <!-- Amenities -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
