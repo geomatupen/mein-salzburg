@@ -1,58 +1,10 @@
-#layer-panel {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 240px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-family: sans-serif;
-  padding: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
+/* style.css: deprecated
+   Most layout and component styles have been migrated to Tailwind utility classes
+   inside `index.html`. This file is intentionally kept minimal to avoid breaking
+   references from the HTML while keeping visual rules centralized in Tailwind.
 
-#layer-panel h3 {
-  margin: 0 0 12px;
-  font-size: 16px;
-  font-weight: bold;
-}
+   If you want to fully remove this file, delete the <link rel="stylesheet" href="style.css">
+   reference in `index.html` after confirming the UI in-browser.
+*/
 
-.layer-group {
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.layer-header {
-  display: flex;
-  align-items: center;
-}
-
-.layer-title {
-  font-size: 15px;
-  font-weight: bold;
-  margin-left: 6px;
-}
-
-.layer-sub {
-  margin-left: 22px;
-  margin-top: 6px;
-}
-
-.sub-toggle {
-  display: block;
-  font-size: 13px;
-  margin: 4px 0;
-}
-
-.opacity-row {
-  margin-top: 6px;
-  font-size: 13px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.opacity-row input[type="range"] {
-  width: 120px;
-}
+/* No runtime rules required here — Tailwind utilities used throughout the app. */
