@@ -828,14 +828,14 @@
         data: "data/Transportation.geojson"
       });
 
-      // Add layers for amenities (points) - new color theme
+      // Add layers for amenities (points) - normalized to project brand colors
       map.addLayer({
         id: "amenities-layer",
         type: "circle",
         source: "amenities",
         paint: {
           "circle-radius": 6,
-          "circle-color": "#1abc9c",
+          "circle-color": "#16a085",
           "circle-opacity": 0.9
         }
       });
@@ -864,7 +864,7 @@
         }
       });
 
-      // Add stroke/outline for buildings (keeps map readable at low zoom)
+      // Add stroke/outline for buildings (keeps map readable at low zoom) - leave buildings colors unchanged
       map.addLayer({
         id: "buildings-outline",
         type: "line",
@@ -881,7 +881,7 @@
         type: "line",
         source: "railway",
         paint: {
-          "line-color": "#3498db",
+          "line-color": "#ED2AD8",
           "line-width": 1
         }
       });
@@ -909,7 +909,7 @@
         }
       });
 
-      // Streets types Coloring - IMPORTANT theme
+      // Streets types Coloring - normalized to brand colors
       map.addLayer({
         id: "streets-layer",
         type: "line",
@@ -919,20 +919,20 @@
           "line-color": [
             "match",
             ["get", "highway"],
-            "motorway", "#e74c3c",
-            "motorway_link", "#e74c3c",
-            "primary", "#ff6b00",
-            "secondary", "#ffb400",
-            "tertiary", "#f39c12",
-            "primary_link", "#ff6b00",
-            "tertiary_link", "#f39c12",
-            "residential", "#6c5ce7",
-            "living_street", "#00b894",
-            "service", "#00b894",
-            "unclassified", "#00cec9",
-            "cycleway", "#00cec9",
-            "path", "#0984e3",
-            "pedestrian", "#0984e3",
+            "motorway", "#EDA02A",
+            "motorway_link", "#EDA02A",
+            "primary", "#EDA02A",
+            "secondary", "#EDA02A",
+            "tertiary", "#EDA02A",
+            "primary_link", "#EDA02A",
+            "tertiary_link", "#EDA02A",
+            "residential", "#ED2AD8",
+            "living_street", "#16a085",
+            "service", "#16a085",
+            "unclassified", "#16a085",
+            "cycleway", "#16a085",
+            "path", "#2A77ED",
+            "pedestrian", "#2A77ED",
             "#95a5a6"
           ],
           // Widths: larger for main roads, smaller for paths
@@ -964,7 +964,7 @@
         type: "line",
         source: "rivers",
         paint: {
-          "line-color": "#3498db",
+          "line-color": "#2A77ED",
           "line-width": 2
         }
       });
@@ -976,7 +976,7 @@
         source: "education",
         paint: {
           "circle-radius": 5,
-          "circle-color": "#f39c12",
+          "circle-color": "#EDA02A",
           "circle-opacity": 0.85
         }
       });
@@ -988,7 +988,7 @@
         source: "health",
         paint: {
           "circle-radius": 5,
-          "circle-color": "#e74c3c",
+          "circle-color": "#ED2AD8",
           "circle-opacity": 0.85
         }
       });
@@ -1000,7 +1000,7 @@
         source: "restaurants",
         paint: {
           "circle-radius": 5,
-          "circle-color": "#d35400",
+          "circle-color": "#EDA02A",
           "circle-opacity": 0.85
         }
       });
@@ -1012,7 +1012,7 @@
         source: "tourism",
         paint: {
           "circle-radius": 5,
-          "circle-color": "#9b59b6",
+          "circle-color": "#ED2AD8",
           "circle-opacity": 0.85
         }
       });
@@ -1404,13 +1404,13 @@
           id: 'proximity-fill',
           type: 'fill',
           source: 'proximity',
-          paint: { 'fill-color': '#1978c8', 'fill-opacity': 0.18 }
+          paint: { 'fill-color': '#2A77ED', 'fill-opacity': 0.18 }
         });
         map.addLayer({
           id: 'proximity-outline',
           type: 'line',
           source: 'proximity',
-          paint: { 'line-color': '#1978c8', 'line-width': 2 }
+          paint: { 'line-color': '#2A77ED', 'line-width': 2 }
         });
       }
       updateProximityInfo();
