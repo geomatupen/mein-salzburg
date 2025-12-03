@@ -1347,9 +1347,21 @@
 
       // Function to build popup HTML content
       function buildPopupHTML(properties) {
-        const name = properties.NAME || properties.name || null;
+        // Determine the title: prefer name, fall back to type, or use "Feature"
+        const title = properties.name || properties.NAME || properties.type || properties.TYPE || "Feature";
 
-        // Create table rows for all properties except NAME
+        // List of fields to exclude from the popup (unimportant data)
+        const excludeFields = new Set([
+          "name", "NAME", "type", "TYPE",
+          "id", "ID", "geometry", "GEOMETRY",
+          "osm_id", "osm_type", "OSM_ID", "OSM_TYPE",
+          "@id", "@type",
+          "changeset", "timestamp", "user", "uid", "version",
+          "visible", "way_id", "node_id", "relation_id",
+          "addr:postcode", "fixme"
+        ]);
+
+        // Create table rows for properties, filtering out excluded fields
         const rows = Object.entries(properties)
         .filter(([key]) => key.toLowerCase() !== "name")
         .map(
@@ -1373,7 +1385,7 @@
                   ${rows}
                 </tbody>
               </table>
-            </div>
+            </div>` : `<div style="padding:8px; color:#666; font-size:13px;">No additional data</div>`}
           </div>
         `;
     }
