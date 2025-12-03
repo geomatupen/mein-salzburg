@@ -195,7 +195,7 @@
     .maplibregl-ctrl-group button.bg-tertiary { background-color: #ED2AD8 !important; color: #fff !important; }
     /* Ensure control container doesn't clip absolute children and buttons */
     .map-control-container { overflow: visible !important; }
-    .maplibregl-ctrl-group button { overflow: visible !important; }
+    .maplibregl-ctrl-group button { overflow: visible !important; min-width:auto;}
 
     /* Provide a few utility classes that our JS toggles — keep them small and explicit so they work without JIT
        These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
@@ -341,8 +341,28 @@
     .text-xxs { font-size: 0.6875rem !important; }
     .text-xxxs { font-size: 0.625rem !important; }
 
+     /* Reusable spacing utilities (Tailwind-like names) - keep as common primitives
+       so you can reuse them across panels without adding bespoke CSS later. */
+     /* vertical spacing: very extra small (approx 1px) */
+     .space-y-xxs > * + * { margin-top: 0.0625rem !important; }
+     /* vertical spacing: extra small (approx 2px) - previously added as .space-y-xs */
+     .space-y-xs > * + * { margin-top: 0.125rem !important; }
+     /* vertical spacing: small (approx 6px) - slightly larger than Tailwind's space-y-1 */
+     .space-y-sm > * + * { margin-top: 0.375rem !important; }
+
+     /* horizontal spacing (space-x) primitives for stacked inline items */
+     .space-x-xxs > * + * { margin-left: 0.0625rem !important; }
+     .space-x-xs > * + * { margin-left: 0.125rem !important; }
+     .space-x-sm > * + * { margin-left: 0.375rem !important; }
+
+     /* gap utilities for flex/grid containers */
+     .gap-xxs { gap: 0.0625rem !important; }
+     .gap-xs { gap: 0.125rem !important; }
+     .gap-sm { gap: 0.375rem !important; }
+
   </style>
   <link rel="stylesheet" href="style.css"  />
+
   <!-- Inter: compact UI font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   
@@ -447,15 +467,15 @@
         </div>
 
       <h4 class="text-xs font-medium text-slate-600 mt-3 mb-2">Overlay Layers</h4>
-      <div class="space-y-1">
+      <div class="space-y-xs">
         <!-- Amenities -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row" >
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-amenities-visible" checked><label for="layer-amenities-visible" class="text-xs text-gray-600">Amenities</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-amenities-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-amenities-opacity" min="0" max="1" step="0.05" value="0.9" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-amenities-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-amenities-opacity" min="0" max="1" step="0.05" value="0.9" class="ml-3 w-full"></label>
         </div>
 
         <!-- Buildings (controls both extrusion and outline) -->
@@ -464,8 +484,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-buildings-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-buildings-opacity" min="0" max="1" step="0.05" value="0.95" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-buildings-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-buildings-opacity" min="0" max="1" step="0.05" value="0.95" class="ml-3 w-full"></label>
         </div>
 
         <!-- Streets -->
@@ -474,8 +494,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-streets-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-streets-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-streets-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-streets-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
         </div>
 
         <!-- Railway -->
@@ -484,8 +504,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-railway-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-railway-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-railway-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-railway-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
         </div>
 
         <!-- Rivers -->
@@ -494,8 +514,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-rivers-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-rivers-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-rivers-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-rivers-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
         </div>
 
         <!-- Education -->
@@ -504,8 +524,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-education-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-education-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-education-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-education-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
         <!-- Health -->
@@ -514,8 +534,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-health-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-health-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-health-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-health-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
         <!-- Restaurants -->
@@ -524,8 +544,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-restaurants-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-restaurants-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-restaurants-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-restaurants-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
         <!-- Tourism -->
@@ -534,8 +554,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-tourism-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-tourism-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-tourism-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-tourism-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
         <!-- Transportation -->
@@ -544,8 +564,8 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-transportation-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-transportation-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-transportation-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-transportation-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
         <!-- Salzburg boundary -->
@@ -554,7 +574,7 @@
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
         </div>
         <div class="layer-menu hidden mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span>Labels</span><input type="checkbox" id="layer-salzburg-boundaries-labels"></label>
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-salzburg-boundaries-labels"></label>
           <label class="flex items-center justify-between gap-2 mt-2"><span>Opacity</span><input type="range" id="layer-salzburg-boundaries-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
         </div>
       </div>
@@ -1773,7 +1793,7 @@
         this._map = mapInstance;
         this._container = document.createElement('div');
         // add Tailwind utility classes for a clean, compact control panel
-        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container bg-white/95 p-2 rounded-lg shadow-md flex flex-col gap-2';
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container bg-white/95 p-1 rounded-lg shadow-md flex flex-col gap-2';
 
         const btnZoom = document.createElement('button');
         btnZoom.type = 'button';
