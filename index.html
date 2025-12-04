@@ -195,6 +195,11 @@
        (some utility classes can make it appear fully transparent depending on cascade; enforce here).
        Also ensure the modal sits above other fixed UI elements (scalebar, controls) by increasing z-index. */
      #welcome-popup { background-color: rgba(0,0,0,0.45) !important; backdrop-filter: none !important; z-index: 9999 !important; position: fixed !important; }
+     
+     .rounded-lg-top {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+     }
   </style>
   <style>
     /* Override MapLibre's ctrl button background so our Tailwind utility colors show */
@@ -553,7 +558,7 @@
   <!-- Webmap Title: top right, above layer panel -->
   
   <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-lg rounded-lg pb-4">
-    <div class="panel-header flex items-center justify-between p-3 border-b bg-primary border-gray-100 rounded-lg">
+    <div class="panel-header flex items-center justify-between p-3 border-b bg-primary border-gray-100 rounded-lg-top">
       <div class="text-sm font-semibold text-gray-200">MeinSalzburg | Salzburg Urban Toolkit</div>
       <div class="panel-controls flex items-center gap-2">
         <button class="minimize-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" data-target="layer-panel" aria-label="Minimize layers" aria-expanded="true"><i class="fa-solid fa-minus text-gray-200" aria-hidden="true"></i></button>
