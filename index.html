@@ -909,7 +909,7 @@
       }
 
       resultsDiv.innerHTML = items.map((it, i) =>
-        `<div class="search-item" data-lon="${it.lon}" data-lat="${it.lat}">${it.display_name}</div>`
+        `<div class="search-item text-xxs text-gray-600 p-2" data-lon="${it.lon}" data-lat="${it.lat}">${it.display_name}</div>`
       ).join('');
 
       // attach click handlers
