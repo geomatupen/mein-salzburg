@@ -204,6 +204,7 @@
     /* Ensure control container doesn't clip absolute children and buttons */
     .map-control-container { overflow: visible !important; }
     .maplibregl-ctrl-group button { overflow: visible !important; min-width:auto;}
+    .maplibregl-popup-close-button{padding-right: 3px;}
 
     /* Provide a few utility classes that our JS toggles — keep them small and explicit so they work without JIT
        These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
@@ -1370,8 +1371,8 @@
         .map(
           ([key, value], i) => `
               <tr class="${i % 2 ? 'bg-rose-50' : 'bg-white'}">
-              <td class="px-2 py-1 text-slate-800"><strong>${key}</strong></td>
-              <td class="px-2 py-1">${value}</td>
+              <td class="px-2 py-1 text-slate-800 text-xxs text-gray-600"><strong>${key}</strong></td>
+              <td class="px-2 py-1 text-xxs text-gray-600">${value}</td>
             </tr>
           `
         )
