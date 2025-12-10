@@ -549,7 +549,15 @@
       </div>
     </div>
     <div class="panel-body p-3 pt-0 space-y-2 max-h-64 overflow-auto">
-      <!-- Streets Group -->
+      <!-- Point Layers -->
+      <div class="legend-item flex items-center gap-3" data-layer="amenities"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#16a085; opacity:0.9;"></div><div class="flex-1 text-xxs text-gray-600">Amenities</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="education"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#EDA02A; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Education</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="health"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#ED2AD8; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Health</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="restaurants"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#EDA02A; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Restaurants</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="tourism"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#ED2AD8; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Tourism</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="transportation"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#16a085; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Transportation</div></div>
+      
+      <!-- Line Layers -->
       <div class="legend-item legend-group" data-layer="streets">
         <div class="text-xxs font-semibold text-gray-700 mb-1">Streets</div>
         <div class="ml-2 space-y-1">
@@ -563,17 +571,12 @@
           <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#2A77ED;"></div><div class="flex-1 text-xxs text-gray-600">Paths / Pedestrian</div></div>
         </div>
       </div>
-      <!-- Individual layers -->
-      <div class="legend-item flex items-center gap-3" data-layer="amenities"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#16a085; opacity:0.9;"></div><div class="flex-1 text-xxs text-gray-600">Amenities</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="rivers"><div class="w-10 rounded" style="background:#2A77ED; height:2px;"></div><div class="flex-1 text-xxs text-gray-600">Rivers</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="railway"><div class="w-10 rounded" style="background:#ED2AD8; height:1px;"></div><div class="flex-1 text-xxs text-gray-600">Railway</div></div>
+      
+      <!-- Polygon Layers -->
       <div class="legend-item flex items-center gap-3" data-layer="buildings"><div class="w-4 h-3 rounded-sm shadow-inner" style="background:#e67e22; opacity:0.95; border: 1px solid #d35400;"></div><div class="flex-1 text-xxs text-gray-600">Buildings</div></div>
       <div class="legend-item flex items-center gap-3" data-layer="salzburg-boundaries"><div class="w-4 h-3 rounded-sm" style="background:transparent; border: 2px solid #34495e;"></div><div class="flex-1 text-xxs text-gray-600">Salzburg boundary</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="rivers"><div class="w-10 rounded" style="background:#2A77ED; height:2px;"></div><div class="flex-1 text-xxs text-gray-600">Rivers</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="education"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#EDA02A; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Education</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="health"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#ED2AD8; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Health</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="restaurants"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#EDA02A; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Restaurants</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="tourism"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#ED2AD8; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Tourism</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="transportation"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#16a085; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Transportation</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="railway"><div class="w-10 rounded" style="background:#ED2AD8; height:1px;"></div><div class="flex-1 text-xxs text-gray-600">Railway</div></div>
     </div>
   </div>
 
@@ -602,11 +605,93 @@
         <button id="proximity-clear" class="btn-tertiary text-xs">Clear</button>
       </div>
     </div>
+
+  <!-- Accessibility panel: Walkability & Bikeability Analysis -->
+  <div id="accessibility-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxs">
+    <div class="flex justify-between items-center mb-2">
+      <strong class="text-xs">Accessibility Analysis</strong>
+      <button id="accessibility-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
+    </div>
+    <div class="text-xxs text-gray-500 mb-3">Analyze walkability and bikeability from a location.</div>
+    
+    <!-- Location selection options -->
+    <div class="mb-3 pb-3 border-b border-gray-200">
+      <label class="text-xxs font-semibold text-gray-600 mb-2 block">Select Location</label>
+      <div class="flex gap-2">
+        <button id="accessibility-use-location" class="btn-accent flex-1 justify-center text-xs">
+          <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
+          <span>My Location</span>
+        </button>
+        <button id="accessibility-draw-point" class="btn-tertiary flex-1 justify-center text-xs">
+          <i class="fa-solid fa-map-pin" aria-hidden="true"></i>
+          <span>Draw Point</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="accessibility-info" class="text-xxs text-gray-600 mb-3">Location: —</div>
+
+    <!-- Distance control -->
+    <div class="mb-3">
+      <label class="text-xxs font-semibold text-gray-600 mb-1 block">Analysis Radius</label>
+      <div class="flex gap-2">
+        <select id="accessibility-distance" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-accent flex-1">
+          <option value="100">100 meters</option>
+          <option value="500" selected>500 meters</option>
+          <option value="1000">1 kilometer</option>
+          <option value="1500">1.5 kilometers</option>
+          <option value="2000">2 kilometers</option>
+          <option value="5000">5 kilometers</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button id="accessibility-run" class="btn-primary w-full justify-center text-xs" disabled>Analyze</button>
+    </div>
+
+    <!-- Results display -->
+    <div id="accessibility-results" class="hidden">
+      <div class="space-y-3 pb-3 border-b border-gray-200 mb-3">
+        <!-- Walkability Score -->
+        <div class="bg-gradient-to-r from-primary/10 to-primary/5 p-3 rounded-md">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-person-walking text-primary" aria-hidden="true"></i>
+              <span class="text-xs font-semibold text-gray-700">Walkability</span>
+            </div>
+            <span id="walkability-score" class="text-sm font-bold text-primary">—</span>
+          </div>
+          <div class="text-xxs text-gray-600" id="walkability-details">Calculating...</div>
+        </div>
+
+        <!-- Bikeability Score -->
+        <div class="bg-gradient-to-r from-secondary/10 to-secondary/5 p-3 rounded-md">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bicycle text-secondary" aria-hidden="true"></i>
+              <span class="text-xs font-semibold text-gray-700">Bikeability</span>
+            </div>
+            <span id="bikeability-score" class="text-sm font-bold text-secondary">—</span>
+          </div>
+          <div class="text-xxs text-gray-600" id="bikeability-details">Calculating...</div>
+        </div>
+      </div>
+
+      <!-- Summary metrics -->
+      <div id="accessibility-summary" class="text-xxs text-gray-700 space-y-1"></div>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-3">
+      <button id="accessibility-clear" class="btn-tertiary text-xs">Clear</button>
+    </div>
+  </div>
+
   <!-- Webmap Title: top right, above layer panel -->
   
   <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-lg rounded-lg pb-4">
     <div class="panel-header flex items-center justify-between p-3 border-b bg-primary border-gray-100 rounded-lg-top">
-      <div class="text-sm font-semibold text-gray-200">MeinSalzburg | Salzburg Urban Toolkit</div>
+      <div class="text-sm font-semibold text-gray-100">MeinSalzburg | Urban Toolkit</div>
       <div class="panel-controls flex items-center gap-2">
         <button class="minimize-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" data-target="layer-panel" aria-label="Minimize layers" aria-expanded="true"><i class="fa-solid fa-minus text-gray-200" aria-hidden="true"></i></button>
       </div>
@@ -634,7 +719,7 @@
 
       <h4 class="text-xs font-semibold text-slate-600 mt-3 mb-2">Overlay Layers</h4>
       <div class="space-y-xs">
-        <!-- Amenities -->
+        <!-- Amenities (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-amenities-visible" checked><label for="layer-amenities-visible" class="text-xs text-gray-600">Amenities</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
@@ -644,47 +729,7 @@
           <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-amenities-opacity" min="0" max="1" step="0.05" value="0.9" class="ml-3 w-full"></label>
         </div>
 
-        <!-- Buildings (controls both extrusion and outline) -->
-        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
-          <div class="flex items-center gap-3"><input type="checkbox" id="layer-buildings-visible" checked><label for="layer-buildings-visible" class="text-xs text-gray-600">Buildings</label></div>
-          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
-        </div>
-        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-buildings-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-buildings-opacity" min="0" max="1" step="0.05" value="0.95" class="ml-3 w-full"></label>
-        </div>
-
-        <!-- Streets -->
-        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
-          <div class="flex items-center gap-3"><input type="checkbox" id="layer-streets-visible" checked><label for="layer-streets-visible" class="text-xs text-gray-600">Streets</label></div>
-          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
-        </div>
-        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-streets-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-streets-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
-        </div>
-
-        <!-- Railway -->
-        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
-          <div class="flex items-center gap-3"><input type="checkbox" id="layer-railway-visible" checked><label for="layer-railway-visible" class="text-xs text-gray-600">Railway</label></div>
-          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
-        </div>
-        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-railway-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-railway-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
-        </div>
-
-        <!-- Rivers -->
-        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
-          <div class="flex items-center gap-3"><input type="checkbox" id="layer-rivers-visible" checked><label for="layer-rivers-visible" class="text-xs text-gray-600">Rivers</label></div>
-          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
-        </div>
-        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
-          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-rivers-labels"></label>
-          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-rivers-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
-        </div>
-
-        <!-- Education -->
+        <!-- Education (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-education-visible" checked><label for="layer-education-visible" class="text-xs text-gray-600">Education</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
@@ -694,7 +739,7 @@
           <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-education-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
-        <!-- Health -->
+        <!-- Health (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-health-visible" checked><label for="layer-health-visible" class="text-xs text-gray-600">Health</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
@@ -704,7 +749,7 @@
           <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-health-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
-        <!-- Restaurants -->
+        <!-- Restaurants (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-restaurants-visible" checked><label for="layer-restaurants-visible" class="text-xs text-gray-600">Restaurants</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
@@ -714,7 +759,7 @@
           <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-restaurants-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
-        <!-- Tourism -->
+        <!-- Tourism (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-tourism-visible" checked><label for="layer-tourism-visible" class="text-xs text-gray-600">Tourism</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
@@ -724,7 +769,7 @@
           <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-tourism-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
-        <!-- Transportation -->
+        <!-- Transportation (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-transportation-visible" checked><label for="layer-transportation-visible" class="text-xs text-gray-600">Transportation</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
@@ -734,7 +779,47 @@
           <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-transportation-opacity" min="0" max="1" step="0.05" value="0.85" class="ml-3 w-full"></label>
         </div>
 
-        <!-- Salzburg boundary -->
+        <!-- Streets (Line) -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-streets-visible" checked><label for="layer-streets-visible" class="text-xs text-gray-600">Streets</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-streets-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-streets-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Railway (Line) -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-railway-visible" checked><label for="layer-railway-visible" class="text-xs text-gray-600">Railway</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-railway-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-railway-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Rivers (Line) -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-rivers-visible" checked><label for="layer-rivers-visible" class="text-xs text-gray-600">Rivers</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-rivers-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-rivers-opacity" min="0" max="1" step="0.05" value="1" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Buildings (Polygon) -->
+        <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
+          <div class="flex items-center gap-3"><input type="checkbox" id="layer-buildings-visible" checked><label for="layer-buildings-visible" class="text-xs text-gray-600">Buildings</label></div>
+          <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
+        </div>
+        <div class="layer-menu mt-2 bg-white shadow rounded w-full sm:w-72 overflow-hidden transition-all duration-200 max-h-0 opacity-0 -translate-y-1 pointer-events-none p-0">
+          <label class="flex items-center justify-between gap-2"><span class="text-xxs text-gray-600">Labels</span><input type="checkbox" id="layer-buildings-labels"></label>
+          <label class="flex items-center justify-between gap-2 mt-2"><span class="text-xxs text-gray-600">Opacity</span><input type="range" id="layer-buildings-opacity" min="0" max="1" step="0.05" value="0.95" class="ml-3 w-full"></label>
+        </div>
+
+        <!-- Salzburg boundary (Polygon) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition" >
           <div class="flex items-center gap-3"><input type="checkbox" id="layer-salzburg-boundaries-visible" checked><label for="layer-salzburg-boundaries-visible" class="text-xs text-gray-600">Salzburg boundary</label></div>
           <button class="layer-menu-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" aria-expanded="false" aria-label="Toggle layer options"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button>
@@ -819,7 +904,6 @@
         </div>
         <div class="data-credit mt-2 text-xs text-slate-700">Map tiles © <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap contributors</a>
           &nbsp;|&nbsp; Satellite © <a href="https://www.esri.com/en-us/home" target="_blank" rel="noopener">Esri</a>
-          &nbsp;|&nbsp; Data: <a href="data/austria-demography-simplified-wgs84.geojson" target="_blank">Austria demography (GeoJSON)</a>
           &nbsp;|&nbsp; Icons: <code>marker.png</code>
         </div>
         <div class="mt-2 text-xs text-slate-500">Please respect each provider's terms of use and attribution requirements.</div>
@@ -969,7 +1053,9 @@
       style: 'https://demotiles.maplibre.org/style.json',
       center: [13.033229, 47.811195],
       zoom: 15,
-      pitch: 45
+      pitch: 45,
+      preserveDrawingBuffer: true,
+      antialias: true
     });
 
     // ------------------------- Simple Nominatim search -------------------------
@@ -1402,60 +1488,10 @@
     }); 
 
 
-    //------------------------------------markers------------------------------------  //
-      //default marker start
-      const markerDefault = new maplibregl.Marker()
-        .setLngLat([16.3725, 48.2084]);
-
-      markerDefault.addTo(map);
-      //default marker end
-
-      //custom marker png start
-      const el = document.createElement("div");
-      const img = document.createElement("img");
-      img.src = "./marker.png";
-      img.className = 'w-6 h-10';
-      el.appendChild(img);
-
-      const markerPNG  = new maplibregl.Marker({ element: el })
-        .setLngLat([16.0725, 48.0084])
-        .addTo(map);
-      //custom marker png end
-
-
-      //html marker start
-      const el1 = document.createElement("div");
-      el1.innerHTML = `
-        <div class="bg-orange-500 text-white px-2 py-1 rounded text-xs">HTML Marker</div>
-      `;
-      const markerHTML = new maplibregl.Marker({ element: el1 })
-        .setLngLat([15.8725, 48.2084])
-        .addTo(map);
-      //html marker end
-
-      // marker for user's location (set when Find my location is used)
-      let locationMarker = null;
-
-      
-     // -------------------------------marker popups-----------------------------------------  // 
-      // prevent polygon click when point marker is clicked
-      markerPNG.getElement().addEventListener("click", (e) => {
-        e.stopPropagation();       // prevents polygon popup
-        markerPNG.togglePopup();      // shows marker popup
-      });
-
-      //marker popup simple way to set popup
-      const popup = new maplibregl.Popup({ offset: 25 })
-        .setHTML("<h3>Marker Info</h3><p>This is a PNG marker.</p>");
-
-      // Attach popup to marker
-      markerPNG.setPopup(popup);
-
-
-      // Function to build popup HTML content. Accepts optional layerId so we can
-      // use curated fields and value aliases when available.
-      function buildPopupHTML(properties, layerId) {
-        const title = properties && (properties.name || properties.NAME || properties.type || properties.TYPE) || "Feature";
+      // Function to build popup HTML content
+      function buildPopupHTML(properties) {
+        // Determine the title: prefer name, fall back to type, or use "Feature"
+        const title = properties.name || properties.NAME || properties.type || properties.TYPE || "Feature";
 
         // If we have curated fields for this layer, show only those with aliases
         let rows = '';
@@ -2118,13 +2154,6 @@
     // Setup marker cursors after map load
     map.on("load", () => {
 
-    
-      const mdEl = markerDefault.getElement(); if (mdEl) mdEl.classList.add('cursor-pointer');
-      const mpEl = markerPNG.getElement(); if (mpEl) mpEl.classList.add('cursor-pointer');
-      const mhEl = markerHTML.getElement(); if (mhEl) mhEl.classList.add('cursor-pointer');
-
-
-
       // Add scale control (like Google Maps)
       const scale = new maplibregl.ScaleControl({
         maxWidth: 140,
@@ -2150,11 +2179,22 @@
     });
 
     // ---------------------- Proximity analysis logic ----------------------
-    let regionsGeo = null;
-    fetch('data/austria-demography-simplified-wgs84.geojson')
-      .then(r => r.json())
-      .then(j => { regionsGeo = j; })
-      .catch(err => { console.warn('Could not load regions GeoJSON for proximity:', err); });
+
+    // Analytics dropdown toggle
+    const analyticsToggle = document.getElementById('analytics-toggle');
+    const analyticsMenu = document.getElementById('analytics-menu');
+    if (analyticsToggle && analyticsMenu) {
+      analyticsToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        analyticsMenu.classList.toggle('hidden');
+      });
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!analyticsToggle.contains(e.target) && !analyticsMenu.contains(e.target)) {
+          analyticsMenu.classList.add('hidden');
+        }
+      });
+    }
 
     const proximityOpen = document.getElementById('proximity-open');
     const proximityPanel = document.getElementById('proximity-panel');
@@ -2269,6 +2309,7 @@
 
     proximityOpen.addEventListener('click', () => {
       showPanel();
+      if (analyticsMenu) analyticsMenu.classList.add('hidden');
     });
     proximityClose.addEventListener('click', () => { hidePanel(); });
 
@@ -2376,20 +2417,6 @@
         markerCounts.push({ id: m.id, inside });
       });
 
-      // regions
-      let regionsInside = [];
-      if (regionsGeo && regionsGeo.features) {
-        regionsGeo.features.forEach(f => {
-          try {
-            if (turf.booleanIntersects(circlePoly, f)) {
-              regionsInside.push(f);
-            }
-          } catch (e) {
-            // ignore
-          }
-        });
-      }
-
       // Build summary HTML
       const lines = [];
       lines.push(`<div class="font-semibold mb-1">Summary</div>`);
@@ -2401,21 +2428,282 @@
         lines.push(`<div class="text-xs py-0.5">${m.id}: <strong class="${m.inside ? 'text-sky-600' : 'text-slate-500'}">${m.inside ? 'inside' : 'outside'}</strong></div>`);
       });
 
-      // regions
-      lines.push('<div class="mt-2"><strong>Regions</strong></div>');
-      lines.push(`<div class="text-xs py-0.5">Count inside: <strong>${regionsInside.length}</strong></div>`);
-      if (regionsInside.length) {
-        lines.push('<div class="max-h-32 overflow-auto border-t border-slate-200 mt-1 pt-1">');
-        regionsInside.slice(0,50).forEach(r => {
-          const name = r.properties && (r.properties.NAME || r.properties.name || '')
-          lines.push(`<div class="text-xs py-1 border-b border-dashed border-slate-200">${name}</div>`);
-        });
-        if (regionsInside.length > 50) lines.push(`<div class="text-xs text-slate-600 py-1">+${regionsInside.length-50} more</div>`);
-        lines.push('</div>');
-      }
-
       summaryDiv.innerHTML = lines.join('');
     });
+
+    // ---------------------- Accessibility Analysis (Walkability & Bikeability) ----------------------
+    const accessibilityOpen = document.getElementById('accessibility-open');
+    const accessibilityPanel = document.getElementById('accessibility-panel');
+    const accessibilityClose = document.getElementById('accessibility-close');
+    const accessibilityUseLocation = document.getElementById('accessibility-use-location');
+    const accessibilityDrawPoint = document.getElementById('accessibility-draw-point');
+    const accessibilityRun = document.getElementById('accessibility-run');
+    const accessibilityClear = document.getElementById('accessibility-clear');
+    const accessibilityDistance = document.getElementById('accessibility-distance');
+    const accessibilityInfo = document.getElementById('accessibility-info');
+    const accessibilityResults = document.getElementById('accessibility-results');
+    const walkabilityScore = document.getElementById('walkability-score');
+    const walkabilityDetails = document.getElementById('walkability-details');
+    const bikeabilityScore = document.getElementById('bikeability-score');
+    const bikeabilityDetails = document.getElementById('bikeability-details');
+    const accessibilitySummary = document.getElementById('accessibility-summary');
+
+    let accessibilityCenter = null; // {lng, lat}
+    let accessibilityMarker = null;
+
+    function showAccessibilityPanel() { accessibilityPanel.classList.remove('hidden'); }
+    function hideAccessibilityPanel() { accessibilityPanel.classList.add('hidden'); }
+
+    accessibilityOpen.addEventListener('click', () => {
+      showAccessibilityPanel();
+      if (analyticsMenu) analyticsMenu.classList.add('hidden');
+    });
+    accessibilityClose.addEventListener('click', () => { hideAccessibilityPanel(); });
+
+    function updateAccessibilityInfo() {
+      const coords = accessibilityCenter ? `${accessibilityCenter.lat.toFixed(5)}, ${accessibilityCenter.lng.toFixed(5)}` : '—';
+      accessibilityInfo.textContent = `Location: ${coords}`;
+    }
+
+    // Use current location
+    accessibilityUseLocation.addEventListener('click', () => {
+      if (!('geolocation' in navigator)) {
+        alert('Geolocation is not available in this browser.');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lng = pos.coords.longitude;
+          const lat = pos.coords.latitude;
+          accessibilityCenter = { lng, lat };
+          
+          // Add marker
+          if (accessibilityMarker) {
+            accessibilityMarker.setLngLat([lng, lat]);
+          } else {
+            accessibilityMarker = new maplibregl.Marker({ color: '#16a085' })
+              .setLngLat([lng, lat])
+              .addTo(map);
+          }
+          
+          map.flyTo({ center: [lng, lat], zoom: 15 });
+          updateAccessibilityInfo();
+          accessibilityRun.disabled = false;
+          accessibilityRun.classList.remove('opacity-60', 'cursor-not-allowed');
+        },
+        (err) => {
+          alert('Unable to retrieve your location: ' + (err.message || err.code));
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    });
+
+    // Draw point on map
+    accessibilityDrawPoint.addEventListener('click', () => {
+      accessibilityResults.classList.add('hidden');
+      map.getCanvas().style.cursor = 'crosshair';
+      const infoMsg = document.createElement('div');
+      infoMsg.textContent = 'Click on the map to set analysis location...';
+      infoMsg.className = 'text-xxs text-accent font-semibold';
+      accessibilityInfo.innerHTML = '';
+      accessibilityInfo.appendChild(infoMsg);
+
+      map.once('click', (e) => {
+        map.getCanvas().style.cursor = '';
+        accessibilityCenter = e.lngLat;
+        
+        // Add marker
+        if (accessibilityMarker) {
+          accessibilityMarker.setLngLat([e.lngLat.lng, e.lngLat.lat]);
+        } else {
+          accessibilityMarker = new maplibregl.Marker({ color: '#16a085' })
+            .setLngLat([e.lngLat.lng, e.lngLat.lat])
+            .addTo(map);
+        }
+        
+        updateAccessibilityInfo();
+        accessibilityRun.disabled = false;
+        accessibilityRun.classList.remove('opacity-60', 'cursor-not-allowed');
+      });
+    });
+
+    // Calculate walkability and bikeability
+    function calculateAccessibility() {
+      if (!accessibilityCenter) {
+        alert('Please select a location first.');
+        return;
+      }
+
+      const distance = parseInt(accessibilityDistance.value);
+      const radiusKm = distance / 1000;
+      const centerPt = turf.point([accessibilityCenter.lng, accessibilityCenter.lat]);
+
+      // Create analysis buffer circle
+      const circle = turf.circle([accessibilityCenter.lng, accessibilityCenter.lat], radiusKm, { steps: 128, units: 'kilometers' });
+
+      // Add/update circle visualization
+      if (map.getSource('accessibility-buffer')) {
+        map.getSource('accessibility-buffer').setData(circle);
+      } else {
+        map.addSource('accessibility-buffer', { type: 'geojson', data: circle });
+        map.addLayer({
+          id: 'accessibility-buffer-fill',
+          type: 'fill',
+          source: 'accessibility-buffer',
+          paint: { 'fill-color': '#16a085', 'fill-opacity': 0.1 }
+        });
+        map.addLayer({
+          id: 'accessibility-buffer-outline',
+          type: 'line',
+          source: 'accessibility-buffer',
+          paint: { 'line-color': '#16a085', 'line-width': 2, 'line-dasharray': [2, 2] }
+        });
+      }
+
+      // Calculate walkability (based on pedestrian infrastructure)
+      let walkabilityMetrics = {
+        pathLength: 0,
+        pathCount: 0,
+        intersections: 0,
+        amenities: 0
+      };
+
+      // Analyze streets for pedestrian paths
+      if (map.getSource('streets')) {
+        try {
+          const features = map.querySourceFeatures('streets');
+          features.forEach(f => {
+            if (!f.geometry || f.geometry.type !== 'LineString') return;
+            const highway = f.properties.highway;
+            const isPedestrian = ['pedestrian', 'path', 'footway', 'living_street', 'residential', 'cycleway'].includes(highway);
+            
+            if (isPedestrian) {
+              try {
+                const line = turf.lineString(f.geometry.coordinates);
+                const intersects = turf.booleanIntersects(circle, line);
+                if (intersects) {
+                  const length = turf.length(line, { units: 'kilometers' });
+                  walkabilityMetrics.pathLength += length;
+                  walkabilityMetrics.pathCount++;
+                }
+              } catch (e) {}
+            }
+          });
+        } catch (e) {
+          console.warn('Streets layer query failed:', e);
+        }
+      }
+
+      // Count amenities within buffer
+      if (map.getSource('amenities')) {
+        try {
+          const features = map.querySourceFeatures('amenities');
+          features.forEach(f => {
+            if (!f.geometry || f.geometry.type !== 'Point') return;
+            try {
+              const pt = turf.point(f.geometry.coordinates);
+              const dist = turf.distance(centerPt, pt, { units: 'kilometers' });
+              if (dist <= radiusKm) {
+                walkabilityMetrics.amenities++;
+              }
+            } catch (e) {}
+          });
+        } catch (e) {
+          console.warn('Amenities layer query failed:', e);
+        }
+      }
+
+      // Calculate bikeability (based on cycling infrastructure)
+      let bikeabilityMetrics = {
+        cyclePathLength: 0,
+        cyclePathCount: 0,
+        roadLength: 0,
+        safetyScore: 0
+      };
+
+      if (map.getSource('streets')) {
+        try {
+          const features = map.querySourceFeatures('streets');
+          features.forEach(f => {
+            if (!f.geometry || f.geometry.type !== 'LineString') return;
+            const highway = f.properties.highway;
+            const isCycleFriendly = ['cycleway', 'path', 'living_street', 'residential', 'tertiary', 'secondary'].includes(highway);
+            
+            if (isCycleFriendly) {
+              try {
+                const line = turf.lineString(f.geometry.coordinates);
+                const intersects = turf.booleanIntersects(circle, line);
+                if (intersects) {
+                  const length = turf.length(line, { units: 'kilometers' });
+                  if (highway === 'cycleway') {
+                    bikeabilityMetrics.cyclePathLength += length;
+                    bikeabilityMetrics.cyclePathCount++;
+                    bikeabilityMetrics.safetyScore += length * 2; // dedicated cycle paths are safer
+                  } else {
+                    bikeabilityMetrics.roadLength += length;
+                    bikeabilityMetrics.safetyScore += length * (highway === 'living_street' ? 1.5 : 1);
+                  }
+                }
+              } catch (e) {}
+            }
+          });
+        } catch (e) {
+          console.warn('Streets layer query failed for bikeability:', e);
+        }
+      }
+
+      // Calculate normalized scores (0-100)
+      const areaKm2 = Math.PI * radiusKm * radiusKm;
+      const walkabilityDensity = walkabilityMetrics.pathLength / areaKm2;
+      const amenityDensity = walkabilityMetrics.amenities / areaKm2;
+      const walkScore = Math.min(100, Math.round((walkabilityDensity * 20) + (amenityDensity * 15) + (walkabilityMetrics.pathCount * 2)));
+
+      const bikeabilityDensity = (bikeabilityMetrics.cyclePathLength + bikeabilityMetrics.roadLength) / areaKm2;
+      const bikeScore = Math.min(100, Math.round((bikeabilityDensity * 20) + (bikeabilityMetrics.safetyScore / areaKm2 * 10)));
+
+      // Update UI with results
+      walkabilityScore.textContent = `${walkScore}/100`;
+      walkabilityDetails.textContent = `${walkabilityMetrics.pathLength.toFixed(1)}km paths • ${walkabilityMetrics.amenities} amenities`;
+
+      bikeabilityScore.textContent = `${bikeScore}/100`;
+      bikeabilityDetails.textContent = `${bikeabilityMetrics.cyclePathLength.toFixed(1)}km cycle paths • ${bikeabilityMetrics.roadLength.toFixed(1)}km roads`;
+
+      // Summary
+      const summaryLines = [];
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Analysis radius:</span><strong>${distance}m</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Area covered:</span><strong>${areaKm2.toFixed(2)}km²</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Pedestrian paths:</span><strong>${walkabilityMetrics.pathCount}</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Cycle paths:</span><strong>${bikeabilityMetrics.cyclePathCount}</strong></div>`);
+      
+      accessibilitySummary.innerHTML = summaryLines.join('');
+      accessibilityResults.classList.remove('hidden');
+    }
+
+    accessibilityRun.addEventListener('click', calculateAccessibility);
+
+    function clearAccessibility() {
+      if (map.getLayer('accessibility-buffer-fill')) map.removeLayer('accessibility-buffer-fill');
+      if (map.getLayer('accessibility-buffer-outline')) map.removeLayer('accessibility-buffer-outline');
+      if (map.getSource('accessibility-buffer')) map.removeSource('accessibility-buffer');
+      if (accessibilityMarker) {
+        accessibilityMarker.remove();
+        accessibilityMarker = null;
+      }
+      accessibilityCenter = null;
+      accessibilityResults.classList.add('hidden');
+      updateAccessibilityInfo();
+      accessibilityRun.disabled = true;
+      accessibilityRun.classList.add('opacity-60', 'cursor-not-allowed');
+      walkabilityScore.textContent = '—';
+      walkabilityDetails.textContent = 'Calculating...';
+      bikeabilityScore.textContent = '—';
+      bikeabilityDetails.textContent = 'Calculating...';
+      accessibilitySummary.innerHTML = '';
+    }
+
+    accessibilityClear.addEventListener('click', clearAccessibility);
+
     // Export / Locate / Zoom functions (used by map controls)
     function exportMapPNG() {
       // kept for backwards compatibility
@@ -2425,77 +2713,42 @@
     // Unified export function supporting png, jpeg and pdf
     async function exportMap(format = 'png') {
       try {
-        // Prefer capturing the full page using html2canvas (works even when map canvas is tainted)
-        if (window.html2canvas) {
-          try {
-            const opts = { useCORS: true, logging: false, scale: Math.max(1, window.devicePixelRatio || 1) };
-            const pageCanvas = await html2canvas(document.body, opts);
+        const mapCanvas = map.getCanvas();
+        if (!mapCanvas) throw new Error('Map canvas not available');
 
-            if (format === 'pdf') {
-              const dataUrl = pageCanvas.toDataURL('image/png');
-              const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
-              if (!jsPDFClass) {
-                alert('PDF export requires jsPDF. Please check your internet connection.');
-                return;
-              }
-              const img = new Image();
-              img.src = dataUrl;
-              img.onload = () => {
-                const imgW = img.width;
-                const imgH = img.height;
-                const imgRatio = imgW / imgH;
-                const pdf = new jsPDFClass({ unit: 'pt', format: 'a4' });
-                const pageW = pdf.internal.pageSize.getWidth();
-                const pageH = pdf.internal.pageSize.getHeight();
-                let renderW = pageW;
-                let renderH = pageW / imgRatio;
-                if (renderH > pageH) { renderH = pageH; renderW = pageH * imgRatio; }
-                const marginX = (pageW - renderW) / 2;
-                const marginY = (pageH - renderH) / 2;
-                pdf.addImage(dataUrl, 'PNG', marginX, marginY, renderW, renderH);
-                pdf.save('map.pdf');
-              };
-              img.onerror = (e) => { console.error('PDF image load error', e); alert('PDF export failed (image load).'); };
-              return;
-            }
+        // wait for a fresh render frame so the canvas has the latest state
+        await new Promise((resolve) => {
+          let resolved = false;
+          const done = () => { if (resolved) return; resolved = true; resolve(); };
+          map.once('idle', () => requestAnimationFrame(() => requestAnimationFrame(done)));
+          map.triggerRepaint();
+          setTimeout(done, 1200); // safety timeout
+        });
 
-            // PNG / JPEG
-            const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-            const quality = format === 'jpeg' ? 0.92 : undefined;
-            if (pageCanvas.toBlob) {
-              pageCanvas.toBlob((blob) => {
-                if (!blob) throw new Error('Failed to generate image blob');
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                setTimeout(() => URL.revokeObjectURL(url), 1000);
-              }, mime, quality);
-            } else {
-              const dataUrl = mime === 'image/png' ? pageCanvas.toDataURL('image/png') : pageCanvas.toDataURL('image/jpeg', quality);
-              const link = document.createElement('a');
-              link.href = dataUrl;
-              link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
-              document.body.appendChild(link);
-              link.click();
-              link.remove();
-            }
-            return;
-          } catch (e) {
-            console.warn('html2canvas capture failed, falling back to map canvas capture', e);
-            // fallthrough to map canvas approach below
-          }
-        }
+        // copy WebGL canvas into a 2D canvas (map only, no legend/UI)
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = mapCanvas.width;
+        exportCanvas.height = mapCanvas.height;
+        const ctx = exportCanvas.getContext('2d');
 
-        // Fallback: export map canvas (may fail if canvas is tainted by cross-origin tiles)
-        const canvas = map.getCanvas();
-        if (!canvas) throw new Error('Map canvas not available');
+        // solid white background to avoid transparency artifacts
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        ctx.drawImage(mapCanvas, 0, 0);
+
+        const downloadBlob = (blob, filename) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        };
 
         if (format === 'pdf') {
-          const dataUrl = canvas.toDataURL('image/png');
+          const dataUrl = exportCanvas.toDataURL('image/png');
           const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
           if (!jsPDFClass) { alert('PDF export requires jsPDF. Please check your internet connection.'); return; }
           const img = new Image();
@@ -2514,21 +2767,29 @@
         }
 
         const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-        const quality = format === 'jpeg' ? 0.92 : undefined;
-        if (canvas.toBlob) {
-          canvas.toBlob((blob) => {
-            if (!blob) throw new Error('Failed to generate image blob');
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-          }, mime, quality);
-        } else {
-          const dataUrl = mime === 'image/png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', quality);
-          const link = document.createElement('a'); link.href = dataUrl; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove();
+        const quality = format === 'jpeg' ? 0.92 : 0.98;
+
+        const blob = await new Promise((resolve, reject) => {
+          if (!exportCanvas.toBlob) return resolve(null);
+          exportCanvas.toBlob((b) => b ? resolve(b) : reject(new Error('Failed to generate image blob')), mime, quality);
+        }).catch(() => null);
+
+        if (blob) {
+          downloadBlob(blob, `map.${format === 'jpeg' ? 'jpg' : 'png'}`);
+          return;
         }
+
+        // fallback when toBlob is not available
+        const dataUrl = mime === 'image/png' ? exportCanvas.toDataURL('image/png') : exportCanvas.toDataURL('image/jpeg', quality);
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
       } catch (err) {
         console.error('Export failed:', err);
-        alert('Export failed. This usually happens when map tiles are loaded from servers that do not send CORS headers, which taints the canvas and prevents image export.\n\nPossible fixes:\n- Use a tile provider that supports CORS (with Access-Control-Allow-Origin).\n- Run a local tile proxy or self-host tiles.\n- Use a hosted map style that allows exporting.\n\nSee the console for the exact error.');
+        alert('Export failed. Please wait for the map to finish loading and try again.');
       }
 
     }
@@ -2661,7 +2922,8 @@
 
     async function zoomToExtent() {
       try {
-        const url = 'data/austria-demography-simplified-wgs84.geojson';
+        // Fit the map to Salzburg boundaries (the main GeoJSON data)
+        const url = 'data/Salzburg_Boundaries.geojson';
         const resp = await fetch(url);
         if (!resp.ok) throw new Error('Failed to fetch GeoJSON: ' + resp.status);
         const geojson = await resp.json();
