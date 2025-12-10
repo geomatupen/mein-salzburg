@@ -188,9 +188,10 @@
     /* Keep the color-binding rule only inside #layer-panel (higher specificity). */
     #layer-panel .switch input[type="checkbox"]:checked + .switch-track { background: #2A77ED !important; background-image: none !important; }
     label input[type="checkbox"] + .relative .switch-bg { background: #d9d9d9 !important; background-image: none !important; }
-     /* Position helper for proximity button placed to the right of the search box.
-       Calculation: left offset of search container (left-20 = 5rem) + width (w-80 = 20rem) + gap 0.5rem = 25.5rem */
-     .proximity-right { left: calc(25.5rem); }
+     /* Position helper for buttons placed to the right of the search box.
+       Calculation: left offset of search container (left-20 = 5rem) + width (w-80 = 20rem) + gap 0.5rem = 25.5rem
+       Flex container holds filter and analytics buttons side-by-side with small gap */
+     .buttons-right { left: calc(25.5rem); display: flex; gap: 0.5rem; align-items: center; }
      /* Welcome popup overlay: ensure a semi-opaque dark veil behind the modal so it stands out
        (some utility classes can make it appear fully transparent depending on cascade; enforce here).
        Also ensure the modal sits above other fixed UI elements (scalebar, controls) by increasing z-index. */
@@ -510,31 +511,56 @@
     <div id="search-results" class="mt-2 bg-white rounded-md shadow-lg max-h-56 overflow-auto"></div>
   </div>
 
-  <!-- Proximity button placed to the right of the search container (whole button) -->
-  <div id="proximity-btn-container" class="absolute top-3 z-30 proximity-right">
-    <button id="filter-toggle" class="btn-primary icon-btn text-xs mr-2" title="Quick filters" aria-expanded="false">Filter</button>
-    <button id="proximity-open" class="btn-secondary icon-btn text-xs" title="Open proximity analysis">Proximity</button>
+  <!-- Filter and Analytics buttons placed side-by-side to the right of the search container -->
+  <div id="top-buttons-container" class="absolute top-3 z-30 buttons-right">
+    <!-- Filter button with compact filter bar -->
+    <div class="relative">
+      <button id="filter-toggle" class="btn-primary icon-btn text-xs" title="Quick filters" aria-expanded="false">Filter</button>
 
-    <!-- Compact horizontal quick-filter bar (hidden by default) -->
-    <div id="compact-filter-bar" class="hidden absolute right-0 top-12 z-40 bg-white rounded-md shadow p-2 flex items-start gap-3" style="min-width:360px;">
-      <div class="flex flex-col text-xxs">
-        <label class="mb-1">Layer</label>
-        <select id="quick-filter-layer" class="text-xxs px-2 py-1 border rounded bg-white"></select>
-      </div>
-      <div class="flex flex-col text-xxs">
-        <label class="mb-1">Attribute</label>
-        <select id="quick-filter-attr" class="text-xxs px-2 py-1 border rounded bg-white"></select>
-      </div>
-      <div class="flex flex-col text-xxs">
-        <label class="mb-1">Values</label>
-        <select id="quick-filter-value" class="text-xxs px-2 py-1 border rounded bg-white" multiple size="6" style="min-width:150px;"></select>
-      </div>
-      <div class="flex flex-col items-stretch justify-between">
-        <label class="mb-1">&nbsp;</label>
-        <div class="flex flex-col gap-2">
-          <button id="quick-filter-apply" class="btn-primary text-xs">Apply</button>
-          <button id="quick-filter-close" class="btn-tertiary text-xs">Close</button>
+      <!-- Compact horizontal quick-filter bar (hidden by default) -->
+      <div id="compact-filter-bar" class="hidden fixed top-12 z-40 bg-white rounded-md shadow p-2 flex items-start gap-3" style="min-width:360px; left: 5rem;    margin-top: .2rem;">
+        <div class="flex flex-col text-xxs">
+          <label class="mb-1">Layer</label>
+          <select id="quick-filter-layer" class="text-xxs px-2 py-1 border rounded bg-white"></select>
         </div>
+        <div class="flex flex-col text-xxs">
+          <label class="mb-1">Attribute</label>
+          <select id="quick-filter-attr" class="text-xxs px-2 py-1 border rounded bg-white"></select>
+        </div>
+        <div class="flex flex-col text-xxs">
+          <label class="mb-1">Values</label>
+          <select id="quick-filter-value" class="text-xxs px-2 py-1 border rounded bg-white" multiple size="6" style="min-width:150px;"></select>
+        </div>
+        <div class="flex flex-col items-stretch justify-between">
+          <label class="mb-1">&nbsp;</label>
+          <div class="flex flex-col gap-2">
+            <button id="quick-filter-apply" class="btn-primary text-xs">Apply</button>
+            <button id="quick-filter-reset" class="btn-tertiary text-xs">Reset</button>
+            <button id="quick-filter-close" class="btn-tertiary text-xs">Close</button>
+          </div> 
+        </div>
+      </div>
+    </div>
+    <!-- Analytics button with analytics menu -->
+    <div class="relative inline-block">
+      <button id="analytics-toggle" class="btn-secondary icon-btn text-xs flex items-center gap-2" title="Open analytics menu">
+        <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+        <span>Analytics</span>
+        <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true"></i>
+      </button>
+      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 min-w-48 overflow-hidden z-40">
+        <button id="proximity-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+          <i class="fa-solid fa-circle-dot text-primary" aria-hidden="true"></i>
+          <span>Proximity</span>
+        </button>
+        <button id="accessibility-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+          <i class="fa-solid fa-road text-secondary" aria-hidden="true"></i>
+          <span>Accessibility</span>
+        </button>
+        <button id="route-optimization-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2">
+          <i class="fa-solid fa-route text-accent" aria-hidden="true"></i>
+          <span>Route Optimization</span>
+        </button>
       </div>
     </div>
   </div>
@@ -832,67 +858,6 @@
 
       <div class="panel-sep my-3 border-t pt-3"></div>
 
-      <!-- Filters UI: reuses existing panel styles and Tailwind utilities -->
-      <div class="filters-section mb-4">
-        <h4 class="text-xs font-medium text-slate-600 mb-2">Filters</h4>
-        <div class="grid grid-cols-2 gap-2 items-end">
-          <div>
-            <label class="text-xxs text-gray-600">Layer</label>
-            <select id="filter-layer" class="text-xs w-full border rounded px-2 py-1">
-              <!-- populated by JS -->
-            </select>
-          </div>
-          <div>
-            <label class="text-xxs text-gray-600">Operator</label>
-            <select id="filter-operator" class="text-xs w-full border rounded px-2 py-1">
-              <option value="==">Equals (=)</option>
-              <option value="!=">Not equals (!=)</option>
-              <option value="in">In (comma separated)</option>
-              <option value="range">Range (min/max)</option>
-              <option value="exists">Exists</option>
-              <option value="not-exists">Not exists</option>
-              <option value="reset">Reset (clear filter)</option>
-            </select>
-          </div>
-
-          <div class="col-span-2">
-            <label class="text-xxs text-gray-600">Attribute</label>
-            <select id="filter-attr-select" class="text-xs w-full border rounded px-2 py-1">
-              <option value="">Choose attribute...</option>
-            </select>
-          </div>
-
-          <div id="filter-value-container" class="col-span-2">
-            <label class="text-xxs text-gray-600">Value</label>
-            <select id="filter-value-select" class="text-xs w-full border rounded px-2 py-1" multiple size="6">
-            </select>
-            <div class="text-xxs text-gray-500 mt-1">💡 <strong>Click to toggle:</strong> Select/deselect items one at a time • Use Ctrl+Click (Cmd+Click on Mac) for multiple selections</div>
-          </div>
-
-          <div id="filter-range-container" class="hidden col-span-2 grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-xxs text-gray-600">Min</label>
-              <input id="filter-min" type="number" class="text-xs w-full border rounded px-2 py-1" />
-            </div>
-            <div>
-              <label class="text-xxs text-gray-600">Max</label>
-              <input id="filter-max" type="number" class="text-xs w-full border rounded px-2 py-1" />
-            </div>
-          </div>
-
-          <div class="col-span-2 flex gap-2 justify-end">
-            <button id="filter-apply" class="btn-tertiary text-xs">Apply</button>
-            <button id="filter-reset" class="btn-tertiary text-xs">Reset</button>
-          </div>
-        </div>
-      </div>
-
-      <h4 class="text-xs font-medium text-slate-600 mb-2">Markers</h4>
-      <div class="space-y-2">
-        <label class="flex items-center gap-3"><input type="checkbox" id="marker-default-visible" checked> <span class="text-xs text-gray-600">Default marker</span></label>
-        <label class="flex items-center gap-3"><input type="checkbox" id="marker-png-visible" checked> <span class="text-xs text-gray-600">PNG marker</span></label>
-        <label class="flex items-center gap-3"><input type="checkbox" id="marker-html-visible" checked> <span class="text-xs text-gray-600">HTML marker</span></label>
-      </div>
 
       <div class="panel-sep my-4 border-t pt-3"></div>
       <div class="text-xs text-slate-600">Data sources</div>
@@ -2228,19 +2193,11 @@
       });
     }
 
-    // When quickAttr changes, use existing populateValueSuggestions to fill main filterValueSelect then copy to quickValue
+    // When quickAttr changes, use existing populateValueSuggestions to fill quickValue directly
     function syncQuickValues(attrName, layerId){
       if (!quickValue) return;
-      // Use existing populateValueSuggestions to fill the global filterValueSelect (it will set display labels)
-      // but we need to ensure filterValueSelect exists in DOM (it does). After calling it, copy options.
-      populateValueSuggestions(attrName, layerId);
-      // copy options from filterValueSelect
-      const mainValSelect = document.getElementById('filter-value-select');
-      quickValue.innerHTML = '';
-      if (!mainValSelect) return;
-      Array.from(mainValSelect.options).forEach(o => {
-        const opt = document.createElement('option'); opt.value = o.value; opt.textContent = o.textContent; quickValue.appendChild(opt);
-      });
+      // Use existing populateValueSuggestions to fill the quick-filter-value select directly
+      populateValueSuggestions(attrName, layerId, 'quick-filter-value');
     }
 
     // When quickAttr changes, trigger sync
@@ -2294,6 +2251,25 @@
         const vals = quickValue ? Array.from(quickValue.selectedOptions).map(o => o.value) : [];
         if (!vals.length){ alert('Select one or more values'); return; }
         applyAttributeFilter({ layerIds: lid, attr, operator: 'in', value: vals });
+      });
+    }
+
+    // Reset all filters
+    const quickReset = document.getElementById('quick-filter-reset');
+    if (quickReset){
+      quickReset.addEventListener('click', () => {
+        // Clear all active filters across all layers
+        clearAttributeFilter(allInteractiveLayers);
+        // Reset layer visibility - check all layer checkboxes
+        document.querySelectorAll('#map-legend input[type="checkbox"]').forEach(cb => {
+          cb.checked = true;
+          // Trigger change event to update layer visibility
+          cb.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        // Reset form selections
+        if (quickLayer) quickLayer.value = '';
+        if (quickAttr) quickAttr.innerHTML = '';
+        if (quickValue) quickValue.innerHTML = '';
       });
     }
 
@@ -3344,13 +3320,8 @@
         } catch (e) {}
       }
 
-      const mDefault = document.getElementById('marker-default-visible');
-      const mPng = document.getElementById('marker-png-visible');
-      const mHtml = document.getElementById('marker-html-visible');
 
-      if (mDefault) mDefault.addEventListener('change', (e) => { if (typeof markerDefault !== 'undefined') setMarkerDisplay(markerDefault, e.target.checked); });
-      if (mPng) mPng.addEventListener('change', (e) => { if (typeof markerPNG !== 'undefined') setMarkerDisplay(markerPNG, e.target.checked); });
-      if (mHtml) mHtml.addEventListener('change', (e) => { if (typeof markerHTML !== 'undefined') setMarkerDisplay(markerHTML, e.target.checked); });
+
 
     });
 
