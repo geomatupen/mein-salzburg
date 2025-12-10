@@ -976,7 +976,9 @@
       style: 'https://demotiles.maplibre.org/style.json',
       center: [13.033229, 47.811195],
       zoom: 15,
-      pitch: 45
+      pitch: 45,
+      preserveDrawingBuffer: true,
+      antialias: true
     });
 
     // ------------------------- Simple Nominatim search -------------------------
@@ -2168,157 +2170,83 @@
     // Unified export function supporting png, jpeg and pdf
     async function exportMap(format = 'png') {
       try {
-        // Attempt to composite the map canvas into the html2canvas capture.
-        // If the map canvas is readable (not tainted) we create a temporary <img>
-        // overlay inside the `#map` container and hide the original canvas so
-        // html2canvas captures the background map image. If the canvas is
-        // tainted (cross-origin tiles without CORS), this step silently fails
-        // and html2canvas will be attempted as before.
         const mapCanvas = map.getCanvas();
-        let overlayImg = null;
-        let overlayInserted = false;
-        let restoredMapPosition = false;
-        let originalMapCanvasVisibility = '';
-        try {
-          if (mapCanvas) {
-            originalMapCanvasVisibility = mapCanvas.style.visibility || '';
-            // try to read canvas data URL (this will throw if tainted)
-            const dataUrl = mapCanvas.toDataURL('image/png');
+        if (!mapCanvas) throw new Error('Map canvas not available');
 
-            // create an overlay image and place it inside the #map container
-            const mapContainer = document.getElementById('map');
-            if (mapContainer) {
-              // ensure the container is positioned so absolute child positions correctly
-              const computedPos = window.getComputedStyle(mapContainer).position;
-              if (computedPos === 'static' || !computedPos) {
-                mapContainer.style.position = 'relative';
-                restoredMapPosition = true;
-              }
+        // wait for a fresh render frame so the canvas has the latest state
+        await new Promise((resolve) => {
+          let resolved = false;
+          const done = () => { if (resolved) return; resolved = true; resolve(); };
+          map.once('idle', () => requestAnimationFrame(() => requestAnimationFrame(done)));
+          map.triggerRepaint();
+          setTimeout(done, 1200); // safety timeout
+        });
 
-              overlayImg = document.createElement('img');
-              overlayImg.src = dataUrl;
-              overlayImg.className = 'map-export-overlay';
-              overlayImg.style.position = 'absolute';
-              overlayImg.style.left = '0';
-              overlayImg.style.top = '0';
-              overlayImg.style.width = '100%';
-              overlayImg.style.height = '100%';
-              overlayImg.style.pointerEvents = 'none';
-              overlayImg.style.zIndex = '2147483646';
-              overlayImg.style.imageRendering = 'auto';
+        // copy WebGL canvas into a 2D canvas (map only, no legend/UI)
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = mapCanvas.width;
+        exportCanvas.height = mapCanvas.height;
+        const ctx = exportCanvas.getContext('2d');
 
-              mapContainer.appendChild(overlayImg);
+        // solid white background to avoid transparency artifacts
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        ctx.drawImage(mapCanvas, 0, 0);
 
-              // hide the original canvas so html2canvas uses our image overlay
-              mapCanvas.style.visibility = 'hidden';
-              overlayInserted = true;
-            }
-          }
-        } catch (e) {
-          // canvas is likely tainted — we can't read it. Continue and let html2canvas try.
-          console.warn('Map canvas is not readable for export (tainted). Will proceed without compositing overlay.', e);
+        const downloadBlob = (blob, filename) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        };
+
+        if (format === 'pdf') {
+          const dataUrl = exportCanvas.toDataURL('image/png');
+          const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
+          if (!jsPDFClass) { alert('PDF export requires jsPDF. Please check your internet connection.'); return; }
+          const img = new Image();
+          img.src = dataUrl;
+          img.onload = () => {
+            const imgW = img.width; const imgH = img.height; const imgRatio = imgW / imgH;
+            const pdf = new jsPDFClass({ unit: 'pt', format: 'a4' });
+            const pageW = pdf.internal.pageSize.getWidth(); const pageH = pdf.internal.pageSize.getHeight();
+            let renderW = pageW; let renderH = pageW / imgRatio;
+            if (renderH > pageH) { renderH = pageH; renderW = pageH * imgRatio; }
+            const marginX = (pageW - renderW) / 2; const marginY = (pageH - renderH) / 2;
+            pdf.addImage(dataUrl, 'PNG', marginX, marginY, renderW, renderH); pdf.save('map.pdf');
+          };
+          img.onerror = (e) => { console.error('Image load error for PDF export', e); alert('PDF export failed (image load).'); };
+          return;
         }
 
-        try {
-          // Prefer capturing the full page using html2canvas (works even when map canvas is tainted)
-          if (window.html2canvas) {
-            try {
-              const opts = { useCORS: true, logging: false, scale: Math.max(1, window.devicePixelRatio || 1) };
-              const pageCanvas = await html2canvas(document.body, opts);
+        const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const quality = format === 'jpeg' ? 0.92 : 0.98;
 
-              if (format === 'pdf') {
-                const dataUrl = pageCanvas.toDataURL('image/png');
-                const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
-                if (!jsPDFClass) {
-                  alert('PDF export requires jsPDF. Please check your internet connection.');
-                  return;
-                }
-                const img = new Image();
-                img.src = dataUrl;
-                img.onload = () => {
-                  const imgW = img.width; const imgH = img.height; const imgRatio = imgW / imgH;
-                  const pdf = new jsPDFClass({ unit: 'pt', format: 'a4' });
-                  const pageW = pdf.internal.pageSize.getWidth(); const pageH = pdf.internal.pageSize.getHeight();
-                  let renderW = pageW; let renderH = pageW / imgRatio;
-                  if (renderH > pageH) { renderH = pageH; renderW = pageH * imgRatio; }
-                  const marginX = (pageW - renderW) / 2; const marginY = (pageH - renderH) / 2;
-                  pdf.addImage(dataUrl, 'PNG', marginX, marginY, renderW, renderH); pdf.save('map.pdf');
-                };
-                img.onerror = (e) => { console.error('PDF image load error', e); alert('PDF export failed (image load).'); };
-                return;
-              }
+        const blob = await new Promise((resolve, reject) => {
+          if (!exportCanvas.toBlob) return resolve(null);
+          exportCanvas.toBlob((b) => b ? resolve(b) : reject(new Error('Failed to generate image blob')), mime, quality);
+        }).catch(() => null);
 
-              // PNG / JPEG
-              const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-              const quality = format === 'jpeg' ? 0.92 : undefined;
-              if (pageCanvas.toBlob) {
-                pageCanvas.toBlob((blob) => {
-                  if (!blob) throw new Error('Failed to generate image blob');
-                  const url = URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-                }, mime, quality);
-              } else {
-                const dataUrl = mime === 'image/png' ? pageCanvas.toDataURL('image/png') : pageCanvas.toDataURL('image/jpeg', quality);
-                const link = document.createElement('a'); link.href = dataUrl; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove();
-              }
-              return;
-            } catch (e) {
-              console.warn('html2canvas capture failed, falling back to map canvas capture', e);
-              // fallthrough to map canvas approach below
-            }
-          }
-
-          // Fallback: export map canvas (may fail if canvas is tainted by cross-origin tiles)
-          if (!mapCanvas) throw new Error('Map canvas not available');
-
-          if (format === 'pdf') {
-            const dataUrl = mapCanvas.toDataURL('image/png');
-            const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF ? window.jsPDF : null);
-            if (!jsPDFClass) { alert('PDF export requires jsPDF. Please check your internet connection.'); return; }
-            const img = new Image();
-            img.src = dataUrl;
-            img.onload = () => {
-              const imgW = img.width; const imgH = img.height; const imgRatio = imgW / imgH;
-              const pdf = new jsPDFClass({ unit: 'pt', format: 'a4' });
-              const pageW = pdf.internal.pageSize.getWidth(); const pageH = pdf.internal.pageSize.getHeight();
-              let renderW = pageW; let renderH = pageW / imgRatio;
-              if (renderH > pageH) { renderH = pageH; renderW = pageH * imgRatio; }
-              const marginX = (pageW - renderW) / 2; const marginY = (pageH - renderH) / 2;
-              pdf.addImage(dataUrl, 'PNG', marginX, marginY, renderW, renderH); pdf.save('map.pdf');
-            };
-            img.onerror = (e) => { console.error('Image load error for PDF export', e); alert('PDF export failed (image load).'); };
-            return;
-          }
-
-          const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-          const quality = format === 'jpeg' ? 0.92 : undefined;
-          if (mapCanvas.toBlob) {
-            mapCanvas.toBlob((blob) => {
-              if (!blob) throw new Error('Failed to generate image blob');
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a'); link.href = url; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-            }, mime, quality);
-          } else {
-            const dataUrl = mime === 'image/png' ? mapCanvas.toDataURL('image/png') : mapCanvas.toDataURL('image/jpeg', quality);
-            const link = document.createElement('a'); link.href = dataUrl; link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`; document.body.appendChild(link); link.click(); link.remove();
-          }
-        } finally {
-          // cleanup overlay and restore map canvas visibility / container positioning
-          try {
-            if (overlayInserted && overlayImg && overlayImg.parentNode) overlayImg.parentNode.removeChild(overlayImg);
-          } catch (e) {}
-          try { if (mapCanvas) mapCanvas.style.visibility = originalMapCanvasVisibility || ''; } catch (e) {}
-          try {
-            if (restoredMapPosition) {
-              const mapContainer = document.getElementById('map');
-              if (mapContainer) mapContainer.style.position = '';
-            }
-          } catch (e) {}
+        if (blob) {
+          downloadBlob(blob, `map.${format === 'jpeg' ? 'jpg' : 'png'}`);
+          return;
         }
+
+        // fallback when toBlob is not available
+        const dataUrl = mime === 'image/png' ? exportCanvas.toDataURL('image/png') : exportCanvas.toDataURL('image/jpeg', quality);
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `map.${format === 'jpeg' ? 'jpg' : 'png'}`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
       } catch (err) {
         console.error('Export failed:', err);
-        alert('Export failed. This usually happens when map tiles are loaded from servers that do not send CORS headers, which taints the canvas and prevents image export.\n\nPossible fixes:\n- Use a tile provider that supports CORS (with Access-Control-Allow-Origin).\n- Run a local tile proxy or self-host tiles.\n- Use a hosted map style that allows exporting.\n\nSee the console for the exact error.');
+        alert('Export failed. Please wait for the map to finish loading and try again.');
       }
 
     }
@@ -2451,7 +2379,8 @@
 
     async function zoomToExtent() {
       try {
-        const url = 'data/austria-demography-simplified-wgs84.geojson';
+        // Fit the map to Salzburg boundaries (the main GeoJSON data)
+        const url = 'data/Salzburg_Boundaries.geojson';
         const resp = await fetch(url);
         if (!resp.ok) throw new Error('Failed to fetch GeoJSON: ' + resp.status);
         const geojson = await resp.json();
