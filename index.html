@@ -495,9 +495,29 @@
     <div id="search-results" class="mt-2 bg-white rounded-md shadow-lg max-h-56 overflow-auto"></div>
   </div>
 
-  <!-- Proximity button placed to the right of the search container (whole button) -->
-  <div id="proximity-btn-container" class="absolute top-3 z-30 proximity-right">
-    <button id="proximity-open" class="btn-secondary icon-btn text-xs" title="Open proximity analysis">Proximity</button>
+  <!-- Analytics dropdown button placed to the right of the search container -->
+  <div id="analytics-btn-container" class="absolute top-3 z-30 proximity-right">
+    <div class="relative inline-block">
+      <button id="analytics-toggle" class="btn-secondary icon-btn text-xs flex items-center gap-2" title="Open analytics menu">
+        <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+        <span>Analytics</span>
+        <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true"></i>
+      </button>
+      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 min-w-48 overflow-hidden z-40">
+        <button id="proximity-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+          <i class="fa-solid fa-circle-dot text-primary" aria-hidden="true"></i>
+          <span>Proximity</span>
+        </button>
+        <button id="accessibility-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+          <i class="fa-solid fa-road text-secondary" aria-hidden="true"></i>
+          <span>Accessibility</span>
+        </button>
+        <button id="route-optimization-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2">
+          <i class="fa-solid fa-route text-accent" aria-hidden="true"></i>
+          <span>Route Optimization</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Legend (draggable + minimizable) -->
@@ -563,11 +583,92 @@
         <button id="proximity-clear" class="btn-tertiary text-xs">Clear</button>
       </div>
     </div>
+
+  <!-- Accessibility panel: Walkability & Bikeability Analysis -->
+  <div id="accessibility-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxs">
+    <div class="flex justify-between items-center mb-2">
+      <strong class="text-xs">Accessibility Analysis</strong>
+      <button id="accessibility-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
+    </div>
+    <div class="text-xxs text-gray-500 mb-3">Analyze walkability and bikeability from a location.</div>
+    
+    <!-- Location selection options -->
+    <div class="mb-3 pb-3 border-b border-gray-200">
+      <label class="text-xxs font-semibold text-gray-600 mb-2 block">Select Location</label>
+      <div class="flex gap-2">
+        <button id="accessibility-use-location" class="btn-accent flex-1 justify-center text-xs">
+          <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
+          <span>My Location</span>
+        </button>
+        <button id="accessibility-draw-point" class="btn-tertiary flex-1 justify-center text-xs">
+          <i class="fa-solid fa-map-pin" aria-hidden="true"></i>
+          <span>Draw Point</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="accessibility-info" class="text-xxs text-gray-600 mb-3">Location: —</div>
+
+    <!-- Distance control -->
+    <div class="mb-3">
+      <label class="text-xxs font-semibold text-gray-600 mb-1 block">Analysis Radius</label>
+      <div class="flex gap-2">
+        <select id="accessibility-distance" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-accent flex-1">
+          <option value="100">100 meters</option>
+          <option value="500" selected>500 meters</option>
+          <option value="1000">1 kilometer</option>
+          <option value="1500">1.5 kilometers</option>
+          <option value="2000">2 kilometers</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <button id="accessibility-run" class="btn-primary w-full justify-center text-xs" disabled>Analyze</button>
+    </div>
+
+    <!-- Results display -->
+    <div id="accessibility-results" class="hidden">
+      <div class="space-y-3 pb-3 border-b border-gray-200 mb-3">
+        <!-- Walkability Score -->
+        <div class="bg-gradient-to-r from-primary/10 to-primary/5 p-3 rounded-md">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-person-walking text-primary" aria-hidden="true"></i>
+              <span class="text-xs font-semibold text-gray-700">Walkability</span>
+            </div>
+            <span id="walkability-score" class="text-sm font-bold text-primary">—</span>
+          </div>
+          <div class="text-xxs text-gray-600" id="walkability-details">Calculating...</div>
+        </div>
+
+        <!-- Bikeability Score -->
+        <div class="bg-gradient-to-r from-secondary/10 to-secondary/5 p-3 rounded-md">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bicycle text-secondary" aria-hidden="true"></i>
+              <span class="text-xs font-semibold text-gray-700">Bikeability</span>
+            </div>
+            <span id="bikeability-score" class="text-sm font-bold text-secondary">—</span>
+          </div>
+          <div class="text-xxs text-gray-600" id="bikeability-details">Calculating...</div>
+        </div>
+      </div>
+
+      <!-- Summary metrics -->
+      <div id="accessibility-summary" class="text-xxs text-gray-700 space-y-1"></div>
+    </div>
+
+    <div class="flex justify-end gap-2 mt-3">
+      <button id="accessibility-clear" class="btn-tertiary text-xs">Clear</button>
+    </div>
+  </div>
+
   <!-- Webmap Title: top right, above layer panel -->
   
   <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-lg rounded-lg pb-4">
     <div class="panel-header flex items-center justify-between p-3 border-b bg-primary border-gray-100 rounded-lg-top">
-      <div class="text-sm font-semibold text-gray-200">MeinSalzburg | Salzburg Urban Toolkit</div>
+      <div class="text-sm font-semibold text-gray-100">MeinSalzburg | Urban Toolkit</div>
       <div class="panel-controls flex items-center gap-2">
         <button class="minimize-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" data-target="layer-panel" aria-label="Minimize layers" aria-expanded="true"><i class="fa-solid fa-minus text-gray-200" aria-hidden="true"></i></button>
       </div>
@@ -1597,6 +1698,22 @@
       .then(j => { regionsGeo = j; })
       .catch(err => { console.warn('Could not load regions GeoJSON for proximity:', err); });
 
+    // Analytics dropdown toggle
+    const analyticsToggle = document.getElementById('analytics-toggle');
+    const analyticsMenu = document.getElementById('analytics-menu');
+    if (analyticsToggle && analyticsMenu) {
+      analyticsToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        analyticsMenu.classList.toggle('hidden');
+      });
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!analyticsToggle.contains(e.target) && !analyticsMenu.contains(e.target)) {
+          analyticsMenu.classList.add('hidden');
+        }
+      });
+    }
+
     const proximityOpen = document.getElementById('proximity-open');
     const proximityPanel = document.getElementById('proximity-panel');
     const proximityClose = document.getElementById('proximity-close');
@@ -1622,6 +1739,7 @@
 
     proximityOpen.addEventListener('click', () => {
       showPanel();
+      if (analyticsMenu) analyticsMenu.classList.add('hidden');
     });
     proximityClose.addEventListener('click', () => { hidePanel(); });
 
@@ -1769,6 +1887,280 @@
 
       summaryDiv.innerHTML = lines.join('');
     });
+
+    // ---------------------- Accessibility Analysis (Walkability & Bikeability) ----------------------
+    const accessibilityOpen = document.getElementById('accessibility-open');
+    const accessibilityPanel = document.getElementById('accessibility-panel');
+    const accessibilityClose = document.getElementById('accessibility-close');
+    const accessibilityUseLocation = document.getElementById('accessibility-use-location');
+    const accessibilityDrawPoint = document.getElementById('accessibility-draw-point');
+    const accessibilityRun = document.getElementById('accessibility-run');
+    const accessibilityClear = document.getElementById('accessibility-clear');
+    const accessibilityDistance = document.getElementById('accessibility-distance');
+    const accessibilityInfo = document.getElementById('accessibility-info');
+    const accessibilityResults = document.getElementById('accessibility-results');
+    const walkabilityScore = document.getElementById('walkability-score');
+    const walkabilityDetails = document.getElementById('walkability-details');
+    const bikeabilityScore = document.getElementById('bikeability-score');
+    const bikeabilityDetails = document.getElementById('bikeability-details');
+    const accessibilitySummary = document.getElementById('accessibility-summary');
+
+    let accessibilityCenter = null; // {lng, lat}
+    let accessibilityMarker = null;
+
+    function showAccessibilityPanel() { accessibilityPanel.classList.remove('hidden'); }
+    function hideAccessibilityPanel() { accessibilityPanel.classList.add('hidden'); }
+
+    accessibilityOpen.addEventListener('click', () => {
+      showAccessibilityPanel();
+      if (analyticsMenu) analyticsMenu.classList.add('hidden');
+    });
+    accessibilityClose.addEventListener('click', () => { hideAccessibilityPanel(); });
+
+    function updateAccessibilityInfo() {
+      const coords = accessibilityCenter ? `${accessibilityCenter.lat.toFixed(5)}, ${accessibilityCenter.lng.toFixed(5)}` : '—';
+      accessibilityInfo.textContent = `Location: ${coords}`;
+    }
+
+    // Use current location
+    accessibilityUseLocation.addEventListener('click', () => {
+      if (!('geolocation' in navigator)) {
+        alert('Geolocation is not available in this browser.');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lng = pos.coords.longitude;
+          const lat = pos.coords.latitude;
+          accessibilityCenter = { lng, lat };
+          
+          // Add marker
+          if (accessibilityMarker) {
+            accessibilityMarker.setLngLat([lng, lat]);
+          } else {
+            accessibilityMarker = new maplibregl.Marker({ color: '#16a085' })
+              .setLngLat([lng, lat])
+              .addTo(map);
+          }
+          
+          map.flyTo({ center: [lng, lat], zoom: 15 });
+          updateAccessibilityInfo();
+          accessibilityRun.disabled = false;
+          accessibilityRun.classList.remove('opacity-60', 'cursor-not-allowed');
+        },
+        (err) => {
+          alert('Unable to retrieve your location: ' + (err.message || err.code));
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    });
+
+    // Draw point on map
+    accessibilityDrawPoint.addEventListener('click', () => {
+      accessibilityResults.classList.add('hidden');
+      map.getCanvas().style.cursor = 'crosshair';
+      const infoMsg = document.createElement('div');
+      infoMsg.textContent = 'Click on the map to set analysis location...';
+      infoMsg.className = 'text-xxs text-accent font-semibold';
+      accessibilityInfo.innerHTML = '';
+      accessibilityInfo.appendChild(infoMsg);
+
+      map.once('click', (e) => {
+        map.getCanvas().style.cursor = '';
+        accessibilityCenter = e.lngLat;
+        
+        // Add marker
+        if (accessibilityMarker) {
+          accessibilityMarker.setLngLat([e.lngLat.lng, e.lngLat.lat]);
+        } else {
+          accessibilityMarker = new maplibregl.Marker({ color: '#16a085' })
+            .setLngLat([e.lngLat.lng, e.lngLat.lat])
+            .addTo(map);
+        }
+        
+        updateAccessibilityInfo();
+        accessibilityRun.disabled = false;
+        accessibilityRun.classList.remove('opacity-60', 'cursor-not-allowed');
+      });
+    });
+
+    // Calculate walkability and bikeability
+    function calculateAccessibility() {
+      if (!accessibilityCenter) {
+        alert('Please select a location first.');
+        return;
+      }
+
+      const distance = parseInt(accessibilityDistance.value);
+      const radiusKm = distance / 1000;
+      const centerPt = turf.point([accessibilityCenter.lng, accessibilityCenter.lat]);
+
+      // Create analysis buffer circle
+      const circle = turf.circle([accessibilityCenter.lng, accessibilityCenter.lat], radiusKm, { steps: 128, units: 'kilometers' });
+
+      // Add/update circle visualization
+      if (map.getSource('accessibility-buffer')) {
+        map.getSource('accessibility-buffer').setData(circle);
+      } else {
+        map.addSource('accessibility-buffer', { type: 'geojson', data: circle });
+        map.addLayer({
+          id: 'accessibility-buffer-fill',
+          type: 'fill',
+          source: 'accessibility-buffer',
+          paint: { 'fill-color': '#16a085', 'fill-opacity': 0.1 }
+        });
+        map.addLayer({
+          id: 'accessibility-buffer-outline',
+          type: 'line',
+          source: 'accessibility-buffer',
+          paint: { 'line-color': '#16a085', 'line-width': 2, 'line-dasharray': [2, 2] }
+        });
+      }
+
+      // Calculate walkability (based on pedestrian infrastructure)
+      let walkabilityMetrics = {
+        pathLength: 0,
+        pathCount: 0,
+        intersections: 0,
+        amenities: 0
+      };
+
+      // Analyze streets for pedestrian paths
+      if (map.getSource('streets')) {
+        try {
+          const features = map.querySourceFeatures('streets');
+          features.forEach(f => {
+            if (!f.geometry || f.geometry.type !== 'LineString') return;
+            const highway = f.properties.highway;
+            const isPedestrian = ['pedestrian', 'path', 'footway', 'living_street', 'residential', 'cycleway'].includes(highway);
+            
+            if (isPedestrian) {
+              try {
+                const line = turf.lineString(f.geometry.coordinates);
+                const intersects = turf.booleanIntersects(circle, line);
+                if (intersects) {
+                  const length = turf.length(line, { units: 'kilometers' });
+                  walkabilityMetrics.pathLength += length;
+                  walkabilityMetrics.pathCount++;
+                }
+              } catch (e) {}
+            }
+          });
+        } catch (e) {
+          console.warn('Streets layer query failed:', e);
+        }
+      }
+
+      // Count amenities within buffer
+      if (map.getSource('amenities')) {
+        try {
+          const features = map.querySourceFeatures('amenities');
+          features.forEach(f => {
+            if (!f.geometry || f.geometry.type !== 'Point') return;
+            try {
+              const pt = turf.point(f.geometry.coordinates);
+              const dist = turf.distance(centerPt, pt, { units: 'kilometers' });
+              if (dist <= radiusKm) {
+                walkabilityMetrics.amenities++;
+              }
+            } catch (e) {}
+          });
+        } catch (e) {
+          console.warn('Amenities layer query failed:', e);
+        }
+      }
+
+      // Calculate bikeability (based on cycling infrastructure)
+      let bikeabilityMetrics = {
+        cyclePathLength: 0,
+        cyclePathCount: 0,
+        roadLength: 0,
+        safetyScore: 0
+      };
+
+      if (map.getSource('streets')) {
+        try {
+          const features = map.querySourceFeatures('streets');
+          features.forEach(f => {
+            if (!f.geometry || f.geometry.type !== 'LineString') return;
+            const highway = f.properties.highway;
+            const isCycleFriendly = ['cycleway', 'path', 'living_street', 'residential', 'tertiary', 'secondary'].includes(highway);
+            
+            if (isCycleFriendly) {
+              try {
+                const line = turf.lineString(f.geometry.coordinates);
+                const intersects = turf.booleanIntersects(circle, line);
+                if (intersects) {
+                  const length = turf.length(line, { units: 'kilometers' });
+                  if (highway === 'cycleway') {
+                    bikeabilityMetrics.cyclePathLength += length;
+                    bikeabilityMetrics.cyclePathCount++;
+                    bikeabilityMetrics.safetyScore += length * 2; // dedicated cycle paths are safer
+                  } else {
+                    bikeabilityMetrics.roadLength += length;
+                    bikeabilityMetrics.safetyScore += length * (highway === 'living_street' ? 1.5 : 1);
+                  }
+                }
+              } catch (e) {}
+            }
+          });
+        } catch (e) {
+          console.warn('Streets layer query failed for bikeability:', e);
+        }
+      }
+
+      // Calculate normalized scores (0-100)
+      const areaKm2 = Math.PI * radiusKm * radiusKm;
+      const walkabilityDensity = walkabilityMetrics.pathLength / areaKm2;
+      const amenityDensity = walkabilityMetrics.amenities / areaKm2;
+      const walkScore = Math.min(100, Math.round((walkabilityDensity * 20) + (amenityDensity * 15) + (walkabilityMetrics.pathCount * 2)));
+
+      const bikeabilityDensity = (bikeabilityMetrics.cyclePathLength + bikeabilityMetrics.roadLength) / areaKm2;
+      const bikeScore = Math.min(100, Math.round((bikeabilityDensity * 20) + (bikeabilityMetrics.safetyScore / areaKm2 * 10)));
+
+      // Update UI with results
+      walkabilityScore.textContent = `${walkScore}/100`;
+      walkabilityDetails.textContent = `${walkabilityMetrics.pathLength.toFixed(1)}km paths • ${walkabilityMetrics.amenities} amenities`;
+
+      bikeabilityScore.textContent = `${bikeScore}/100`;
+      bikeabilityDetails.textContent = `${bikeabilityMetrics.cyclePathLength.toFixed(1)}km cycle paths • ${bikeabilityMetrics.roadLength.toFixed(1)}km roads`;
+
+      // Summary
+      const summaryLines = [];
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Analysis radius:</span><strong>${distance}m</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Area covered:</span><strong>${areaKm2.toFixed(2)}km²</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Pedestrian paths:</span><strong>${walkabilityMetrics.pathCount}</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Cycle paths:</span><strong>${bikeabilityMetrics.cyclePathCount}</strong></div>`);
+      
+      accessibilitySummary.innerHTML = summaryLines.join('');
+      accessibilityResults.classList.remove('hidden');
+    }
+
+    accessibilityRun.addEventListener('click', calculateAccessibility);
+
+    function clearAccessibility() {
+      if (map.getLayer('accessibility-buffer-fill')) map.removeLayer('accessibility-buffer-fill');
+      if (map.getLayer('accessibility-buffer-outline')) map.removeLayer('accessibility-buffer-outline');
+      if (map.getSource('accessibility-buffer')) map.removeSource('accessibility-buffer');
+      if (accessibilityMarker) {
+        accessibilityMarker.remove();
+        accessibilityMarker = null;
+      }
+      accessibilityCenter = null;
+      accessibilityResults.classList.add('hidden');
+      updateAccessibilityInfo();
+      accessibilityRun.disabled = true;
+      accessibilityRun.classList.add('opacity-60', 'cursor-not-allowed');
+      walkabilityScore.textContent = '—';
+      walkabilityDetails.textContent = 'Calculating...';
+      bikeabilityScore.textContent = '—';
+      bikeabilityDetails.textContent = 'Calculating...';
+      accessibilitySummary.innerHTML = '';
+    }
+
+    accessibilityClear.addEventListener('click', clearAccessibility);
+
     // Export / Locate / Zoom functions (used by map controls)
     function exportMapPNG() {
       // kept for backwards compatibility
