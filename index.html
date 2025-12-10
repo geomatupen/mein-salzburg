@@ -1987,7 +1987,8 @@
 
     async function zoomToExtent() {
       try {
-        const url = 'data/austria-demography-simplified-wgs84.geojson';
+        // Fit the map to Salzburg boundaries (the main GeoJSON data)
+        const url = 'data/Salzburg_Boundaries.geojson';
         const resp = await fetch(url);
         if (!resp.ok) throw new Error('Failed to fetch GeoJSON: ' + resp.status);
         const geojson = await resp.json();
