@@ -812,13 +812,6 @@
 
       <div class="panel-sep my-3 border-t pt-3"></div>
 
-      <h4 class="text-xs font-medium text-slate-600 mb-2">Markers</h4>
-      <div class="space-y-2">
-        <label class="flex items-center gap-3"><input type="checkbox" id="marker-default-visible" checked> <span class="text-xs text-gray-600">Default marker</span></label>
-        <label class="flex items-center gap-3"><input type="checkbox" id="marker-png-visible" checked> <span class="text-xs text-gray-600">PNG marker</span></label>
-        <label class="flex items-center gap-3"><input type="checkbox" id="marker-html-visible" checked> <span class="text-xs text-gray-600">HTML marker</span></label>
-      </div>
-
       <div class="panel-sep my-4 border-t pt-3"></div>
       <div class="text-xs text-slate-600">Data sources</div>
       <div class="mt-2 text-xs text-slate-700">
@@ -1414,56 +1407,6 @@
     }); 
 
 
-    //------------------------------------markers------------------------------------  //
-      //default marker start
-      const markerDefault = new maplibregl.Marker()
-        .setLngLat([16.3725, 48.2084]);
-
-      markerDefault.addTo(map);
-      //default marker end
-
-      //custom marker png start
-      const el = document.createElement("div");
-      const img = document.createElement("img");
-      img.src = "./marker.png";
-      img.className = 'w-6 h-10';
-      el.appendChild(img);
-
-      const markerPNG  = new maplibregl.Marker({ element: el })
-        .setLngLat([16.0725, 48.0084])
-        .addTo(map);
-      //custom marker png end
-
-
-      //html marker start
-      const el1 = document.createElement("div");
-      el1.innerHTML = `
-        <div class="bg-orange-500 text-white px-2 py-1 rounded text-xs">HTML Marker</div>
-      `;
-      const markerHTML = new maplibregl.Marker({ element: el1 })
-        .setLngLat([15.8725, 48.2084])
-        .addTo(map);
-      //html marker end
-
-      // marker for user's location (set when Find my location is used)
-      let locationMarker = null;
-
-      
-     // -------------------------------marker popups-----------------------------------------  // 
-      // prevent polygon click when point marker is clicked
-      markerPNG.getElement().addEventListener("click", (e) => {
-        e.stopPropagation();       // prevents polygon popup
-        markerPNG.togglePopup();      // shows marker popup
-      });
-
-      //marker popup simple way to set popup
-      const popup = new maplibregl.Popup({ offset: 25 })
-        .setHTML("<h3>Marker Info</h3><p>This is a PNG marker.</p>");
-
-      // Attach popup to marker
-      markerPNG.setPopup(popup);
-
-
       // Function to build popup HTML content
       function buildPopupHTML(properties) {
         // Determine the title: prefer name, fall back to type, or use "Feature"
@@ -1662,13 +1605,6 @@
 
     // Setup marker cursors after map load
     map.on("load", () => {
-
-    
-      const mdEl = markerDefault.getElement(); if (mdEl) mdEl.classList.add('cursor-pointer');
-      const mpEl = markerPNG.getElement(); if (mpEl) mpEl.classList.add('cursor-pointer');
-      const mhEl = markerHTML.getElement(); if (mhEl) mhEl.classList.add('cursor-pointer');
-
-
 
       // Add scale control (like Google Maps)
       const scale = new maplibregl.ScaleControl({
