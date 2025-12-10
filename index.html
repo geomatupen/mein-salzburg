@@ -495,9 +495,29 @@
     <div id="search-results" class="mt-2 bg-white rounded-md shadow-lg max-h-56 overflow-auto"></div>
   </div>
 
-  <!-- Proximity button placed to the right of the search container (whole button) -->
-  <div id="proximity-btn-container" class="absolute top-3 z-30 proximity-right">
-    <button id="proximity-open" class="btn-secondary icon-btn text-xs" title="Open proximity analysis">Proximity</button>
+  <!-- Analytics dropdown button placed to the right of the search container -->
+  <div id="analytics-btn-container" class="absolute top-3 z-30 proximity-right">
+    <div class="relative inline-block">
+      <button id="analytics-toggle" class="btn-secondary icon-btn text-xs flex items-center gap-2" title="Open analytics menu">
+        <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+        <span>Analytics</span>
+        <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true"></i>
+      </button>
+      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 min-w-48 overflow-hidden z-40">
+        <button id="proximity-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+          <i class="fa-solid fa-circle-dot text-primary" aria-hidden="true"></i>
+          <span>Proximity</span>
+        </button>
+        <button id="accessibility-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
+          <i class="fa-solid fa-road text-secondary" aria-hidden="true"></i>
+          <span>Accessibility</span>
+        </button>
+        <button id="route-optimization-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2">
+          <i class="fa-solid fa-route text-accent" aria-hidden="true"></i>
+          <span>Route Optimization</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Legend (draggable + minimizable) -->
@@ -1595,6 +1615,22 @@
       .then(j => { regionsGeo = j; })
       .catch(err => { console.warn('Could not load regions GeoJSON for proximity:', err); });
 
+    // Analytics dropdown toggle
+    const analyticsToggle = document.getElementById('analytics-toggle');
+    const analyticsMenu = document.getElementById('analytics-menu');
+    if (analyticsToggle && analyticsMenu) {
+      analyticsToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        analyticsMenu.classList.toggle('hidden');
+      });
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!analyticsToggle.contains(e.target) && !analyticsMenu.contains(e.target)) {
+          analyticsMenu.classList.add('hidden');
+        }
+      });
+    }
+
     const proximityOpen = document.getElementById('proximity-open');
     const proximityPanel = document.getElementById('proximity-panel');
     const proximityClose = document.getElementById('proximity-close');
@@ -1620,6 +1656,7 @@
 
     proximityOpen.addEventListener('click', () => {
       showPanel();
+      if (analyticsMenu) analyticsMenu.classList.add('hidden');
     });
     proximityClose.addEventListener('click', () => { hidePanel(); });
 
