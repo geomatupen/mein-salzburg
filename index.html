@@ -643,18 +643,32 @@
         <strong class="text-xs">Proximity Analysis</strong>
         <button id="proximity-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
       </div>
-      <div class="text-xxs text-gray-500 mb-2">Click <strong>Set center</strong> then click the map to pick the center point.</div>
+      <div class="text-xxs text-gray-500 mb-2">Choose a location, select a distance and amenities to find everything nearby.</div>
+
+      <!-- Location selection -->
+      <div class="mb-2 grid grid-cols-2 gap-2">
+        <button id="proximity-use-location" class="btn-accent justify-center text-xs"><i class="fa-solid fa-location-crosshairs"></i><span class="ml-1">My Location</span></button>
+        <button id="proximity-draw-point" class="btn-tertiary justify-center text-xs"><i class="fa-solid fa-map-pin"></i><span class="ml-1">Draw Point</span></button>
+      </div>
+      <div id="proximity-info" class="text-xxs text-gray-600 mb-2">Location: —  Distance: —</div>
+
+      <!-- Distance options -->
       <div class="mb-2">
-        <button id="proximity-set-center" class="btn-tertiary w-full justify-center text-xs">Set center</button>
+        <label class="text-xxs font-semibold text-gray-600 mb-1 block">Distance</label>
+        <div id="proximity-distance-group" class="grid grid-cols-4 gap-2">
+          <label class="inline-flex items-center gap-1 text-xxs"><input type="radio" name="proximity-distance" value="0.5" /> 500 m</label>
+          <label class="inline-flex items-center gap-1 text-xxs"><input type="radio" name="proximity-distance" value="1" checked /> 1 km</label>
+          <label class="inline-flex items-center gap-1 text-xxs"><input type="radio" name="proximity-distance" value="2" /> 2 km</label>
+          <label class="inline-flex items-center gap-1 text-xxs"><input type="radio" name="proximity-distance" value="5" /> 5 km</label>
+        </div>
       </div>
-      <div id="proximity-info" class="text-xxs text-gray-600 mb-2">Center: —  Radius: —</div>
-      <div class="flex gap-2 mb-2">
-        <input id="proximity-radius" type="number" min="10" value="5000" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 flex-1" />
-        <select id="proximity-units" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200">
-          <option value="meters">m</option>
-          <option value="kilometers">km</option>
-        </select>
+
+      <!-- Amenities -->
+      <div class="mb-2">
+        <label class="text-xxs font-semibold text-gray-600 mb-1 block">Amenities & Services</label>
+        <div id="proximity-amenities-list" class="max-h-32 overflow-y-auto border border-gray-200 rounded-md bg-gray-50 p-2 grid grid-cols-2 gap-1"></div>
       </div>
+
       <div class="mb-2">
         <button id="proximity-run" class="btn-primary w-full justify-center text-xs" disabled>Run</button>
       </div>
@@ -2275,15 +2289,19 @@
     const proximityOpen = document.getElementById('proximity-open');
     const proximityPanel = document.getElementById('proximity-panel');
     const proximityClose = document.getElementById('proximity-close');
-    const setCenterBtn = document.getElementById('proximity-set-center');
+    const proximityUseLocation = document.getElementById('proximity-use-location');
+    const proximityDrawPoint = document.getElementById('proximity-draw-point');
     const runBtn = document.getElementById('proximity-run');
     const clearBtn = document.getElementById('proximity-clear');
-    const radiusInput = document.getElementById('proximity-radius');
-    const unitsSelect = document.getElementById('proximity-units');
     const summaryDiv = document.getElementById('proximity-summary');
     const infoDiv = document.getElementById('proximity-info');
+    const distanceGroup = document.getElementById('proximity-distance-group');
+    const amenitiesListEl = document.getElementById('proximity-amenities-list');
 
     let proximityCenter = null; // {lng, lat}
+    let proximityMarker = null;
+    let amenitiesDataCache = null; // GeoJSON FeatureCollection
+    let selectedAmenityKeys = new Set();
 
     // Quick filter compact bar elements
     const filterToggle = document.getElementById('filter-toggle');
@@ -2384,11 +2402,17 @@
       });
     }
 
+    function getSelectedRadiusKm() {
+      const checked = distanceGroup.querySelector('input[name="proximity-distance"]:checked');
+      const km = checked ? parseFloat(checked.value) : 1;
+      return isNaN(km) ? 1 : km;
+    }
+
     function updateProximityInfo() {
-      const val = parseFloat(radiusInput.value) || 0;
-      const units = unitsSelect.value === 'kilometers' ? 'km' : 'm';
-      const coords = proximityCenter ? `${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}` : '\u2014';
-      infoDiv.textContent = `Center: ${coords}  Radius: ${val} ${units}`;
+      const distKm = getSelectedRadiusKm();
+      const distLabel = distKm < 1 ? `${Math.round(distKm*1000)} m` : `${distKm} km`;
+      const coords = proximityCenter ? `${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}` : '—';
+      infoDiv.textContent = `Location: ${coords}  Distance: ${distLabel}`;
     }
 
     function showPanel() { proximityPanel.classList.remove('hidden'); }
@@ -2406,6 +2430,7 @@
       if (map.getSource('proximity')) map.removeSource('proximity');
       summaryDiv.innerHTML = '';
       proximityCenter = null;
+      if (proximityMarker) { proximityMarker.remove(); proximityMarker = null; }
       updateProximityInfo();
       // Disable Run button when clearing
       runBtn.disabled = true;
@@ -2417,32 +2442,44 @@
 
     clearBtn.addEventListener('click', () => { clearProximity(); });
 
-    // update info when radius or units change
-    radiusInput.addEventListener('input', () => updateProximityInfo());
-    unitsSelect.addEventListener('change', () => updateProximityInfo());
+    // update info when distance changes
+    distanceGroup.addEventListener('change', () => { drawProximityCircle(); updateProximityInfo(); });
 
-    setCenterBtn.addEventListener('click', () => {
-      summaryDiv.innerHTML = '<div class="text-slate-600 text-xs">Click on the map to set the center point...</div>';
+    // Use geolocation
+    proximityUseLocation.addEventListener('click', () => {
+      if (!('geolocation' in navigator)) { alert('Geolocation is not available in this browser.'); return; }
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lng = pos.coords.longitude; const lat = pos.coords.latitude;
+        proximityCenter = { lng, lat };
+        if (proximityMarker) { proximityMarker.setLngLat([lng, lat]); } else {
+          proximityMarker = new maplibregl.Marker({ color: '#16a085' }).setLngLat([lng, lat]).addTo(map);
+        }
+        map.flyTo({ center: [lng, lat], zoom: 15 });
+        drawProximityCircle();
+        updateProximityInfo();
+        runBtn.disabled = false; runBtn.classList.remove('bg-transparent','text-slate-700','border','border-gray-100','hover:bg-gray-50'); runBtn.classList.add('bg-primary','text-white','hover:opacity-90','cursor-pointer'); runBtn.removeAttribute('disabled');
+      }, (err) => { alert('Unable to retrieve your location: ' + (err.message || err.code)); }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+    });
+
+    // Draw point
+    proximityDrawPoint.addEventListener('click', () => {
+      summaryDiv.innerHTML = '<div class="text-slate-600 text-xs">Click on the map to set the location...</div>';
       map.getCanvas().classList.add('cursor-crosshair');
       map.once('click', (e) => {
-        map.getCanvas().classList.remove('cursor-crosshair','cursor-pointer');
+        map.getCanvas().classList.remove('cursor-crosshair');
         proximityCenter = e.lngLat;
-        updateProximityInfo();
+        if (proximityMarker) { proximityMarker.setLngLat([e.lngLat.lng, e.lngLat.lat]); } else {
+          proximityMarker = new maplibregl.Marker({ color: '#16a085' }).setLngLat([e.lngLat.lng, e.lngLat.lat]).addTo(map);
+        }
         drawProximityCircle();
-        // Enable Run button after center is selected
-        runBtn.disabled = false;
-        // swap to primary action appearance (Tailwind utilities)
-        runBtn.classList.remove('bg-transparent','text-slate-700','border','border-gray-100','hover:bg-gray-50');
-        runBtn.classList.add('bg-primary','text-white','hover:opacity-90','cursor-pointer');
-        runBtn.removeAttribute('disabled');
+        updateProximityInfo();
+        runBtn.disabled = false; runBtn.classList.remove('bg-transparent','text-slate-700','border','border-gray-100','hover:bg-gray-50'); runBtn.classList.add('bg-primary','text-white','hover:opacity-90','cursor-pointer'); runBtn.removeAttribute('disabled');
       });
     });
 
     function drawProximityCircle() {
       if (!proximityCenter) return;
-      const val = parseFloat(radiusInput.value) || 0;
-      const units = unitsSelect.value === 'kilometers' ? 'kilometers' : 'meters';
-      const radiusKm = units === 'kilometers' ? val : val / 1000;
+      const radiusKm = getSelectedRadiusKm();
 
       const centerCoord = [proximityCenter.lng, proximityCenter.lat];
       const circle = turf.circle(centerCoord, radiusKm, { steps: 128, units: 'kilometers' });
@@ -2467,53 +2504,155 @@
       updateProximityInfo();
     }
 
-    runBtn.addEventListener('click', () => {
-      if (!proximityCenter) {
-        summaryDiv.innerHTML = '<div class="text-red-700">Set a center point first.</div>';
-        return;
+    // Amenity categories: each has label and matching tags across common OSM keys
+    const AMENITY_CATEGORIES = [
+      { id:'hospital', label:'Hospitals', match:[{k:'amenity',v:'hospital'}] },
+      { id:'clinic', label:'Clinics', match:[{k:'amenity',v:'clinic'},{k:'healthcare',v:'clinic'}] },
+      { id:'pharmacy', label:'Pharmacies', match:[{k:'amenity',v:'pharmacy'}] },
+      { id:'school', label:'Schools', match:[{k:'amenity',v:'school'}] },
+      { id:'kindergarten', label:'Kindergartens', match:[{k:'amenity',v:'kindergarten'}] },
+      { id:'university', label:'Universities', match:[{k:'amenity',v:'university'}] },
+      { id:'park', label:'Parks', match:[{k:'leisure',v:'park'}] },
+      { id:'garden', label:'Gardens', match:[{k:'leisure',v:'garden'}] },
+      { id:'playground', label:'Playgrounds', match:[{k:'leisure',v:'playground'}] },
+      { id:'library', label:'Libraries', match:[{k:'amenity',v:'library'}] },
+      { id:'police', label:'Police', match:[{k:'amenity',v:'police'}] },
+      { id:'fire_station', label:'Fire Stations', match:[{k:'amenity',v:'fire_station'}] },
+      { id:'supermarket', label:'Supermarkets', match:[{k:'shop',v:'supermarket'}] },
+      { id:'restaurant', label:'Restaurants', match:[{k:'amenity',v:'restaurant'}] },
+      { id:'cafe', label:'Cafes', match:[{k:'amenity',v:'cafe'}] },
+      { id:'bank', label:'Banks', match:[{k:'amenity',v:'bank'}] },
+      { id:'atm', label:'ATMs', match:[{k:'amenity',v:'atm'}] },
+      { id:'post_office', label:'Post Offices', match:[{k:'amenity',v:'post_office'}] },
+      { id:'parking', label:'Parking', match:[{k:'amenity',v:'parking'}] }
+    ];
+
+    function populateAmenityList(){
+      if (!amenitiesListEl) return;
+      amenitiesListEl.innerHTML = '';
+      AMENITY_CATEGORIES.forEach(cat => {
+        const id = `amenity-${cat.id}`;
+        const label = document.createElement('label');
+        label.className = 'inline-flex items-center gap-2 text-xxs';
+        label.innerHTML = `<input type="checkbox" id="${id}" data-id="${cat.id}"><span>${cat.label}</span>`;
+        const cb = label.querySelector('input');
+        cb.addEventListener('change', (e) => {
+          if (e.target.checked) selectedAmenityKeys.add(cat.id); else selectedAmenityKeys.delete(cat.id);
+        });
+        amenitiesListEl.appendChild(label);
+      });
+    }
+    populateAmenityList();
+
+    async function ensureAmenitiesData(){
+      if (amenitiesDataCache) return amenitiesDataCache;
+      // Try to read from source's data URL
+      const res = await fetch('data/amenities.geojson');
+      amenitiesDataCache = await res.json();
+      return amenitiesDataCache;
+    }
+
+    // Build Overpass QL for selected categories around a center point
+    function buildOverpassQuery(center, radiusMeters, cats){
+      const lat = center.lat; const lon = center.lng; const r = Math.max(1, Math.round(radiusMeters));
+      let parts = [];
+      cats.forEach(cat => {
+        cat.match.forEach(rule => {
+          parts.push(`node(around:${r},${lat},${lon})[${rule.k}=${rule.v}]`);
+        });
+      });
+      const union = parts.join(";\n        ");
+      // Return nodes only for simplicity; ways/relations could be added if needed
+      return `[
+        out:json][timeout:25];
+        (
+        ${union}
+        );
+        out body;`;
+    }
+
+    async function fetchAmenitiesFromOSM(center, distKm, cats){
+      const radiusMeters = Math.round(distKm * 1000);
+      const ql = buildOverpassQuery(center, radiusMeters, cats);
+      const url = 'https://overpass-api.de/api/interpreter';
+      const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: new URLSearchParams({ data: ql }) });
+      if (!res.ok) throw new Error('OSM Overpass request failed');
+      const data = await res.json();
+      // Convert Overpass elements to GeoJSON FeatureCollection (points only)
+      const features = (data.elements || []).filter(el => el.type === 'node' && typeof el.lat === 'number' && typeof el.lon === 'number').map(el => ({
+        type:'Feature',
+        geometry:{ type:'Point', coordinates:[el.lon, el.lat] },
+        properties: el.tags || {}
+      }));
+      return { type:'FeatureCollection', features };
+    }
+
+    function featureMatchesCategory(feat, cat){
+      const props = feat.properties || {};
+      return cat.match.some(rule => (props[rule.k] + '')?.toLowerCase() === (rule.v + '').toLowerCase());
+    }
+
+    runBtn.addEventListener('click', async () => {
+      if (!proximityCenter) { summaryDiv.innerHTML = '<div class="text-red-700">Pick a location first (My Location or Draw Point).</div>'; return; }
+      if (selectedAmenityKeys.size === 0) { summaryDiv.innerHTML = '<div class="text-red-700">Select at least one amenity category.</div>'; return; }
+
+      drawProximityCircle();
+      // Make buffer more transparent after running
+      try { if (map.getLayer('proximity-fill')) { map.setPaintProperty('proximity-fill', 'fill-opacity', 0.05); } } catch {}
+      updateProximityInfo();
+
+      const distKm = getSelectedRadiusKm();
+      const centerPt = turf.point([proximityCenter.lng, proximityCenter.lat]);
+      const cats = AMENITY_CATEGORIES.filter(c => selectedAmenityKeys.has(c.id));
+      let data;
+      try {
+        data = await fetchAmenitiesFromOSM(proximityCenter, distKm, cats);
+      } catch(err){
+        // Fallback to local dataset if Overpass fails
+        data = await ensureAmenitiesData();
       }
 
-      // ensure circle is drawn/updated
-      drawProximityCircle();
+      const counts = new Map();
+      cats.forEach(c => counts.set(c.id, 0));
+      const results = [];
 
-      const val = parseFloat(radiusInput.value) || 0;
-      const units = unitsSelect.value === 'kilometers' ? 'kilometers' : 'meters';
-      const radiusKm = units === 'kilometers' ? val : val / 1000;
-
-      const centerPt = turf.point([proximityCenter.lng, proximityCenter.lat]);
-      const circlePoly = turf.circle([proximityCenter.lng, proximityCenter.lat], radiusKm, { steps: 128, units: 'kilometers' });
-
-      // markers: markerDefault, markerPNG, markerHTML
-      const markerCounts = [];
-      const markers = [
-        { id: 'Default Marker', obj: markerDefault },
-        { id: 'PNG Marker', obj: markerPNG },
-        { id: 'HTML Marker', obj: markerHTML }
-      ];
-
-      markers.forEach(m => {
-        let inside = false;
-        try {
-          const ll = m.obj.getLngLat();
-          const mp = turf.point([ll.lng, ll.lat]);
-          const dist = turf.distance(centerPt, mp, { units: 'kilometers' });
-          if (dist <= radiusKm) inside = true;
-        } catch (e) {
-          inside = false;
+      (data.features || []).forEach(feat => {
+        if (!feat.geometry || feat.geometry.type !== 'Point') return;
+        const [flng, flat] = feat.geometry.coordinates;
+        const d = turf.distance(centerPt, turf.point([flng, flat]), { units: 'kilometers' });
+        if (d <= distKm){
+          const matched = cats.find(cat => featureMatchesCategory(feat, cat));
+          if (matched){
+            counts.set(matched.id, (counts.get(matched.id) || 0) + 1);
+            results.push({ name: feat.properties?.name || '(unnamed)', cat: matched.label, distKm: d, lng: flng, lat: flat });
+          }
         }
-        markerCounts.push({ id: m.id, inside });
       });
 
-      // Build summary HTML
+      results.sort((a,b) => a.distKm - b.distKm);
+
       const lines = [];
-      lines.push(`<div class="font-semibold mb-1">Summary</div>`);
-      lines.push(`<div class="text-xs mb-1">Center: ${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)} — Radius: ${val} ${units === 'kilometers' ? 'km' : 'm'}</div>`);
-
-      // markers
-      lines.push('<div class="mt-1"><strong>Markers</strong></div>');
-      markerCounts.forEach(m => {
-        lines.push(`<div class="text-xs py-0.5">${m.id}: <strong class="${m.inside ? 'text-sky-600' : 'text-slate-500'}">${m.inside ? 'inside' : 'outside'}</strong></div>`);
+      const distLabel = distKm < 1 ? `${Math.round(distKm*1000)} m` : `${distKm} km`;
+      lines.push(`<div class="font-semibold mb-1">Amenities within ${distLabel}</div>`);
+      lines.push(`<div class="text-xs mb-2">Location: ${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}</div>`);
+      lines.push('<div class="grid grid-cols-2 gap-1 mb-2">');
+      cats.forEach(cat => {
+        const c = counts.get(cat.id) || 0;
+        lines.push(`<div class="text-xs">${cat.label}: <strong class="text-primary">${c}</strong></div>`);
       });
+      lines.push('</div>');
+
+      if (results.length){
+        lines.push('<div class="text-xs font-semibold mt-1">Nearest results</div>');
+        lines.push('<div class="divide-y">');
+        results.slice(0, 50).forEach(r => {
+          const dLabel = r.distKm < 1 ? `${Math.round(r.distKm*1000)} m` : `${r.distKm.toFixed(1)} km`;
+          lines.push(`<div class="py-1 text-xs">${r.name} <span class="text-slate-500">(${r.cat}, ${dLabel})</span></div>`);
+        });
+        lines.push('</div>');
+      } else {
+        lines.push('<div class="text-xs text-slate-600">No amenities found in the selected range.</div>');
+      }
 
       summaryDiv.innerHTML = lines.join('');
     });
