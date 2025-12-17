@@ -534,8 +534,8 @@
   </style>
   
 </head>
-<body class="h-full overflow-hidden font-sans">
-  <div id="map" class="w-full h-screen"></div>
+<body class="h-full overflow-hidden font-sans" style="background-color: #ffffff;">
+  <div id="map" class="w-full h-screen" style="background-color: #ffffff;"></div>
   <div id="search-container" class="absolute left-20 top-3 z-30 w-80">
     <div class="relative">
       <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3" />
@@ -770,8 +770,10 @@
         </div>
         <div class="mb-3">
           <div class="flex flex-col gap-2 pb-2">
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio" checked> <span class="text-xs text-gray-600">Street</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="none" id="basemap-none-radio"> <span class="text-xs text-gray-600">None</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio"> <span class="text-xs text-gray-600">Street</span></label>
             <label class="flex items-center gap-3"><input type="radio" name="basemap" value="satellite" id="basemap-sat-radio"> <span class="text-xs text-gray-600">Satellite</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="mapbox-light" id="basemap-mapbox-light-radio" checked> <span class="text-xs text-gray-600">Mapbox Light</span></label>
           </div>
         </div>
 
@@ -1047,7 +1049,12 @@
     // Use the public MapLibre demo style which includes a working `glyphs` URL
     const map = new maplibregl.Map({
       container: "map",
-      style: 'https://demotiles.maplibre.org/style.json',
+      style: {
+        version: 8,
+        sources: {},
+        layers: [],
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
+      },
       center: [13.033229, 47.811195],
       zoom: 15,
       pitch: 45,
@@ -1180,11 +1187,25 @@
         attribution: 'Tiles © Esri'
       });
 
-      // Add street raster layer (visible by default)
+      // Mapbox Light
+      map.addSource('basemap-mapbox-light-source', {
+        type: 'raster',
+        tiles: [
+          'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+        ],
+        tileSize: 256,
+        attribution: '© CartoDB'
+      });
+
+      // Add street raster layer (hidden by default)
       map.addLayer({
         id: 'basemap-street',
         type: 'raster',
-        source: 'basemap-street-source'
+        source: 'basemap-street-source',
+        layout: { 'visibility': 'none' }
       });
 
       // Add satellite raster layer (hidden by default)
@@ -1193,6 +1214,14 @@
         type: 'raster',
         source: 'basemap-satellite-source',
         layout: { 'visibility': 'none' }
+      });
+
+      // Add Mapbox Light raster layer (visible by default)
+      map.addLayer({
+        id: 'basemap-mapbox-light',
+        type: 'raster',
+        source: 'basemap-mapbox-light-source',
+        layout: { 'visibility': 'visible' }
       });
 
       map.addSource("amenities", {
@@ -1578,12 +1607,22 @@
       const basemapRadios = document.querySelectorAll('input[name="basemap"]');
       basemapRadios.forEach(r => r.addEventListener('change', (e) => {
         const val = e.target.value;
-        if (val === 'street') {
+        if (val === 'none') {
+          map.setLayoutProperty('basemap-street', 'visibility', 'none');
+          map.setLayoutProperty('basemap-satellite', 'visibility', 'none');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'none');
+        } else if (val === 'street') {
           map.setLayoutProperty('basemap-street', 'visibility', 'visible');
           map.setLayoutProperty('basemap-satellite', 'visibility', 'none');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'none');
         } else if (val === 'satellite') {
           map.setLayoutProperty('basemap-street', 'visibility', 'none');
           map.setLayoutProperty('basemap-satellite', 'visibility', 'visible');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'none');
+        } else if (val === 'mapbox-light') {
+          map.setLayoutProperty('basemap-street', 'visibility', 'none');
+          map.setLayoutProperty('basemap-satellite', 'visibility', 'none');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'visible');
         }
       }));
 
