@@ -1376,7 +1376,10 @@
 
       map.addSource("amenities", {
         type: "geojson",
-        data: "data/amenities.geojson"
+        data: "data/amenities.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("buildings", {
@@ -1401,17 +1404,26 @@
 
       map.addSource("education", {
         type: "geojson",
-        data: "data/Education.geojson"
+        data: "data/Education.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("health", {
         type: "geojson",
-        data: "data/Health.geojson"
+        data: "data/Health.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("restaurants", {
         type: "geojson",
-        data: "data/Restaurants.geojson"
+        data: "data/Restaurants.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("rivers", {
@@ -1421,12 +1433,18 @@
 
       map.addSource("tourism", {
         type: "geojson",
-        data: "data/Tourism.geojson"
+        data: "data/Tourism.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("transportation", {
         type: "geojson",
-        data: "data/Transportation.geojson"
+        data: "data/Transportation.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       // Add layers for amenities (points) - normalized to project brand colors
