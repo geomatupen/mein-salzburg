@@ -1311,7 +1311,7 @@
             6
           ],
           "fill-extrusion-base": 0,
-          "fill-extrusion-opacity": 0.95
+          "fill-extrusion-opacity": 0.80
         }
       });
 
@@ -1537,9 +1537,22 @@
         id: "rivers-layer",
         type: "line",
         source: "rivers",
+        layout: {
+          "line-cap": "round",
+          "line-join": "round"
+        },
         paint: {
-          "line-color": "#2A77ED",
-          "line-width": 2
+          "line-color": "#6ec6ff",
+          "line-width": [
+            "interpolate", ["exponential", 1.35], ["zoom"],
+            10, 2.0,
+            14, 6.0,
+            15, 15.0,
+            16, 30.0,
+            17, 52.8,
+            18, 115.0,
+            19, 325.0
+          ]
         }
       });
 
