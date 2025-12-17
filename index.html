@@ -767,7 +767,7 @@
   <div id="route-optimization-panel" class="hidden absolute left-40 top-16 z-40 w-96 bg-white rounded-lg shadow-xl p-4 text-xxs">
     <div class="flex justify-between items-center mb-3">
       <strong class="text-xs">Route Optimization</strong>
-      <button id="route-optimization-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">âœ•</button>
+      <button id="route-optimization-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
     </div>
 
     <!-- Starting Location Selection -->
@@ -785,7 +785,7 @@
       </div>
     </div>
 
-    <div id="route-start-info" class="text-xxs text-gray-600 mb-3">Start: â€”</div>
+    <div id="route-start-info" class="text-xxs text-gray-600 mb-3">Start: —</div>
 
     <!-- Destination Selection -->
     <div class="mb-3 pb-3 border-b border-gray-200">
@@ -3339,18 +3339,18 @@ out center;`;
 
     // Iconic landmarks in Salzburg for route planning
     const routeLandmarks = [
-      { id: 1, name: 'Hohensalzburg Fortress', lat: 47.7975, lng: 13.0475, emoji: 'ðŸ°' },
-      { id: 2, name: 'Mirabell Palace', lat: 47.8090, lng: 13.0450, emoji: 'ðŸ›ï¸' },
-      { id: 3, name: 'Mozart\'s Birthplace', lat: 47.8009, lng: 13.0468, emoji: 'ðŸŽµ' },
-      { id: 4, name: 'Salzburg Cathedral', lat: 47.7997, lng: 13.0478, emoji: 'â›ª' },
-      { id: 5, name: 'Hellbrunn Palace', lat: 47.7667, lng: 13.0400, emoji: 'ðŸ’§' },
-      { id: 6, name: 'Getreidegasse', lat: 47.8006, lng: 13.0457, emoji: 'ðŸ›ï¸' },
-      { id: 7, name: 'Makartsteg (Love Lock Bridge)', lat: 47.8055, lng: 13.0440, emoji: 'â¤ï¸' },
-      { id: 8, name: 'Hangar-7', lat: 47.7930, lng: 13.0030, emoji: 'âœˆï¸' },
-      { id: 9, name: 'St. Peter\'s Abbey', lat: 47.7989, lng: 13.0466, emoji: 'ðŸ“–' },
-      { id: 10, name: 'Nonnberg Abbey', lat: 47.7940, lng: 13.0480, emoji: 'ðŸ›•' },
-      { id: 11, name: 'Salzburg Festival House', lat: 47.8000, lng: 13.0430, emoji: 'ðŸŽ­' },
-      { id: 12, name: 'Kapuzinerberg Mountain', lat: 47.8040, lng: 13.0510, emoji: 'â›°ï¸' }
+      { id: 1, name: 'Hohensalzburg Fortress', lat: 47.7975, lng: 13.0475, emoji: '🏰' },
+      { id: 2, name: 'Mirabell Palace', lat: 47.8090, lng: 13.0450, emoji: '🏛️' },
+      { id: 3, name: 'Mozart\'s Birthplace', lat: 47.8009, lng: 13.0468, emoji: '🎵' },
+      { id: 4, name: 'Salzburg Cathedral', lat: 47.7997, lng: 13.0478, emoji: '⛪' },
+      { id: 5, name: 'Hellbrunn Palace', lat: 47.7667, lng: 13.0400, emoji: '💧' },
+      { id: 6, name: 'Getreidegasse', lat: 47.8006, lng: 13.0457, emoji: '🛍️' },
+      { id: 7, name: 'Makartsteg (Love Lock Bridge)', lat: 47.8055, lng: 13.0440, emoji: '❤️' },
+      { id: 8, name: 'Hangar-7', lat: 47.7930, lng: 13.0030, emoji: '✈️' },
+      { id: 9, name: 'St. Peter\'s Abbey', lat: 47.7989, lng: 13.0466, emoji: '📖' },
+      { id: 10, name: 'Nonnberg Abbey', lat: 47.7940, lng: 13.0480, emoji: '🛕' },
+      { id: 11, name: 'Salzburg Festival House', lat: 47.8000, lng: 13.0430, emoji: '🎭' },
+      { id: 12, name: 'Kapuzinerberg Mountain', lat: 47.8040, lng: 13.0510, emoji: '⛰️' }
     ];
 
     function showRouteOptimizationPanel() {
