@@ -2795,9 +2795,32 @@
 
     async function ensureAmenitiesData(){
       if (amenitiesDataCache) return amenitiesDataCache;
-      // Try to read from source's data URL
-      const res = await fetch('data/amenities.geojson');
-      amenitiesDataCache = await res.json();
+      
+      // Fetch from multiple local data sources
+      const dataFiles = [
+        'data/amenities.geojson',
+        'data/Education.geojson',
+        'data/Health.geojson',
+        'data/Restaurants.geojson',
+        'data/Tourism.geojson',
+        'data/Transportation.geojson'
+      ];
+      
+      const allFeatures = [];
+      
+      for (const file of dataFiles) {
+        try {
+          const res = await fetch(file);
+          const data = await res.json();
+          if (data.features) {
+            allFeatures.push(...data.features);
+          }
+        } catch (err) {
+          console.warn(`Failed to load ${file}:`, err);
+        }
+      }
+      
+      amenitiesDataCache = { type: 'FeatureCollection', features: allFeatures };
       return amenitiesDataCache;
     }
 
@@ -2889,16 +2912,50 @@ out center;`;
       try { if (map.getLayer('proximity-fill')) { map.setPaintProperty('proximity-fill', 'fill-opacity', 0.05); } } catch {}
       updateProximityInfo();
 
+      summaryDiv.innerHTML = '<div class="text-slate-600 text-xs"><i class="fa-solid fa-spinner fa-spin"></i> Loading data from OSM and local sources...</div>';
+
       const distKm = getSelectedRadiusKm();
       const centerPt = turf.point([proximityCenter.lng, proximityCenter.lat]);
       const cats = AMENITY_CATEGORIES.filter(c => selectedAmenityKeys.has(c.id));
-      let data;
+      
+      // Fetch from both OSM and local data sources
+      const allFeatures = [];
+      
+      // 1. Try to fetch from OSM
       try {
-        data = await fetchAmenitiesFromOSM(proximityCenter, distKm, cats);
+        const osmData = await fetchAmenitiesFromOSM(proximityCenter, distKm, cats);
+        if (osmData.features) {
+          allFeatures.push(...osmData.features.map(f => ({ ...f, source: 'OSM' })));
+        }
       } catch(err){
-        // Fallback to local dataset if Overpass fails
-        data = await ensureAmenitiesData();
+        console.warn('OSM data fetch failed, using local data only:', err);
       }
+      
+      // 2. Always fetch from local data sources
+      try {
+        const localData = await ensureAmenitiesData();
+        if (localData.features) {
+          allFeatures.push(...localData.features.map(f => ({ ...f, source: 'Local' })));
+        }
+      } catch(err){
+        console.warn('Local data fetch failed:', err);
+      }
+
+      // Deduplicate by location (within 10 meters)
+      const uniqueFeatures = [];
+      const seen = new Set();
+      
+      allFeatures.forEach(feat => {
+        if (!feat.geometry || feat.geometry.type !== 'Point') return;
+        const [lng, lat] = feat.geometry.coordinates;
+        const key = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueFeatures.push(feat);
+        }
+      });
+
+      const data = { type: 'FeatureCollection', features: uniqueFeatures };
 
       const counts = new Map();
       cats.forEach(c => counts.set(c.id, 0));
@@ -2912,7 +2969,14 @@ out center;`;
           const matched = cats.find(cat => featureMatchesCategory(feat, cat));
           if (matched){
             counts.set(matched.id, (counts.get(matched.id) || 0) + 1);
-            results.push({ name: feat.properties?.name || '(unnamed)', cat: matched.label, distKm: d, lng: flng, lat: flat });
+            results.push({ 
+              name: feat.properties?.name || '(unnamed)', 
+              cat: matched.label, 
+              distKm: d, 
+              lng: flng, 
+              lat: flat,
+              source: feat.source
+            });
           }
         }
       });
@@ -2935,7 +2999,8 @@ out center;`;
         lines.push('<div class="divide-y">');
         results.slice(0, 50).forEach(r => {
           const dLabel = r.distKm < 1 ? `${Math.round(r.distKm*1000)} m` : `${r.distKm.toFixed(1)} km`;
-          lines.push(`<div class="py-1 text-xs">${r.name} <span class="text-slate-500">(${r.cat}, ${dLabel})</span></div>`);
+          const sourceTag = r.source ? `<span class="text-xs text-slate-400">[${r.source}]</span>` : '';
+          lines.push(`<div class="py-1 text-xs">${r.name} ${sourceTag} <span class="text-slate-500">(${r.cat}, ${dLabel})</span></div>`);
         });
         lines.push('</div>');
       } else {
