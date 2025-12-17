@@ -1,4 +1,4 @@
-  <!-- Welcome Popup (Tailwind) -->
+﻿  <!-- Welcome Popup (Tailwind) -->
   <div id="welcome-popup" class="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
     <div class="bg-white/80 backdrop-blur-md max-w-2xl w-full p-6 rounded-xl shadow-2xl relative text-slate-800 overflow-auto max-h-screen text-xxs">
       <button id="welcome-close" aria-label="Close welcome popup" class="btn-tertiary w-8 h-8 p-0 absolute top-3 right-3">&times;</button>
@@ -26,7 +26,7 @@
   </div>
   </div>
   <script>
-    // Welcome popup logic — do not auto-hide on load (user requested persistent welcome)
+    // Welcome popup logic â€” do not auto-hide on load (user requested persistent welcome)
     window.addEventListener('DOMContentLoaded', function() {
       var popup = document.getElementById('welcome-popup');
       var closeBtn = document.getElementById('welcome-close');
@@ -247,7 +247,7 @@
     #map-legend .legend-group .ml-2 .flex { gap: 0.5rem; }
     #map-legend .panel-body { max-height: 20rem; overflow: auto; }
 
-    /* Provide a few utility classes that our JS toggles — keep them small and explicit so they work without JIT
+    /* Provide a few utility classes that our JS toggles â€” keep them small and explicit so they work without JIT
        These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
     .max-h-80 { max-height: 20rem !important; }
     .opacity-100 { opacity: 1 !important; }
@@ -282,7 +282,7 @@
       background: transparent;
       border-radius: 9999px;
     }
-    /* Fallback color when JS hasn't run yet — use our gray palette (light track) */
+    /* Fallback color when JS hasn't run yet â€” use our gray palette (light track) */
     .layer-menu input[type="range"] { background-color: #D6D9DE; }
     /* WebKit thumb */
     .layer-menu input[type="range"]::-webkit-slider-thumb {
@@ -401,7 +401,7 @@
     .text-sm { font-size: 1.125rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
     .text-xs { font-size: 1rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
     .text-xxs { font-size: 0.9375rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
-    .text-xxxs { font-size: 0.875rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-xxxs { font-size: 0.675rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
 
     /* Brand text color utilities (four project colors) */
     .text-primary { color: #2A77ED !important; }
@@ -517,10 +517,10 @@
     /* Non-small screens: reduce panel widths (~25% narrower) so they are less dominant
        This applies from tablet upward (>= 641px) and preserves existing small-screen rules. */
     @media (min-width: 641px) {
-      /* layer-panel: slightly wider than the previous reduction — increase a bit for readability */
+      /* layer-panel: slightly wider than the previous reduction â€” increase a bit for readability */
       /* set to 22.5% (slightly less than original 25%) with a sensible max-width */
       #layer-panel { width: 22.5% !important; max-width: 32rem !important; }
-      /* legend default width ~14rem (w-56) — reduce by 25% to 10.5rem */
+      /* legend default width ~14rem (w-56) â€” reduce by 25% to 10.5rem */
       #map-legend { width: 10.5rem !important; max-width: 10.5rem !important; }
       /* reduce legend body height by ~25% (from 48vh -> 36vh) to cover less map on normal screens */
       #map-legend .panel-body { max-height: 32vh; overflow: auto; }
@@ -587,7 +587,7 @@
       <button id="analytics-toggle" class="btn-secondary icon-btn text-xs flex items-center gap-2" title="Open analytics menu">
         <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
         <span>Analytics</span>
-        <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true"></i>
+        <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true" style="color: white;"></i>
       </button>
       <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-xl border border-gray-200 min-w-48 overflow-hidden z-40">
         <button id="proximity-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
@@ -643,7 +643,7 @@
     <div id="proximity-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxs">
       <div class="flex justify-between items-center mb-2">
         <strong class="text-xs">Proximity Analysis</strong>
-        <button id="proximity-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
+        <button id="proximity-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">âœ•</button>
       </div>
       <div class="text-xxs text-gray-500 mb-2">Choose a location, select a distance and amenities to find everything nearby.</div>
 
@@ -652,7 +652,7 @@
         <button id="proximity-use-location" class="btn-accent justify-center text-xs"><i class="fa-solid fa-location-crosshairs"></i><span class="ml-1">My Location</span></button>
         <button id="proximity-draw-point" class="btn-tertiary justify-center text-xs"><i class="fa-solid fa-map-pin"></i><span class="ml-1">Draw Point</span></button>
       </div>
-      <div id="proximity-info" class="text-xxs text-gray-600 mb-2">Location: —  Distance: —</div>
+      <div id="proximity-info" class="text-xxs text-gray-600 mb-2">Location: â€”  Distance: â€”</div>
 
       <!-- Distance options -->
       <div class="mb-2">
@@ -685,7 +685,7 @@
   <div id="accessibility-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxs">
     <div class="flex justify-between items-center mb-2">
       <strong class="text-xs">Accessibility Analysis</strong>
-      <button id="accessibility-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
+      <button id="accessibility-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">âœ•</button>
     </div>
     <div class="text-xxs text-gray-500 mb-3">Analyze walkability and bikeability from a location.</div>
     
@@ -704,7 +704,7 @@
       </div>
     </div>
 
-    <div id="accessibility-info" class="text-xxs text-gray-600 mb-3">Location: —</div>
+    <div id="accessibility-info" class="text-xxs text-gray-600 mb-3">Location: â€”</div>
 
     <!-- Distance control -->
     <div class="mb-3">
@@ -736,7 +736,7 @@
               <i class="fa-solid fa-person-walking text-primary" aria-hidden="true"></i>
               <span class="text-xs font-semibold text-gray-700">Walkability</span>
             </div>
-            <span id="walkability-score" class="text-sm font-bold text-primary">—</span>
+            <span id="walkability-score" class="text-sm font-bold text-primary">â€”</span>
           </div>
           <div class="text-xxs text-gray-600" id="walkability-details">Calculating...</div>
         </div>
@@ -748,7 +748,7 @@
               <i class="fa-solid fa-bicycle text-secondary" aria-hidden="true"></i>
               <span class="text-xs font-semibold text-gray-700">Bikeability</span>
             </div>
-            <span id="bikeability-score" class="text-sm font-bold text-secondary">—</span>
+            <span id="bikeability-score" class="text-sm font-bold text-secondary">â€”</span>
           </div>
           <div class="text-xxs text-gray-600" id="bikeability-details">Calculating...</div>
         </div>
@@ -767,7 +767,7 @@
   <div id="route-optimization-panel" class="hidden absolute left-40 top-16 z-40 w-96 bg-white rounded-lg shadow-xl p-4 text-xxs">
     <div class="flex justify-between items-center mb-3">
       <strong class="text-xs">Route Optimization</strong>
-      <button id="route-optimization-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
+      <button id="route-optimization-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">âœ•</button>
     </div>
 
     <!-- Starting Location Selection -->
@@ -785,7 +785,7 @@
       </div>
     </div>
 
-    <div id="route-start-info" class="text-xxs text-gray-600 mb-3">Start: —</div>
+    <div id="route-start-info" class="text-xxs text-gray-600 mb-3">Start: â€”</div>
 
     <!-- Destination Selection -->
     <div class="mb-3 pb-3 border-b border-gray-200">
@@ -801,7 +801,7 @@
       </div>
     </div>
 
-    <div id="route-destination-info" class="text-xxs text-gray-600 mb-3">Destinations: —</div>
+    <div id="route-destination-info" class="text-xxs text-gray-600 mb-3">Destinations: â€”</div>
     <div id="route-custom-destinations" class="text-xxs text-accent mb-2"></div>
 
     <!-- Optimize Button -->
@@ -817,15 +817,15 @@
       <div class="space-y-2 pb-3 border-b border-gray-200 mb-3">
         <div class="flex justify-between">
           <span class="text-gray-500">Total Distance:</span>
-          <strong id="route-total-distance" class="text-primary">—</strong>
+          <strong id="route-total-distance" class="text-primary">â€”</strong>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-500">Estimated Time:</span>
-          <strong id="route-total-time" class="text-primary">—</strong>
+          <strong id="route-total-time" class="text-primary">â€”</strong>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-500">Stops:</span>
-          <strong id="route-stop-count" class="text-primary">—</strong>
+          <strong id="route-stop-count" class="text-primary">â€”</strong>
         </div>
       </div>
 
@@ -1048,29 +1048,26 @@
       </div>
 
       <div class="panel-sep my-3 border-t pt-3"></div>
-
-
-      <div class="panel-sep my-4 border-t pt-3"></div>
-      <div class="text-xs text-slate-600">Data sources</div>
-      <div class="mt-2 text-xs text-slate-700">
-        <div class="data-logos flex gap-2 items-center mt-2">
-          <img src="logo/logo_cde.jpg" alt="Copernicus Master in Digital Earth logo" class="h-8 rounded bg-white p-1 shadow-sm" />
-          <img src="logo/uni-sbg-logo.png" alt="Paris Lodron University Salzburg logo" class="h-8 rounded bg-white p-1 shadow-sm" />
-          <img src="logo/upol_logo.png" alt="Palacký University Olomouc logo" class="h-8 rounded bg-white p-1 shadow-sm" />
-        </div>
-        <div class="data-credit mt-2 text-xs text-slate-700">Map tiles © <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap contributors</a>
-          &nbsp;|&nbsp; Satellite © <a href="https://www.esri.com/en-us/home" target="_blank" rel="noopener">Esri</a>
-          &nbsp;|&nbsp; Icons: <code>marker.png</code>
-        </div>
-        <div class="mt-2 text-xs text-slate-500">Please respect each provider's terms of use and attribution requirements.</div>
       </div>
-    </div>
-  </div>
 
-  <!-- Removed mobile pin/hamburger control per UX request. -->
+      <div class="data-source sticky bottom-0 bg-white/95 pt-3">
+       
+        <!--<div class="text-xs text-slate-600 font-semibold p-2">Data sources</div>-->
+        <div class="mt-2 text-xs text-slate-700 p-2">
+          <div class="data-credit text-xxxs text-slate-700">Data Source: Map tiles © <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap contributors</a>
+            &nbsp;|&nbsp; Satellite © <a href="https://www.esri.com/en-us/home" target="_blank" rel="noopener">Esri</a>
+            &nbsp;|&nbsp; Routing & Geocoding © <a href="https://www.mapbox.com/" target="_blank" rel="noopener">Mapbox</a>
+          </div>
+          <div class="data-logos flex gap-2 items-center mt-2">
+            <img src="logo/logo_cde.jpg" alt="Copernicus Master in Digital Earth logo" class="h-8 rounded bg-white p-1 shadow-sm" />
+            <img src="logo/uni-sbg-logo.png" alt="Paris Lodron University Salzburg logo" class="h-8 rounded bg-white p-1 shadow-sm" />
+            <img src="logo/upol_logo.png" alt="Palacký University Olomouc logo" class="h-8 rounded bg-white p-1 shadow-sm" />
+          </div>
+        </div>
+      </div>
 
-  <!-- Centralize panel collapse/expand behavior: helper + wiring -->
-  <script>
+      <!-- Centralize panel collapse/expand behavior: helper + wiring -->
+      <script>
     (function(){
       function setPanelCollapsed(panel, collapsed){
         if (!panel) return;
@@ -1115,11 +1112,11 @@
             if (!pid) {
               // nothing to do
             } else if (!collapsed && pid === 'map-legend') {
-              // legend is being opened on mobile — collapse layer panel
+              // legend is being opened on mobile â€” collapse layer panel
               const other = document.getElementById('layer-panel');
               if (other) setPanelCollapsed(other, true);
             } else if (!collapsed && pid === 'layer-panel') {
-              // layer panel is being opened on mobile — collapse legend
+              // layer panel is being opened on mobile â€” collapse legend
               const other = document.getElementById('map-legend');
               if (other) setPanelCollapsed(other, true);
             }
@@ -1331,7 +1328,7 @@
           'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
         ],
         tileSize: 256,
-        attribution: '© OpenStreetMap contributors'
+        attribution: 'Â© OpenStreetMap contributors'
       });
 
       // Satellite (Esri World Imagery)
@@ -1341,7 +1338,7 @@
           'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
         ],
         tileSize: 256,
-        attribution: 'Tiles © Esri'
+        attribution: 'Tiles Â© Esri'
       });
 
       // Mapbox Light
@@ -1354,7 +1351,7 @@
           'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         ],
         tileSize: 256,
-        attribution: '© CartoDB'
+        attribution: 'Â© CartoDB'
       });
 
       // Add street raster layer (hidden by default)
@@ -2690,7 +2687,7 @@
     function updateProximityInfo() {
       const distKm = getSelectedRadiusKm();
       const distLabel = distKm < 1 ? `${Math.round(distKm*1000)} m` : `${distKm} km`;
-      const coords = proximityCenter ? `${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}` : '—';
+      const coords = proximityCenter ? `${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}` : 'â€”';
       infoDiv.textContent = `Location: ${coords}  Distance: ${distLabel}`;
     }
 
@@ -3070,7 +3067,7 @@ out center;`;
     accessibilityClose.addEventListener('click', () => { hideAccessibilityPanel(); });
 
     function updateAccessibilityInfo() {
-      const coords = accessibilityCenter ? `${accessibilityCenter.lat.toFixed(5)}, ${accessibilityCenter.lng.toFixed(5)}` : '—';
+      const coords = accessibilityCenter ? `${accessibilityCenter.lat.toFixed(5)}, ${accessibilityCenter.lng.toFixed(5)}` : 'â€”';
       accessibilityInfo.textContent = `Location: ${coords}`;
     }
 
@@ -3273,15 +3270,15 @@ out center;`;
 
       // Update UI with results
       walkabilityScore.textContent = `${walkScore}/10`;
-      walkabilityDetails.textContent = `${walkabilityMetrics.pathLength.toFixed(1)}km paths • ${walkabilityMetrics.amenities} amenities`;
+      walkabilityDetails.textContent = `${walkabilityMetrics.pathLength.toFixed(1)}km paths â€¢ ${walkabilityMetrics.amenities} amenities`;
 
       bikeabilityScore.textContent = `${bikeScore}/10`;
-      bikeabilityDetails.textContent = `${bikeabilityMetrics.cyclePathLength.toFixed(1)}km cycle paths • ${bikeabilityMetrics.roadLength.toFixed(1)}km roads`;
+      bikeabilityDetails.textContent = `${bikeabilityMetrics.cyclePathLength.toFixed(1)}km cycle paths â€¢ ${bikeabilityMetrics.roadLength.toFixed(1)}km roads`;
 
       // Summary
       const summaryLines = [];
       summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Analysis radius:</span><strong>${distance}m</strong></div>`);
-      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Area covered:</span><strong>${areaKm2.toFixed(2)}km²</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Area covered:</span><strong>${areaKm2.toFixed(2)}kmÂ²</strong></div>`);
       summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Pedestrian paths:</span><strong>${walkabilityMetrics.pathCount}</strong></div>`);
       summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Cycle paths:</span><strong>${bikeabilityMetrics.cyclePathCount}</strong></div>`);
       
@@ -3304,9 +3301,9 @@ out center;`;
       updateAccessibilityInfo();
       accessibilityRun.disabled = true;
       accessibilityRun.classList.add('opacity-60', 'cursor-not-allowed');
-      walkabilityScore.textContent = '—';
+      walkabilityScore.textContent = 'â€”';
       walkabilityDetails.textContent = 'Calculating...';
-      bikeabilityScore.textContent = '—';
+      bikeabilityScore.textContent = 'â€”';
       bikeabilityDetails.textContent = 'Calculating...';
       accessibilitySummary.innerHTML = '';
     }
@@ -3342,18 +3339,18 @@ out center;`;
 
     // Iconic landmarks in Salzburg for route planning
     const routeLandmarks = [
-      { id: 1, name: 'Hohensalzburg Fortress', lat: 47.7975, lng: 13.0475, emoji: '🏰' },
-      { id: 2, name: 'Mirabell Palace', lat: 47.8090, lng: 13.0450, emoji: '🏛️' },
-      { id: 3, name: 'Mozart\'s Birthplace', lat: 47.8009, lng: 13.0468, emoji: '🎵' },
-      { id: 4, name: 'Salzburg Cathedral', lat: 47.7997, lng: 13.0478, emoji: '⛪' },
-      { id: 5, name: 'Hellbrunn Palace', lat: 47.7667, lng: 13.0400, emoji: '💧' },
-      { id: 6, name: 'Getreidegasse', lat: 47.8006, lng: 13.0457, emoji: '🛍️' },
-      { id: 7, name: 'Makartsteg (Love Lock Bridge)', lat: 47.8055, lng: 13.0440, emoji: '❤️' },
-      { id: 8, name: 'Hangar-7', lat: 47.7930, lng: 13.0030, emoji: '✈️' },
-      { id: 9, name: 'St. Peter\'s Abbey', lat: 47.7989, lng: 13.0466, emoji: '📖' },
-      { id: 10, name: 'Nonnberg Abbey', lat: 47.7940, lng: 13.0480, emoji: '🛕' },
-      { id: 11, name: 'Salzburg Festival House', lat: 47.8000, lng: 13.0430, emoji: '🎭' },
-      { id: 12, name: 'Kapuzinerberg Mountain', lat: 47.8040, lng: 13.0510, emoji: '⛰️' }
+      { id: 1, name: 'Hohensalzburg Fortress', lat: 47.7975, lng: 13.0475, emoji: 'ðŸ°' },
+      { id: 2, name: 'Mirabell Palace', lat: 47.8090, lng: 13.0450, emoji: 'ðŸ›ï¸' },
+      { id: 3, name: 'Mozart\'s Birthplace', lat: 47.8009, lng: 13.0468, emoji: 'ðŸŽµ' },
+      { id: 4, name: 'Salzburg Cathedral', lat: 47.7997, lng: 13.0478, emoji: 'â›ª' },
+      { id: 5, name: 'Hellbrunn Palace', lat: 47.7667, lng: 13.0400, emoji: 'ðŸ’§' },
+      { id: 6, name: 'Getreidegasse', lat: 47.8006, lng: 13.0457, emoji: 'ðŸ›ï¸' },
+      { id: 7, name: 'Makartsteg (Love Lock Bridge)', lat: 47.8055, lng: 13.0440, emoji: 'â¤ï¸' },
+      { id: 8, name: 'Hangar-7', lat: 47.7930, lng: 13.0030, emoji: 'âœˆï¸' },
+      { id: 9, name: 'St. Peter\'s Abbey', lat: 47.7989, lng: 13.0466, emoji: 'ðŸ“–' },
+      { id: 10, name: 'Nonnberg Abbey', lat: 47.7940, lng: 13.0480, emoji: 'ðŸ›•' },
+      { id: 11, name: 'Salzburg Festival House', lat: 47.8000, lng: 13.0430, emoji: 'ðŸŽ­' },
+      { id: 12, name: 'Kapuzinerberg Mountain', lat: 47.8040, lng: 13.0510, emoji: 'â›°ï¸' }
     ];
 
     function showRouteOptimizationPanel() {
@@ -3398,7 +3395,7 @@ out center;`;
     function updateRouteDestinationInfo() {
       const totalDestinations = selectedLandmarks.length + customDestinations.length;
       if (totalDestinations === 0) {
-        routeDestinationInfo.textContent = 'Destinations: —';
+        routeDestinationInfo.textContent = 'Destinations: â€”';
       } else {
         routeDestinationInfo.textContent = `Destinations: ${totalDestinations} selected (${selectedLandmarks.length} landmarks, ${customDestinations.length} custom)`;
       }
@@ -3408,7 +3405,7 @@ out center;`;
       if (routeStartPoint) {
         routeStartInfo.textContent = `Start: ${routeStartPoint.lat.toFixed(5)}, ${routeStartPoint.lng.toFixed(5)}`;
       } else {
-        routeStartInfo.textContent = 'Start: —';
+        routeStartInfo.textContent = 'Start: â€”';
       }
     }
 
@@ -3935,7 +3932,7 @@ out center;`;
         btn.disabled = true;
         // preserve the button icon HTML and show a small busy indicator (keep icon visible)
         var originalHTML = btn.innerHTML;
-        btn.innerHTML = originalHTML + ' <span aria-hidden="true">⏳</span>';
+        btn.innerHTML = originalHTML + ' <span aria-hidden="true">â³</span>';
       }
 
       navigator.geolocation.getCurrentPosition(
@@ -4543,7 +4540,7 @@ out center;`;
         btn.className = 'layer-menu-btn btn-tertiary';
         btn.setAttribute('aria-haspopup', 'true');
         btn.setAttribute('aria-expanded', 'false');
-        btn.innerHTML = '<span class="sr-only">Open layer options</span>▾';
+        btn.innerHTML = '<span class="sr-only">Open layer options</span>â–¾';
 
         // mark sub as popover for older layout compatibility
         sub.classList.add('popover');
@@ -4687,3 +4684,5 @@ out center;`;
   </script>
 </body>
 </html>
+
+
