@@ -877,7 +877,13 @@
           </div>
         </div>
 
-      <h4 class="text-xs font-semibold text-slate-600 mt-3 mb-2">Overlay Layers</h4>
+      <div class="flex items-center justify-between mt-3 mb-2">
+        <h4 class="text-xs font-semibold text-slate-600">Overlay Layers</h4>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" id="overlay-layers-select-all" checked>
+          <span class="text-xxs text-gray-600">Select All</span>
+        </label>
+      </div>
       <div class="space-y-xs">
         <!-- Amenities (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
@@ -1452,6 +1458,7 @@
         id: "amenities-layer",
         type: "circle",
         source: "amenities",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 6,
           "circle-color": "#16a085",
@@ -1750,6 +1757,7 @@
         id: "education-layer",
         type: "circle",
         source: "education",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#EDA02A",
@@ -1762,6 +1770,7 @@
         id: "health-layer",
         type: "circle",
         source: "health",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#ED2AD8",
@@ -1774,6 +1783,7 @@
         id: "restaurants-layer",
         type: "circle",
         source: "restaurants",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#EDA02A",
@@ -1786,6 +1796,7 @@
         id: "tourism-layer",
         type: "circle",
         source: "tourism",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#ED2AD8",
@@ -1798,6 +1809,7 @@
         id: "transportation-layer",
         type: "circle",
         source: "transportation",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#16a085",
@@ -4171,13 +4183,73 @@
         });
       })();
 
+    // Wire "Select All" checkbox for overlay layers
+    const selectAllCheckbox = document.getElementById('overlay-layers-select-all');
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', (e) => {
+        const isChecked = e.target.checked;
+        // Toggle all overlay layer checkboxes
+        const overlayCheckboxes = [
+          'layer-amenities-visible',
+          'layer-education-visible',
+          'layer-health-visible',
+          'layer-restaurants-visible',
+          'layer-tourism-visible',
+          'layer-transportation-visible',
+          'layer-streets-visible',
+          'layer-railway-visible',
+          'layer-rivers-visible',
+          'layer-buildings-visible',
+          'layer-salzburg-boundaries-visible'
+        ];
+        
+        overlayCheckboxes.forEach(id => {
+          const checkbox = document.getElementById(id);
+          if (checkbox) {
+            checkbox.checked = isChecked;
+            // Trigger change event to update layer visibility
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+      });
+      
+      // Update select all checkbox when individual layers are toggled
+      const overlayCheckboxes = [
+        'layer-amenities-visible',
+        'layer-education-visible',
+        'layer-health-visible',
+        'layer-restaurants-visible',
+        'layer-tourism-visible',
+        'layer-transportation-visible',
+        'layer-streets-visible',
+        'layer-railway-visible',
+        'layer-rivers-visible',
+        'layer-buildings-visible',
+        'layer-salzburg-boundaries-visible'
+      ];
+      
+      overlayCheckboxes.forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+          checkbox.addEventListener('change', () => {
+            // Check if all overlay layers are checked
+            const allChecked = overlayCheckboxes.every(checkboxId => {
+              const cb = document.getElementById(checkboxId);
+              return cb && cb.checked;
+            });
+            selectAllCheckbox.checked = allChecked;
+          });
+        }
+      });
+    }
+
     // --- Layer switcher wiring: visibility, labels (off by default), opacity ---
     // Runs once the map is idle so all sources/layers are available.
     map.once('idle', () => {
       const configs = [
         { layers: [{ id: 'amenities-layer', paintKey: 'circle-opacity' }], source: 'amenities', ui: 'amenities', defaultOpacity: 0.9 },
         { layers: [{ id: 'buildings-layer', paintKey: 'fill-extrusion-opacity' }, { id: 'buildings-outline', paintKey: 'line-opacity' }], source: 'buildings', ui: 'buildings', defaultOpacity: 0.95 },
-        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
+        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }, { id: 'streets-borders', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'railway-layer', paintKey: 'line-opacity' }], source: 'railway', ui: 'railway', defaultOpacity: 1 },
         { layers: [{ id: 'rivers-layer', paintKey: 'line-opacity' }], source: 'rivers', ui: 'rivers', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'education-layer', paintKey: 'circle-opacity' }], source: 'education', ui: 'education', defaultOpacity: 0.85 },
