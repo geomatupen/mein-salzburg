@@ -78,6 +78,9 @@
     };
   </script>
   <style>
+    /* Global font rendering improvements */
+    body, html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+    
     /* Lightweight button styles so we don't need @apply or runtime mapping.
        Keeps styles local and simple; colors match the Tailwind config tokens. */
     .btn-primary {
@@ -248,6 +251,11 @@
        These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
     .max-h-80 { max-height: 20rem !important; }
     .opacity-100 { opacity: 1 !important; }
+    
+    /* Enhanced shadow utilities for better visibility on white backgrounds */
+    .shadow-lg { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1) !important; }
+    .shadow-md { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important; }
+    .shadow-xl { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(0, 0, 0, 0.12) !important; }
     .translate-y-0 { transform: translateY(0) !important; }
     .pointer-events-auto { pointer-events: auto !important; }
     .p-2 { padding: 0.5rem !important; }
@@ -389,11 +397,11 @@
     .text-gray-800 { color: #1F2937 !important; }
 
     /* Text size utilities (keep `text-sm` as the sidebar title reference) */
-    .text-md { font-size: 1rem !important; }
-    .text-sm { font-size: 0.875rem !important; }
-    .text-xs { font-size: 0.75rem !important; }
-    .text-xxs { font-size: 0.65rem !important; }
-    .text-xxxs { font-size: 0.55rem !important; }
+    .text-md { font-size: 1.25rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-sm { font-size: 1.125rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-xs { font-size: 1rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-xxs { font-size: 0.9375rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-xxxs { font-size: 0.875rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
 
     /* Brand text color utilities (four project colors) */
     .text-primary { color: #2A77ED !important; }
@@ -539,9 +547,9 @@
   <div id="map" class="w-full h-screen" style="background-color: #ffffff;"></div>
   <div id="search-container" class="absolute left-20 top-3 z-30 w-80">
     <div class="relative">
-      <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3" />
+      <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3 shadow-lg" />
     </div>
-    <div id="search-results" class="mt-2 bg-white rounded-md shadow-lg max-h-56 overflow-auto"></div>
+    <div id="search-results" class="mt-2 bg-white rounded-md shadow-xl max-h-56 overflow-auto"></div>
   </div>
 
   <!-- Filter and Analytics buttons placed side-by-side to the right of the search container -->
@@ -551,7 +559,7 @@
       <button id="filter-toggle" class="btn-primary icon-btn text-xs" title="Quick filters" aria-expanded="false">Filter</button>
 
       <!-- Compact horizontal quick-filter bar (hidden by default) -->
-      <div id="compact-filter-bar" class="hidden fixed top-12 z-40 bg-white rounded-md shadow p-2 flex items-start gap-3" style="min-width:360px; left: 5rem;    margin-top: .2rem;">
+      <div id="compact-filter-bar" class="hidden fixed top-12 z-40 bg-white rounded-md shadow-xl p-2 flex items-start gap-3" style="min-width:360px; left: 5rem;    margin-top: .2rem;">
         <div class="flex flex-col text-xxs">
           <label class="mb-1">Layer</label>
           <select id="quick-filter-layer" class="text-xxs px-2 py-1 border rounded bg-white"></select>
@@ -581,7 +589,7 @@
         <span>Analytics</span>
         <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true"></i>
       </button>
-      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 min-w-48 overflow-hidden z-40">
+      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-xl border border-gray-200 min-w-48 overflow-hidden z-40">
         <button id="proximity-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
           <i class="fa-solid fa-circle-dot text-primary" aria-hidden="true"></i>
           <span>Proximity</span>
@@ -599,7 +607,7 @@
   </div>
 
   <!-- Legend (draggable + minimizable) -->
-  <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 w-56 max-w-xs z-20 bg-white rounded-lg shadow-lg" role="dialog" aria-label="Map legend">
+  <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 w-56 max-w-xs z-20 bg-white rounded-lg shadow-xl" role="dialog" aria-label="Map legend">
     <div class="panel-header flex items-center justify-between p-3 pb-1 pt-1 border-b border-gray-100">
       <strong class="text-xs">Legend</strong>
       <div class="panel-controls flex items-center gap-2">
@@ -607,7 +615,7 @@
         <button class="minimize-btn btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center" data-target="map-legend" aria-label="Minimize legend" aria-expanded="true"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
       </div>
     </div>
-    <div class="panel-body p-3 pt-0 space-y-2 max-h-64 overflow-auto">
+    <div class="panel-body p-2 space-y-xs max-h-64 overflow-auto">
       <!-- Point Layers -->
       <div class="legend-item flex items-center gap-3" data-layer="amenities"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#16a085; opacity:0.9;"></div><div class="flex-1 text-xxs text-gray-600">Amenities</div></div>
       <div class="legend-item flex items-center gap-3" data-layer="education"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#EDA02A; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Education</div></div>
@@ -617,21 +625,14 @@
       <div class="legend-item flex items-center gap-3" data-layer="transportation"><div class="w-3 h-3 rounded-full shadow-inner" style="background:#16a085; opacity:0.85;"></div><div class="flex-1 text-xxs text-gray-600">Transportation</div></div>
       
       <!-- Line Layers -->
-      <div class="legend-item legend-group" data-layer="streets">
-        <div class="text-xxs font-semibold text-gray-700 mb-1">Streets</div>
-        <div class="ml-2 space-y-1">
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#EDA02A;"></div><div class="flex-1 text-xxs text-gray-600">Motorway</div></div>
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#EDA02A;"></div><div class="flex-1 text-xxs text-gray-600">Primary roads</div></div>
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#EDA02A;"></div><div class="flex-1 text-xxs text-gray-600">Secondary roads</div></div>
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#EDA02A;"></div><div class="flex-1 text-xxs text-gray-600">Tertiary roads</div></div>
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#ED2AD8;"></div><div class="flex-1 text-xxs text-gray-600">Residential</div></div>
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#16a085;"></div><div class="flex-1 text-xxs text-gray-600">Living street / Service</div></div>
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#16a085;"></div><div class="flex-1 text-xxs text-gray-600">Cycleway / Unclassified</div></div>
-          <div class="flex items-center gap-2"><div class="w-8 h-1 rounded" style="background:#2A77ED;"></div><div class="flex-1 text-xxs text-gray-600">Paths / Pedestrian</div></div>
-        </div>
+      <div class="legend-item flex items-center gap-3" data-layer="streets"><div class="w-10 h-2 rounded" style="background:#e8e8e8; border: 1px solid #666666;"></div><div class="flex-1 text-xxs text-gray-600">Streets</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="rivers"><div class="w-10 rounded" style="background:#6ec6ff; height:2px;"></div><div class="flex-1 text-xxs text-gray-600">Rivers</div></div>
+      <div class="legend-item flex items-center gap-3" data-layer="railway">
+        <svg width="40" height="8" viewBox="0 0 40 8" style="flex-shrink: 0;">
+          <line x1="0" y1="4" x2="40" y2="4" stroke="#444444" stroke-width="1" stroke-dasharray="6,3"></line>
+        </svg>
+        <div class="flex-1 text-xxs text-gray-600">Railway</div>
       </div>
-      <div class="legend-item flex items-center gap-3" data-layer="rivers"><div class="w-10 rounded" style="background:#2A77ED; height:2px;"></div><div class="flex-1 text-xxs text-gray-600">Rivers</div></div>
-      <div class="legend-item flex items-center gap-3" data-layer="railway"><div class="w-10 rounded" style="background:#ED2AD8; height:1px;"></div><div class="flex-1 text-xxs text-gray-600">Railway</div></div>
       
       <!-- Polygon Layers -->
       <div class="legend-item flex items-center gap-3" data-layer="buildings"><div class="w-4 h-3 rounded-sm shadow-inner" style="background:#e67e22; opacity:0.95; border: 1px solid #d35400;"></div><div class="flex-1 text-xxs text-gray-600">Buildings</div></div>
@@ -716,6 +717,7 @@
           <option value="1500">1.5 kilometers</option>
           <option value="2000">2 kilometers</option>
           <option value="5000">5 kilometers</option>
+          <option value="10000">10 kilometers</option>
         </select>
       </div>
     </div>
@@ -847,7 +849,7 @@
 
   <!-- Webmap Title: top right, above layer panel -->
   
-  <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-lg rounded-lg pb-4">
+  <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-xl rounded-lg pb-4">
     <div class="panel-header flex items-center justify-between p-3 border-b bg-primary border-gray-100 rounded-lg-top">
       <div class="text-sm font-semibold text-gray-100">MeinSalzburg | Urban Toolkit</div>
       <div class="panel-controls flex items-center gap-2">
@@ -855,29 +857,34 @@
       </div>
     </div>
     <div class="layer-panel-body overflow-auto p-2">
-      <div class="mb-3">
-        <div class="flex items-center justify-between mb-2">
-          <h4 class="text-xs font-semibold text-slate-600">Base Layers</h4>
-          <div class="flex items-center gap-3">
-            <label class="text-xxs text-gray-600 mr-2">3D</label>
-            <label id="switch-3d" class="switch switch-xxs inline-flex items-center gap-3 cursor-pointer">
-              <input id="toggle-3d" type="checkbox" class="sr-only" aria-label="Toggle 3D view" />
-              <div class="switch-track">
-                <div class="switch-knob"></div>
-              </div>
-            </label>
-          </div>
+      <div class="flex items-center justify-between mb-2">
+        <h4 class="text-xs font-semibold text-slate-600">Base Layers</h4>
+        <div class="flex items-center gap-3">
+          <label class="text-xxs text-gray-600 mr-2">3D</label>
+          <label id="switch-3d" class="switch switch-xxs inline-flex items-center gap-3 cursor-pointer">
+            <input id="toggle-3d" type="checkbox" class="sr-only" aria-label="Toggle 3D view" />
+            <div class="switch-track">
+              <div class="switch-knob"></div>
+            </div>
+          </label>
         </div>
-        <div class="mb-3">
-          <div class="flex flex-col gap-2 pb-2">
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="none" id="basemap-none-radio"> <span class="text-xs text-gray-600">None</span></label>
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio"> <span class="text-xs text-gray-600">Street</span></label>
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="satellite" id="basemap-sat-radio"> <span class="text-xs text-gray-600">Satellite</span></label>
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="mapbox-light" id="basemap-mapbox-light-radio" checked> <span class="text-xs text-gray-600">Mapbox Light</span></label>
-          </div>
+      </div>
+      <div class="space-y-xs pb-2">
+        <div class="flex flex-col gap-2">
+          <label class="flex items-center gap-3"><input type="radio" name="basemap" value="none" id="basemap-none-radio"> <span class="text-xs text-gray-600">None</span></label>
+          <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio"> <span class="text-xs text-gray-600">Street</span></label>
+          <label class="flex items-center gap-3"><input type="radio" name="basemap" value="satellite" id="basemap-sat-radio"> <span class="text-xs text-gray-600">Satellite</span></label>
+          <label class="flex items-center gap-3"><input type="radio" name="basemap" value="mapbox-light" id="basemap-mapbox-light-radio" checked> <span class="text-xs text-gray-600">Mapbox Light</span></label>
         </div>
+      </div>
 
-      <h4 class="text-xs font-semibold text-slate-600 mt-3 mb-2">Overlay Layers</h4>
+      <div class="flex items-center justify-between mt-3 mb-2">
+        <h4 class="text-xs font-semibold text-slate-600">Overlay Layers</h4>
+        <label class="flex items-center gap-2">
+          <input type="checkbox" id="overlay-layers-select-all" checked>
+          <span class="text-xxs text-gray-600">Select All</span>
+        </label>
+      </div>
       <div class="space-y-xs">
         <!-- Amenities (Point) -->
         <div class="flex items-center justify-between bg-white/60 rounded hover:bg-sky-50 hover:-translate-y-0.5 transform transition layer-row">
@@ -1376,7 +1383,10 @@
 
       map.addSource("amenities", {
         type: "geojson",
-        data: "data/amenities.geojson"
+        data: "data/amenities.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("buildings", {
@@ -1401,17 +1411,26 @@
 
       map.addSource("education", {
         type: "geojson",
-        data: "data/Education.geojson"
+        data: "data/Education.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("health", {
         type: "geojson",
-        data: "data/Health.geojson"
+        data: "data/Health.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("restaurants", {
         type: "geojson",
-        data: "data/Restaurants.geojson"
+        data: "data/Restaurants.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("rivers", {
@@ -1421,12 +1440,18 @@
 
       map.addSource("tourism", {
         type: "geojson",
-        data: "data/Tourism.geojson"
+        data: "data/Tourism.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       map.addSource("transportation", {
         type: "geojson",
-        data: "data/Transportation.geojson"
+        data: "data/Transportation.geojson",
+        cluster: true,
+        clusterMaxZoom: 15,
+        clusterRadius: 50
       });
 
       // Add layers for amenities (points) - normalized to project brand colors
@@ -1434,6 +1459,7 @@
         id: "amenities-layer",
         type: "circle",
         source: "amenities",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 6,
           "circle-color": "#16a085",
@@ -1732,6 +1758,7 @@
         id: "education-layer",
         type: "circle",
         source: "education",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#EDA02A",
@@ -1744,6 +1771,7 @@
         id: "health-layer",
         type: "circle",
         source: "health",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#ED2AD8",
@@ -1756,6 +1784,7 @@
         id: "restaurants-layer",
         type: "circle",
         source: "restaurants",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#EDA02A",
@@ -1768,6 +1797,7 @@
         id: "tourism-layer",
         type: "circle",
         source: "tourism",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#ED2AD8",
@@ -1780,6 +1810,7 @@
         id: "transportation-layer",
         type: "circle",
         source: "transportation",
+        layout: { 'visibility': 'none' },
         paint: {
           "circle-radius": 5,
           "circle-color": "#16a085",
@@ -2794,9 +2825,32 @@
 
     async function ensureAmenitiesData(){
       if (amenitiesDataCache) return amenitiesDataCache;
-      // Try to read from source's data URL
-      const res = await fetch('data/amenities.geojson');
-      amenitiesDataCache = await res.json();
+      
+      // Fetch from multiple local data sources
+      const dataFiles = [
+        'data/amenities.geojson',
+        'data/Education.geojson',
+        'data/Health.geojson',
+        'data/Restaurants.geojson',
+        'data/Tourism.geojson',
+        'data/Transportation.geojson'
+      ];
+      
+      const allFeatures = [];
+      
+      for (const file of dataFiles) {
+        try {
+          const res = await fetch(file);
+          const data = await res.json();
+          if (data.features) {
+            allFeatures.push(...data.features);
+          }
+        } catch (err) {
+          console.warn(`Failed to load ${file}:`, err);
+        }
+      }
+      
+      amenitiesDataCache = { type: 'FeatureCollection', features: allFeatures };
       return amenitiesDataCache;
     }
 
@@ -2888,16 +2942,50 @@ out center;`;
       try { if (map.getLayer('proximity-fill')) { map.setPaintProperty('proximity-fill', 'fill-opacity', 0.05); } } catch {}
       updateProximityInfo();
 
+      summaryDiv.innerHTML = '<div class="text-slate-600 text-xs"><i class="fa-solid fa-spinner fa-spin"></i> Loading data from OSM and local sources...</div>';
+
       const distKm = getSelectedRadiusKm();
       const centerPt = turf.point([proximityCenter.lng, proximityCenter.lat]);
       const cats = AMENITY_CATEGORIES.filter(c => selectedAmenityKeys.has(c.id));
-      let data;
+      
+      // Fetch from both OSM and local data sources
+      const allFeatures = [];
+      
+      // 1. Try to fetch from OSM
       try {
-        data = await fetchAmenitiesFromOSM(proximityCenter, distKm, cats);
+        const osmData = await fetchAmenitiesFromOSM(proximityCenter, distKm, cats);
+        if (osmData.features) {
+          allFeatures.push(...osmData.features.map(f => ({ ...f, source: 'OSM' })));
+        }
       } catch(err){
-        // Fallback to local dataset if Overpass fails
-        data = await ensureAmenitiesData();
+        console.warn('OSM data fetch failed, using local data only:', err);
       }
+      
+      // 2. Always fetch from local data sources
+      try {
+        const localData = await ensureAmenitiesData();
+        if (localData.features) {
+          allFeatures.push(...localData.features.map(f => ({ ...f, source: 'Local' })));
+        }
+      } catch(err){
+        console.warn('Local data fetch failed:', err);
+      }
+
+      // Deduplicate by location (within 10 meters)
+      const uniqueFeatures = [];
+      const seen = new Set();
+      
+      allFeatures.forEach(feat => {
+        if (!feat.geometry || feat.geometry.type !== 'Point') return;
+        const [lng, lat] = feat.geometry.coordinates;
+        const key = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueFeatures.push(feat);
+        }
+      });
+
+      const data = { type: 'FeatureCollection', features: uniqueFeatures };
 
       const counts = new Map();
       cats.forEach(c => counts.set(c.id, 0));
@@ -2911,7 +2999,14 @@ out center;`;
           const matched = cats.find(cat => featureMatchesCategory(feat, cat));
           if (matched){
             counts.set(matched.id, (counts.get(matched.id) || 0) + 1);
-            results.push({ name: feat.properties?.name || '(unnamed)', cat: matched.label, distKm: d, lng: flng, lat: flat });
+            results.push({ 
+              name: feat.properties?.name || '(unnamed)', 
+              cat: matched.label, 
+              distKm: d, 
+              lng: flng, 
+              lat: flat,
+              source: feat.source
+            });
           }
         }
       });
@@ -2934,7 +3029,8 @@ out center;`;
         lines.push('<div class="divide-y">');
         results.slice(0, 50).forEach(r => {
           const dLabel = r.distKm < 1 ? `${Math.round(r.distKm*1000)} m` : `${r.distKm.toFixed(1)} km`;
-          lines.push(`<div class="py-1 text-xs">${r.name} <span class="text-slate-500">(${r.cat}, ${dLabel})</span></div>`);
+          const sourceTag = r.source ? `<span class="text-xs text-slate-400">[${r.source}]</span>` : '';
+          lines.push(`<div class="py-1 text-xs">${r.name} ${sourceTag} <span class="text-slate-500">(${r.cat}, ${dLabel})</span></div>`);
         });
         lines.push('</div>');
       } else {
@@ -3166,20 +3262,20 @@ out center;`;
         }
       }
 
-      // Calculate normalized scores (0-100)
+      // Calculate normalized scores (0-10)
       const areaKm2 = Math.PI * radiusKm * radiusKm;
       const walkabilityDensity = walkabilityMetrics.pathLength / areaKm2;
       const amenityDensity = walkabilityMetrics.amenities / areaKm2;
-      const walkScore = Math.min(100, Math.round((walkabilityDensity * 20) + (amenityDensity * 15) + (walkabilityMetrics.pathCount * 2)));
+      const walkScore = Math.min(10, Math.round((walkabilityDensity * 20) + (amenityDensity * 15) + (walkabilityMetrics.pathCount * 2)) / 10);
 
       const bikeabilityDensity = (bikeabilityMetrics.cyclePathLength + bikeabilityMetrics.roadLength) / areaKm2;
-      const bikeScore = Math.min(100, Math.round((bikeabilityDensity * 20) + (bikeabilityMetrics.safetyScore / areaKm2 * 10)));
+      const bikeScore = Math.min(10, Math.round((bikeabilityDensity * 20) + (bikeabilityMetrics.safetyScore / areaKm2 * 10)) / 10);
 
       // Update UI with results
-      walkabilityScore.textContent = `${walkScore}/100`;
+      walkabilityScore.textContent = `${walkScore}/10`;
       walkabilityDetails.textContent = `${walkabilityMetrics.pathLength.toFixed(1)}km paths • ${walkabilityMetrics.amenities} amenities`;
 
-      bikeabilityScore.textContent = `${bikeScore}/100`;
+      bikeabilityScore.textContent = `${bikeScore}/10`;
       bikeabilityDetails.textContent = `${bikeabilityMetrics.cyclePathLength.toFixed(1)}km cycle paths • ${bikeabilityMetrics.roadLength.toFixed(1)}km roads`;
 
       // Summary
@@ -3993,14 +4089,14 @@ out center;`;
         this._map = mapInstance;
         this._container = document.createElement('div');
         // add Tailwind utility classes for a clean, compact control panel
-        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container bg-white/95 p-1 rounded-lg shadow-md flex flex-col gap-2';
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container bg-white/95 p-1 rounded-lg shadow-xl flex flex-col gap-2';
 
         const btnZoom = document.createElement('button');
         btnZoom.type = 'button';
         btnZoom.title = 'Zoom to extent';
         // fit/extent icon (Font Awesome)
         btnZoom.innerHTML = `<i class="fa-solid fa-expand text-gray-500" aria-hidden="true"></i>`;
-        btnZoom.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
+        btnZoom.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-lg hover:opacity-90';
         // accessible label
         const zLabel = document.createElement('span');
         zLabel.className = 'sr-only';
@@ -4013,7 +4109,7 @@ out center;`;
         btnLocate.title = 'Find my location';
         // crosshair / locate icon (Font Awesome)
         btnLocate.innerHTML = `<i class="fa-solid fa-location-dot text-gray-500" aria-hidden="true"></i>`;
-        btnLocate.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
+        btnLocate.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-lg hover:opacity-90';
         const lLabel = document.createElement('span');
         lLabel.className = 'sr-only';
         
@@ -4025,7 +4121,7 @@ out center;`;
         btnExport.title = 'Export map';
         // download arrow icon (Font Awesome)
         btnExport.innerHTML = `<i class="fa-solid fa-download text-gray-500" aria-hidden="true"></i>`;
-        btnExport.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
+        btnExport.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-lg hover:opacity-90';
         const eLabel = document.createElement('span');
         eLabel.className = 'sr-only';
         eLabel.textContent = 'Export map';
@@ -4192,13 +4288,73 @@ out center;`;
         });
       })();
 
+    // Wire "Select All" checkbox for overlay layers
+    const selectAllCheckbox = document.getElementById('overlay-layers-select-all');
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', (e) => {
+        const isChecked = e.target.checked;
+        // Toggle all overlay layer checkboxes
+        const overlayCheckboxes = [
+          'layer-amenities-visible',
+          'layer-education-visible',
+          'layer-health-visible',
+          'layer-restaurants-visible',
+          'layer-tourism-visible',
+          'layer-transportation-visible',
+          'layer-streets-visible',
+          'layer-railway-visible',
+          'layer-rivers-visible',
+          'layer-buildings-visible',
+          'layer-salzburg-boundaries-visible'
+        ];
+        
+        overlayCheckboxes.forEach(id => {
+          const checkbox = document.getElementById(id);
+          if (checkbox) {
+            checkbox.checked = isChecked;
+            // Trigger change event to update layer visibility
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+        });
+      });
+      
+      // Update select all checkbox when individual layers are toggled
+      const overlayCheckboxes = [
+        'layer-amenities-visible',
+        'layer-education-visible',
+        'layer-health-visible',
+        'layer-restaurants-visible',
+        'layer-tourism-visible',
+        'layer-transportation-visible',
+        'layer-streets-visible',
+        'layer-railway-visible',
+        'layer-rivers-visible',
+        'layer-buildings-visible',
+        'layer-salzburg-boundaries-visible'
+      ];
+      
+      overlayCheckboxes.forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox) {
+          checkbox.addEventListener('change', () => {
+            // Check if all overlay layers are checked
+            const allChecked = overlayCheckboxes.every(checkboxId => {
+              const cb = document.getElementById(checkboxId);
+              return cb && cb.checked;
+            });
+            selectAllCheckbox.checked = allChecked;
+          });
+        }
+      });
+    }
+
     // --- Layer switcher wiring: visibility, labels (off by default), opacity ---
     // Runs once the map is idle so all sources/layers are available.
     map.once('idle', () => {
       const configs = [
         { layers: [{ id: 'amenities-layer', paintKey: 'circle-opacity' }], source: 'amenities', ui: 'amenities', defaultOpacity: 0.9 },
         { layers: [{ id: 'buildings-layer', paintKey: 'fill-extrusion-opacity' }, { id: 'buildings-outline', paintKey: 'line-opacity' }], source: 'buildings', ui: 'buildings', defaultOpacity: 0.95 },
-        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
+        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }, { id: 'streets-borders', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'railway-layer', paintKey: 'line-opacity' }], source: 'railway', ui: 'railway', defaultOpacity: 1 },
         { layers: [{ id: 'rivers-layer', paintKey: 'line-opacity' }], source: 'rivers', ui: 'rivers', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'education-layer', paintKey: 'circle-opacity' }], source: 'education', ui: 'education', defaultOpacity: 0.85 },
