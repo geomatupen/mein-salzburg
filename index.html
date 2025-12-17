@@ -1691,6 +1691,7 @@
         }
       });
 
+
       // Add education POIs (points)
       map.addLayer({
         id: "education-layer",
@@ -3998,9 +3999,9 @@
       const configs = [
         { layers: [{ id: 'amenities-layer', paintKey: 'circle-opacity' }], source: 'amenities', ui: 'amenities', defaultOpacity: 0.9 },
         { layers: [{ id: 'buildings-layer', paintKey: 'fill-extrusion-opacity' }, { id: 'buildings-outline', paintKey: 'line-opacity' }], source: 'buildings', ui: 'buildings', defaultOpacity: 0.95 },
-        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1 },
+        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'railway-layer', paintKey: 'line-opacity' }], source: 'railway', ui: 'railway', defaultOpacity: 1 },
-        { layers: [{ id: 'rivers-layer', paintKey: 'line-opacity' }], source: 'rivers', ui: 'rivers', defaultOpacity: 1 },
+        { layers: [{ id: 'rivers-layer', paintKey: 'line-opacity' }], source: 'rivers', ui: 'rivers', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'education-layer', paintKey: 'circle-opacity' }], source: 'education', ui: 'education', defaultOpacity: 0.85 },
         { layers: [{ id: 'health-layer', paintKey: 'circle-opacity' }], source: 'health', ui: 'health', defaultOpacity: 0.85 },
         { layers: [{ id: 'restaurants-layer', paintKey: 'circle-opacity' }], source: 'restaurants', ui: 'restaurants', defaultOpacity: 0.85 },
@@ -4051,11 +4052,19 @@
             id: labelId,
             type: 'symbol',
             source: cfg.source,
+            minzoom: cfg.labelMinZoom || 0,
             layout: {
+              'symbol-placement': 'line',
               'text-field': ['coalesce', ['get', 'name'], ['get', 'NAME'], ''],
-              'text-size': 12,
+              'text-size': [
+                'interpolate', ['linear'], ['zoom'],
+                (cfg.labelMinZoom || 10), 11,
+                18, 14,
+                19, 15
+              ],
               'visibility': 'none',
-              'text-allow-overlap': false
+              'text-allow-overlap': false,
+              'text-optional': true
             },
             paint: {
               'text-color': '#17202A',
@@ -4122,20 +4131,27 @@
         }
 
         if (labelsEl) {
-          labelsEl.checked = false; // labels off by default
+          labelsEl.checked = !!cfg.labelsDefaultOn;
           // if glyphs are not available, disable the checkbox and inform user via console
-          labelsEl.addEventListener('change', (ev) => {
+          const toggleLabels = (evChecked) => {
             const created = ensureLabelLayer(cfg);
             if (!created) {
-              // creation failed (likely missing glyphs) — revert checkbox and notify
-              ev.target.checked = false;
-              ev.target.disabled = true;
-              ev.target.title = 'Label rendering requires a style with `glyphs` configured.';
+              labelsEl.checked = false;
+              labelsEl.disabled = true;
+              labelsEl.title = 'Label rendering requires a style with `glyphs` configured.';
               console.warn('Labels unavailable for', cfg.ui, '- style missing glyphs or source unavailable');
               return;
             }
-            applyLayout([labelLayerId], ev.target.checked);
+            applyLayout([labelLayerId], evChecked);
+          };
+
+          labelsEl.addEventListener('change', (ev) => {
+            toggleLabels(ev.target.checked);
           });
+
+          if (cfg.labelsDefaultOn) {
+            toggleLabels(true);
+          }
         }
       });
 
