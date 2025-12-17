@@ -251,6 +251,11 @@
        These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
     .max-h-80 { max-height: 20rem !important; }
     .opacity-100 { opacity: 1 !important; }
+    
+    /* Enhanced shadow utilities for better visibility on white backgrounds */
+    .shadow-lg { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1) !important; }
+    .shadow-md { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important; }
+    .shadow-xl { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2), 0 6px 16px rgba(0, 0, 0, 0.12) !important; }
     .translate-y-0 { transform: translateY(0) !important; }
     .pointer-events-auto { pointer-events: auto !important; }
     .p-2 { padding: 0.5rem !important; }
@@ -542,9 +547,9 @@
   <div id="map" class="w-full h-screen" style="background-color: #ffffff;"></div>
   <div id="search-container" class="absolute left-20 top-3 z-30 w-80">
     <div class="relative">
-      <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3" />
+      <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3 shadow-lg" />
     </div>
-    <div id="search-results" class="mt-2 bg-white rounded-md shadow-lg max-h-56 overflow-auto"></div>
+    <div id="search-results" class="mt-2 bg-white rounded-md shadow-xl max-h-56 overflow-auto"></div>
   </div>
 
   <!-- Filter and Analytics buttons placed side-by-side to the right of the search container -->
@@ -554,7 +559,7 @@
       <button id="filter-toggle" class="btn-primary icon-btn text-xs" title="Quick filters" aria-expanded="false">Filter</button>
 
       <!-- Compact horizontal quick-filter bar (hidden by default) -->
-      <div id="compact-filter-bar" class="hidden fixed top-12 z-40 bg-white rounded-md shadow p-2 flex items-start gap-3" style="min-width:360px; left: 5rem;    margin-top: .2rem;">
+      <div id="compact-filter-bar" class="hidden fixed top-12 z-40 bg-white rounded-md shadow-xl p-2 flex items-start gap-3" style="min-width:360px; left: 5rem;    margin-top: .2rem;">
         <div class="flex flex-col text-xxs">
           <label class="mb-1">Layer</label>
           <select id="quick-filter-layer" class="text-xxs px-2 py-1 border rounded bg-white"></select>
@@ -584,7 +589,7 @@
         <span>Analytics</span>
         <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true"></i>
       </button>
-      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-lg border border-gray-200 min-w-48 overflow-hidden z-40">
+      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-xl border border-gray-200 min-w-48 overflow-hidden z-40">
         <button id="proximity-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
           <i class="fa-solid fa-circle-dot text-primary" aria-hidden="true"></i>
           <span>Proximity</span>
@@ -602,7 +607,7 @@
   </div>
 
   <!-- Legend (draggable + minimizable) -->
-  <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 w-56 max-w-xs z-20 bg-white rounded-lg shadow-lg" role="dialog" aria-label="Map legend">
+  <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 w-56 max-w-xs z-20 bg-white rounded-lg shadow-xl" role="dialog" aria-label="Map legend">
     <div class="panel-header flex items-center justify-between p-3 pb-1 pt-1 border-b border-gray-100">
       <strong class="text-xs">Legend</strong>
       <div class="panel-controls flex items-center gap-2">
@@ -843,7 +848,7 @@
 
   <!-- Webmap Title: top right, above layer panel -->
   
-  <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-lg rounded-lg pb-4">
+  <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-xl rounded-lg pb-4">
     <div class="panel-header flex items-center justify-between p-3 border-b bg-primary border-gray-100 rounded-lg-top">
       <div class="text-sm font-semibold text-gray-100">MeinSalzburg | Urban Toolkit</div>
       <div class="panel-controls flex items-center gap-2">
@@ -3979,14 +3984,14 @@
         this._map = mapInstance;
         this._container = document.createElement('div');
         // add Tailwind utility classes for a clean, compact control panel
-        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container bg-white/95 p-1 rounded-lg shadow-md flex flex-col gap-2';
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-control-container bg-white/95 p-1 rounded-lg shadow-xl flex flex-col gap-2';
 
         const btnZoom = document.createElement('button');
         btnZoom.type = 'button';
         btnZoom.title = 'Zoom to extent';
         // fit/extent icon (Font Awesome)
         btnZoom.innerHTML = `<i class="fa-solid fa-expand text-gray-500" aria-hidden="true"></i>`;
-        btnZoom.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
+        btnZoom.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-lg hover:opacity-90';
         // accessible label
         const zLabel = document.createElement('span');
         zLabel.className = 'sr-only';
@@ -3999,7 +4004,7 @@
         btnLocate.title = 'Find my location';
         // crosshair / locate icon (Font Awesome)
         btnLocate.innerHTML = `<i class="fa-solid fa-location-dot text-gray-500" aria-hidden="true"></i>`;
-        btnLocate.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
+        btnLocate.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-lg hover:opacity-90';
         const lLabel = document.createElement('span');
         lLabel.className = 'sr-only';
         
@@ -4011,7 +4016,7 @@
         btnExport.title = 'Export map';
         // download arrow icon (Font Awesome)
         btnExport.innerHTML = `<i class="fa-solid fa-download text-gray-500" aria-hidden="true"></i>`;
-        btnExport.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-sm hover:opacity-90';
+        btnExport.className = 'inline-flex items-center justify-center w-8 h-8 rounded-md bg-white text-gray-500 border border-gray-100 shadow-lg hover:opacity-90';
         const eLabel = document.createElement('span');
         eLabel.className = 'sr-only';
         eLabel.textContent = 'Export map';
