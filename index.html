@@ -2804,40 +2804,79 @@
     function buildOverpassQuery(center, radiusMeters, cats){
       const lat = center.lat; const lon = center.lng; const r = Math.max(1, Math.round(radiusMeters));
       let parts = [];
+      
       cats.forEach(cat => {
         cat.match.forEach(rule => {
-          parts.push(`node(around:${r},${lat},${lon})[${rule.k}=${rule.v}]`);
+          // Query for nodes, ways, and relations with the tag
+          parts.push(`node(around:${r},${lat},${lon})["${rule.k}"="${rule.v}"]`);
+          parts.push(`way(around:${r},${lat},${lon})["${rule.k}"="${rule.v}"]`);
+          parts.push(`relation(around:${r},${lat},${lon})["${rule.k}"="${rule.v}"]`);
         });
       });
-      const union = parts.join(";\n        ");
-      // Return nodes only for simplicity; ways/relations could be added if needed
-      return `[
-        out:json][timeout:25];
-        (
-        ${union}
-        );
-        out body;`;
+      
+      const union = parts.join(";\n  ");
+      // Return elements with center point for geometry calculation
+      return `[out:json][timeout:30];
+(
+  ${union}
+);
+out center;`;
     }
 
     async function fetchAmenitiesFromOSM(center, distKm, cats){
       const radiusMeters = Math.round(distKm * 1000);
       const ql = buildOverpassQuery(center, radiusMeters, cats);
       const url = 'https://overpass-api.de/api/interpreter';
-      const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: new URLSearchParams({ data: ql }) });
-      if (!res.ok) throw new Error('OSM Overpass request failed');
-      const data = await res.json();
-      // Convert Overpass elements to GeoJSON FeatureCollection (points only)
-      const features = (data.elements || []).filter(el => el.type === 'node' && typeof el.lat === 'number' && typeof el.lon === 'number').map(el => ({
-        type:'Feature',
-        geometry:{ type:'Point', coordinates:[el.lon, el.lat] },
-        properties: el.tags || {}
-      }));
-      return { type:'FeatureCollection', features };
+      
+      try {
+        const res = await fetch(url, { 
+          method:'POST', 
+          headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, 
+          body: new URLSearchParams({ data: ql }),
+          timeout: 30000
+        });
+        
+        if (!res.ok) throw new Error(`Overpass API error: ${res.statusText}`);
+        
+        const data = await res.json();
+        
+        // Convert Overpass elements to GeoJSON FeatureCollection
+        const features = (data.elements || []).map(el => {
+          let lat, lon;
+          
+          // Get coordinates from element
+          if (el.type === 'node') {
+            lat = el.lat;
+            lon = el.lon;
+          } else if (el.center) {
+            // Ways and relations have center point
+            lat = el.center.lat;
+            lon = el.center.lon;
+          }
+          
+          if (typeof lat === 'number' && typeof lon === 'number') {
+            return {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [lon, lat] },
+              properties: { ...el.tags, osm_id: el.id, osm_type: el.type }
+            };
+          }
+          return null;
+        }).filter(f => f !== null);
+        
+        return { type: 'FeatureCollection', features };
+      } catch(err){
+        console.error('OSM Overpass error:', err);
+        throw err;
+      }
     }
 
     function featureMatchesCategory(feat, cat){
       const props = feat.properties || {};
-      return cat.match.some(rule => (props[rule.k] + '')?.toLowerCase() === (rule.v + '').toLowerCase());
+      return cat.match.some(rule => {
+        const propVal = props[rule.k];
+        return propVal && (propVal + '').toLowerCase() === (rule.v + '').toLowerCase();
+      });
     }
 
     runBtn.addEventListener('click', async () => {
