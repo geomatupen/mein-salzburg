@@ -26,7 +26,7 @@
   </div>
   </div>
   <script>
-    // Welcome popup logic â€” do not auto-hide on load (user requested persistent welcome)
+    // Welcome popup logic — do not auto-hide on load (user requested persistent welcome)
     window.addEventListener('DOMContentLoaded', function() {
       var popup = document.getElementById('welcome-popup');
       var closeBtn = document.getElementById('welcome-close');
@@ -247,7 +247,7 @@
     #map-legend .legend-group .ml-2 .flex { gap: 0.5rem; }
     #map-legend .panel-body { max-height: 20rem; overflow: auto; }
 
-    /* Provide a few utility classes that our JS toggles â€” keep them small and explicit so they work without JIT
+    /* Provide a few utility classes that our JS toggles — keep them small and explicit so they work without JIT
        These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
     .max-h-80 { max-height: 20rem !important; }
     .opacity-100 { opacity: 1 !important; }
@@ -282,7 +282,7 @@
       background: transparent;
       border-radius: 9999px;
     }
-    /* Fallback color when JS hasn't run yet â€” use our gray palette (light track) */
+    /* Fallback color when JS hasn't run yet — use our gray palette (light track) */
     .layer-menu input[type="range"] { background-color: #D6D9DE; }
     /* WebKit thumb */
     .layer-menu input[type="range"]::-webkit-slider-thumb {
@@ -398,9 +398,9 @@
 
     /* Text size utilities (keep `text-sm` as the sidebar title reference) */
     .text-md { font-size: 1.25rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
-    .text-sm { font-size: 1.125rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
-    .text-xs { font-size: 1rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
-    .text-xxs { font-size: 0.9375rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-sm { font-size: 1rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-xs { font-size: 0.9rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+    .text-xxs { font-size: 0.785rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
     .text-xxxs { font-size: 0.675rem !important; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
 
     /* Brand text color utilities (four project colors) */
@@ -517,10 +517,10 @@
     /* Non-small screens: reduce panel widths (~25% narrower) so they are less dominant
        This applies from tablet upward (>= 641px) and preserves existing small-screen rules. */
     @media (min-width: 641px) {
-      /* layer-panel: slightly wider than the previous reduction â€” increase a bit for readability */
+      /* layer-panel: slightly wider than the previous reduction — increase a bit for readability */
       /* set to 22.5% (slightly less than original 25%) with a sensible max-width */
       #layer-panel { width: 22.5% !important; max-width: 32rem !important; }
-      /* legend default width ~14rem (w-56) â€” reduce by 25% to 10.5rem */
+      /* legend default width ~14rem (w-56) — reduce by 25% to 10.5rem */
       #map-legend { width: 10.5rem !important; max-width: 10.5rem !important; }
       /* reduce legend body height by ~25% (from 48vh -> 36vh) to cover less map on normal screens */
       #map-legend .panel-body { max-height: 32vh; overflow: auto; }
@@ -559,25 +559,25 @@
       <button id="filter-toggle" class="btn-primary icon-btn text-xs" title="Quick filters" aria-expanded="false">Filter</button>
 
       <!-- Compact horizontal quick-filter bar (hidden by default) -->
-      <div id="compact-filter-bar" class="hidden fixed top-12 z-40 bg-white rounded-md shadow-xl p-2 flex items-start gap-3" style="min-width:360px; left: 5rem;    margin-top: .2rem;">
+      <div id="compact-filter-bar" class="hidden fixed top-12 z-40 bg-white rounded-md shadow-xl p-2 flex items-start gap-3 text-gray-600" style="min-width:360px; left: 5rem;    margin-top: .2rem;">
         <div class="flex flex-col text-xxs">
           <label class="mb-1">Layer</label>
-          <select id="quick-filter-layer" class="text-xxs px-2 py-1 border rounded bg-white"></select>
+          <select id="quick-filter-layer" class="text-xxxs px-2 py-1 border rounded bg-white"></select>
         </div>
         <div class="flex flex-col text-xxs">
           <label class="mb-1">Attribute</label>
-          <select id="quick-filter-attr" class="text-xxs px-2 py-1 border rounded bg-white"></select>
+          <select id="quick-filter-attr" class="text-xxxs px-2 py-1 border rounded bg-white"></select>
         </div>
         <div class="flex flex-col text-xxs">
           <label class="mb-1">Values</label>
-          <select id="quick-filter-value" class="text-xxs px-2 py-1 border rounded bg-white" multiple size="6" style="min-width:150px;"></select>
+          <select id="quick-filter-value" class="text-xxxs px-2 py-1 border rounded bg-white" multiple size="6" style="min-width:150px;"></select>
         </div>
         <div class="flex flex-col items-stretch justify-between">
           <label class="mb-1">&nbsp;</label>
           <div class="flex flex-col gap-2">
-            <button id="quick-filter-apply" class="btn-primary text-xs">Apply</button>
-            <button id="quick-filter-reset" class="btn-tertiary text-xs">Reset</button>
-            <button id="quick-filter-close" class="btn-tertiary text-xs">Close</button>
+            <button id="quick-filter-apply" class="btn-primary text-xxs">Apply</button>
+            <button id="quick-filter-reset" class="btn-tertiary text-xxs">Reset</button>
+            <button id="quick-filter-close" class="btn-tertiary text-xxs">Close</button>
           </div> 
         </div>
       </div>
@@ -589,7 +589,7 @@
         <span>Analytics</span>
         <i class="fa-solid fa-chevron-down text-xxs" aria-hidden="true" style="color: white;"></i>
       </button>
-      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-xl border border-gray-200 min-w-48 overflow-hidden z-40">
+      <div id="analytics-menu" class="hidden absolute left-0 top-full mt-1 bg-white rounded-md shadow-xl border border-gray-200 min-w-48 overflow-hidden z-40 text-gray-600">
         <button id="proximity-open" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 border-b border-gray-100">
           <i class="fa-solid fa-circle-dot text-primary" aria-hidden="true"></i>
           <span>Proximity</span>
@@ -640,23 +640,23 @@
     </div>
   </div>
 
-    <div id="proximity-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxs">
+    <div id="proximity-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxxs text-gray-600">
       <div class="flex justify-between items-center mb-2">
-        <strong class="text-xs">Proximity Analysis</strong>
-        <button id="proximity-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">âœ•</button>
+        <strong class="text-xxs">Proximity Analysis</strong>
+        <button id="proximity-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
       </div>
-      <div class="text-xxs text-gray-500 mb-2">Choose a location, select a distance and amenities to find everything nearby.</div>
+      <div class="text-xxxs text-gray-500 mb-2">Choose a location, select a distance and amenities to find everything nearby.</div>
 
       <!-- Location selection -->
       <div class="mb-2 grid grid-cols-2 gap-2">
-        <button id="proximity-use-location" class="btn-accent justify-center text-xs"><i class="fa-solid fa-location-crosshairs"></i><span class="ml-1">My Location</span></button>
-        <button id="proximity-draw-point" class="btn-tertiary justify-center text-xs"><i class="fa-solid fa-map-pin"></i><span class="ml-1">Draw Point</span></button>
+        <button id="proximity-use-location" class="btn-accent justify-center text-xxs"><i class="fa-solid fa-location-crosshairs"></i><span class="ml-1">My Location</span></button>
+        <button id="proximity-draw-point" class="btn-tertiary justify-center text-xxs"><i class="fa-solid fa-map-pin"></i><span class="ml-1">Draw Point</span></button>
       </div>
-      <div id="proximity-info" class="text-xxs text-gray-600 mb-2">Location: -”  Distance: -”</div>
+      <div id="proximity-info" class="text-xxxs text-gray-600 mb-2">Location: —  Distance: —</div>
 
       <!-- Distance options -->
       <div class="mb-2">
-        <label class="text-xxs font-semibold text-gray-600 mb-1 block">Distance</label>
+        <label class="text-xxxs font-semibold text-gray-600 mb-1 block">Distance</label>
         <div id="proximity-distance-group" class="grid grid-cols-5 gap-2">
           <label class="inline-flex items-center gap-1 text-xxxs"><input type="radio" name="proximity-distance" value="0.5" /> 500 m</label>
           <label class="inline-flex items-center gap-1 text-xxxs"><input type="radio" name="proximity-distance" value="1" checked /> 1 km</label>
@@ -668,49 +668,49 @@
 
       <!-- Amenities -->
       <div class="mb-2">
-        <label class="text-xxs font-semibold text-gray-600 mb-1 block">Amenities & Services</label>
+        <label class="text-xxxs font-semibold text-gray-600 mb-1 block">Amenities & Services</label>
         <div id="proximity-amenities-list" class="max-h-32 overflow-y-auto border border-gray-200 rounded-md bg-gray-50 p-2 grid grid-cols-2 gap-1"></div>
       </div>
 
       <div class="mb-2">
-        <button id="proximity-run" class="btn-primary w-full justify-center text-xs" disabled>Run</button>
+        <button id="proximity-run" class="btn-primary w-full justify-center text-xxs" disabled>Run</button>
       </div>
-      <div id="proximity-summary" class="text-xxs text-gray-700 max-h-56 overflow-auto border-t pt-2"></div>
+      <div id="proximity-summary" class="text-xxxs text-gray-700 max-h-56 overflow-auto border-t pt-2"></div>
         <div class="flex justify-end mt-3">
-        <button id="proximity-clear" class="btn-tertiary text-xs">Clear</button>
+        <button id="proximity-clear" class="btn-tertiary text-xxs">Clear</button>
       </div>
     </div>
 
   <!-- Accessibility panel: Walkability & Bikeability Analysis -->
-  <div id="accessibility-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxs">
+  <div id="accessibility-panel" class="hidden absolute left-40 top-16 z-40 w-80 bg-white rounded-lg shadow-xl p-4 text-xxxs text-gray-600">
     <div class="flex justify-between items-center mb-2">
-      <strong class="text-xs">Accessibility Analysis</strong>
-      <button id="accessibility-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">âœ•</button>
+      <strong class="text-xxs">Accessibility Analysis</strong>
+      <button id="accessibility-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
     </div>
-    <div class="text-xxs text-gray-500 mb-3">Analyze walkability and bikeability from a location.</div>
+    <div class="text-xxxs text-gray-500 mb-3">Analyze walkability and bikeability from a location.</div>
     
     <!-- Location selection options -->
     <div class="mb-3 pb-3 border-b border-gray-200">
-      <label class="text-xxs font-semibold text-gray-600 mb-2 block">Select Location</label>
+      <label class="text-xxxs font-semibold text-gray-600 mb-2 block">Select Location</label>
       <div class="flex gap-2">
-        <button id="accessibility-use-location" class="btn-accent flex-1 justify-center text-xs">
+        <button id="accessibility-use-location" class="btn-accent flex-1 justify-center text-xxs">
           <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
           <span>My Location</span>
         </button>
-        <button id="accessibility-draw-point" class="btn-tertiary flex-1 justify-center text-xs">
+        <button id="accessibility-draw-point" class="btn-tertiary flex-1 justify-center text-xxs">
           <i class="fa-solid fa-map-pin" aria-hidden="true"></i>
           <span>Draw Point</span>
         </button>
       </div>
     </div>
 
-    <div id="accessibility-info" class="text-xxs text-gray-600 mb-3">Location: -”</div>
+    <div id="accessibility-info" class="text-xxxs text-gray-600 mb-3">Location: —</div>
 
     <!-- Distance control -->
     <div class="mb-3">
-      <label class="text-xxs font-semibold text-gray-600 mb-1 block">Analysis Radius</label>
+      <label class="text-xxxs font-semibold text-gray-600 mb-1 block">Analysis Radius</label>
       <div class="flex gap-2">
-        <select id="accessibility-distance" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-accent flex-1">
+        <select id="accessibility-distance" class="px-2 py-1 border border-gray-200 rounded-md bg-white text-xxs focus:outline-none focus:ring-2 focus:ring-accent flex-1">
           <option value="100">100 meters</option>
           <option value="500" selected>500 meters</option>
           <option value="1000">1 kilometer</option>
@@ -723,7 +723,7 @@
     </div>
 
     <div class="mb-3">
-      <button id="accessibility-run" class="btn-primary w-full justify-center text-xs" disabled>Analyze</button>
+      <button id="accessibility-run" class="btn-primary w-full justify-center text-xxs" disabled>Analyze</button>
     </div>
 
     <!-- Results display -->
@@ -734,11 +734,11 @@
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-person-walking text-primary" aria-hidden="true"></i>
-              <span class="text-xs font-semibold text-gray-700">Walkability</span>
+              <span class="text-xxs font-semibold text-gray-700">Walkability</span>
             </div>
-            <span id="walkability-score" class="text-sm font-bold text-primary">-</span>
+            <span id="walkability-score" class="text-sm font-bold text-primary">—</span>
           </div>
-          <div class="text-xxs text-gray-600" id="walkability-details">Calculating...</div>
+          <div class="text-xxxs text-gray-600" id="walkability-details">Calculating...</div>
         </div>
 
         <!-- Bikeability Score -->
@@ -746,52 +746,52 @@
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <i class="fa-solid fa-bicycle text-secondary" aria-hidden="true"></i>
-              <span class="text-xs font-semibold text-gray-700">Bikeability</span>
+              <span class="text-xxs font-semibold text-gray-700">Bikeability</span>
             </div>
-            <span id="bikeability-score" class="text-sm font-bold text-secondary">-</span>
+            <span id="bikeability-score" class="text-sm font-bold text-secondary">—</span>
           </div>
-          <div class="text-xxs text-gray-600" id="bikeability-details">Calculating...</div>
+          <div class="text-xxxs text-gray-600" id="bikeability-details">Calculating...</div>
         </div>
       </div>
 
       <!-- Summary metrics -->
-      <div id="accessibility-summary" class="text-xxs text-gray-700 space-y-1"></div>
+      <div id="accessibility-summary" class="text-xxxs text-gray-700 space-y-1"></div>
     </div>
 
     <div class="flex justify-end gap-2 mt-3">
-      <button id="accessibility-clear" class="btn-tertiary text-xs">Clear</button>
+      <button id="accessibility-clear" class="btn-tertiary text-xxs">Clear</button>
     </div>
   </div>
 
   <!-- Route Optimization Panel -->
-  <div id="route-optimization-panel" class="hidden absolute left-40 top-16 z-40 w-96 bg-white rounded-lg shadow-xl p-4 text-xxs">
+  <div id="route-optimization-panel" class="hidden absolute left-40 top-16 z-40 w-96 bg-white rounded-lg shadow-xl p-4 text-xxxs text-gray-600">
     <div class="flex justify-between items-center mb-3">
-      <strong class="text-xs">Route Optimization</strong>
+      <strong class="text-xxs">Route Optimization</strong>
       <button id="route-optimization-close" class="btn-tertiary w-8 h-8 p-0 inline-flex items-center justify-center">✕</button>
     </div>
 
     <!-- Starting Location Selection -->
     <div class="mb-3 pb-3 border-b border-gray-200">
-      <label class="text-xxs font-semibold text-gray-600 mb-2 block">Starting Location</label>
+      <label class="text-xxxs font-semibold text-gray-600 mb-2 block">Starting Location</label>
       <div class="flex gap-2">
-        <button id="route-use-location" class="btn-accent flex-1 justify-center text-xs">
+        <button id="route-use-location" class="btn-accent flex-1 justify-center text-xxs">
           <i class="fa-solid fa-location-crosshairs" aria-hidden="true"></i>
           <span>My Location</span>
         </button>
-        <button id="route-draw-start" class="btn-tertiary flex-1 justify-center text-xs">
+        <button id="route-draw-start" class="btn-tertiary flex-1 justify-center text-xxs">
           <i class="fa-solid fa-map-pin" aria-hidden="true"></i>
           <span>Draw Point</span>
         </button>
       </div>
     </div>
 
-    <div id="route-start-info" class="text-xxs text-gray-600 mb-3">Start: —</div>
+    <div id="route-start-info" class="text-xxxs text-gray-600 mb-3">Start: —</div>
 
     <!-- Destination Selection -->
     <div class="mb-3 pb-3 border-b border-gray-200">
-      <label class="text-xxs font-semibold text-gray-600 mb-2 block">Destinations (Select 1+)</label>
+      <label class="text-xxxs font-semibold text-gray-600 mb-2 block">Destinations (Select 1+)</label>
       <div class="mb-2 flex gap-2">
-        <button id="route-draw-destination" class="btn-tertiary flex-1 justify-center text-xs">
+        <button id="route-draw-destination" class="btn-tertiary flex-1 justify-center text-xxs">
           <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
           <span>Draw Destination</span>
         </button>
@@ -801,12 +801,12 @@
       </div>
     </div>
 
-    <div id="route-destination-info" class="text-xxs text-gray-600 mb-3">Destinations: -</div>
-    <div id="route-custom-destinations" class="text-xxs text-accent mb-2"></div>
+    <div id="route-destination-info" class="text-xxxs text-gray-600 mb-3">Destinations: —</div>
+    <div id="route-custom-destinations" class="text-xxxs text-accent mb-2"></div>
 
     <!-- Optimize Button -->
     <div class="mb-3">
-      <button id="route-optimize" class="btn-primary w-full justify-center text-xs" disabled>
+      <button id="route-optimize" class="btn-primary w-full justify-center text-xxs" disabled>
         <i class="fa-solid fa-route" aria-hidden="true"></i>
         <span>Calculate Route</span>
       </button>
@@ -817,25 +817,25 @@
       <div class="space-y-2 pb-3 border-b border-gray-200 mb-3">
         <div class="flex justify-between">
           <span class="text-gray-500">Total Distance:</span>
-          <strong id="route-total-distance" class="text-primary">-</strong>
+          <strong id="route-total-distance" class="text-primary">—</strong>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-500">Estimated Time:</span>
-          <strong id="route-total-time" class="text-primary">-</strong>
+          <strong id="route-total-time" class="text-primary">—</strong>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-500">Stops:</span>
-          <strong id="route-stop-count" class="text-primary">-</strong>
+          <strong id="route-stop-count" class="text-primary">—</strong>
         </div>
       </div>
 
       <!-- Route Itinerary -->
-      <div id="route-itinerary" class="text-xxs text-gray-700 max-h-40 overflow-auto mb-3"></div>
+      <div id="route-itinerary" class="text-xxxs text-gray-700 max-h-40 overflow-auto mb-3"></div>
     </div>
 
     <!-- Animation Controls -->
     <div id="route-animation-controls" class="hidden mb-3 flex gap-2">
-      <button id="route-animate" class="btn-secondary flex-1 justify-center text-xs">
+      <button id="route-animate" class="btn-secondary flex-1 justify-center text-xxs">
         <i class="fa-solid fa-play" aria-hidden="true"></i>
         <span>Animate</span>
       </button>
@@ -843,7 +843,7 @@
 
     <!-- Clear Button -->
     <div class="flex justify-end gap-2">
-      <button id="route-clear" class="btn-tertiary text-xs">Clear</button>
+      <button id="route-clear" class="btn-tertiary text-xxs">Clear</button>
     </div>
   </div>
 
@@ -1112,11 +1112,11 @@
             if (!pid) {
               // nothing to do
             } else if (!collapsed && pid === 'map-legend') {
-              // legend is being opened on mobile â€” collapse layer panel
+              // legend is being opened on mobile — collapse layer panel
               const other = document.getElementById('layer-panel');
               if (other) setPanelCollapsed(other, true);
             } else if (!collapsed && pid === 'layer-panel') {
-              // layer panel is being opened on mobile â€” collapse legend
+              // layer panel is being opened on mobile — collapse legend
               const other = document.getElementById('map-legend');
               if (other) setPanelCollapsed(other, true);
             }
@@ -1328,7 +1328,7 @@
           'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
         ],
         tileSize: 256,
-        attribution: 'Â© OpenStreetMap contributors'
+        attribution: '© OpenStreetMap contributors'
       });
 
       // Satellite (Esri World Imagery)
@@ -1338,7 +1338,7 @@
           'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
         ],
         tileSize: 256,
-        attribution: 'Tiles Â© Esri'
+        attribution: 'Tiles © Esri'
       });
 
       // Mapbox Light
@@ -1351,7 +1351,7 @@
           'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
         ],
         tileSize: 256,
-        attribution: 'Â© CartoDB'
+        attribution: '© CartoDB'
       });
 
       // Add street raster layer (hidden by default)
@@ -2699,7 +2699,7 @@
     function updateProximityInfo() {
       const distKm = getSelectedRadiusKm();
       const distLabel = distKm < 1 ? `${Math.round(distKm*1000)} m` : `${distKm} km`;
-      const coords = proximityCenter ? `${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}` : 'â€”';
+      const coords = proximityCenter ? `${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}` : '—';
       infoDiv.textContent = `Location: ${coords}  Distance: ${distLabel}`;
     }
 
@@ -2951,7 +2951,7 @@ out center;`;
       try { if (map.getLayer('proximity-fill')) { map.setPaintProperty('proximity-fill', 'fill-opacity', 0.05); } } catch {}
       updateProximityInfo();
 
-      summaryDiv.innerHTML = '<div class="text-slate-600 text-xs"><i class="fa-solid fa-spinner fa-spin"></i> Loading data from OSM and local sources...</div>';
+      summaryDiv.innerHTML = '<div class="text-slate-600 text-xxs"><i class="fa-solid fa-spinner fa-spin"></i> Loading data from OSM and local sources...</div>';
 
       const distKm = getSelectedRadiusKm();
       const centerPt = turf.point([proximityCenter.lng, proximityCenter.lat]);
@@ -3025,25 +3025,25 @@ out center;`;
       const lines = [];
       const distLabel = distKm < 1 ? `${Math.round(distKm*1000)} m` : `${distKm} km`;
       lines.push(`<div class="font-semibold mb-1">Amenities within ${distLabel}</div>`);
-      lines.push(`<div class="text-xs mb-2">Location: ${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}</div>`);
+      lines.push(`<div class="text-xxs mb-2">Location: ${proximityCenter.lat.toFixed(5)}, ${proximityCenter.lng.toFixed(5)}</div>`);
       lines.push('<div class="grid grid-cols-2 gap-1 mb-2">');
       cats.forEach(cat => {
         const c = counts.get(cat.id) || 0;
-        lines.push(`<div class="text-xs">${cat.label}: <strong class="text-primary">${c}</strong></div>`);
+        lines.push(`<div class="text-xxs">${cat.label}: <strong class="text-primary">${c}</strong></div>`);
       });
       lines.push('</div>');
 
       if (results.length){
-        lines.push('<div class="text-xs font-semibold mt-1">Nearest results</div>');
+        lines.push('<div class="text-xxs font-semibold mt-1">Nearest results</div>');
         lines.push('<div class="divide-y">');
         results.slice(0, 50).forEach(r => {
           const dLabel = r.distKm < 1 ? `${Math.round(r.distKm*1000)} m` : `${r.distKm.toFixed(1)} km`;
-          const sourceTag = r.source ? `<span class="text-xs text-slate-400">[${r.source}]</span>` : '';
-          lines.push(`<div class="py-1 text-xs">${r.name} ${sourceTag} <span class="text-slate-500">(${r.cat}, ${dLabel})</span></div>`);
+          const sourceTag = r.source ? `<span class="text-xxs text-slate-400">[${r.source}]</span>` : '';
+          lines.push(`<div class="py-1 text-xxs">${r.name} ${sourceTag} <span class="text-slate-500">(${r.cat}, ${dLabel})</span></div>`);
         });
         lines.push('</div>');
       } else {
-        lines.push('<div class="text-xs text-slate-600">No amenities found in the selected range.</div>');
+        lines.push('<div class="text-xxs text-slate-600">No amenities found in the selected range.</div>');
       }
 
       summaryDiv.innerHTML = lines.join('');
@@ -3079,7 +3079,7 @@ out center;`;
     accessibilityClose.addEventListener('click', () => { hideAccessibilityPanel(); });
 
     function updateAccessibilityInfo() {
-      const coords = accessibilityCenter ? `${accessibilityCenter.lat.toFixed(5)}, ${accessibilityCenter.lng.toFixed(5)}` : 'â€”';
+      const coords = accessibilityCenter ? `${accessibilityCenter.lat.toFixed(5)}, ${accessibilityCenter.lng.toFixed(5)}` : '—';
       accessibilityInfo.textContent = `Location: ${coords}`;
     }
 
@@ -3282,15 +3282,15 @@ out center;`;
 
       // Update UI with results
       walkabilityScore.textContent = `${walkScore}/10`;
-      walkabilityDetails.textContent = `${walkabilityMetrics.pathLength.toFixed(1)}km paths â€¢ ${walkabilityMetrics.amenities} amenities`;
+      walkabilityDetails.textContent = `${walkabilityMetrics.pathLength.toFixed(1)}km paths • ${walkabilityMetrics.amenities} amenities`;
 
       bikeabilityScore.textContent = `${bikeScore}/10`;
-      bikeabilityDetails.textContent = `${bikeabilityMetrics.cyclePathLength.toFixed(1)}km cycle paths â€¢ ${bikeabilityMetrics.roadLength.toFixed(1)}km roads`;
+      bikeabilityDetails.textContent = `${bikeabilityMetrics.cyclePathLength.toFixed(1)}km cycle paths • ${bikeabilityMetrics.roadLength.toFixed(1)}km roads`;
 
       // Summary
       const summaryLines = [];
       summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Analysis radius:</span><strong>${distance}m</strong></div>`);
-      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Area covered:</span><strong>${areaKm2.toFixed(2)}kmÂ²</strong></div>`);
+      summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Area covered:</span><strong>${areaKm2.toFixed(2)}km²</strong></div>`);
       summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Pedestrian paths:</span><strong>${walkabilityMetrics.pathCount}</strong></div>`);
       summaryLines.push(`<div class="flex justify-between"><span class="text-gray-500">Cycle paths:</span><strong>${bikeabilityMetrics.cyclePathCount}</strong></div>`);
       
@@ -3313,9 +3313,9 @@ out center;`;
       updateAccessibilityInfo();
       accessibilityRun.disabled = true;
       accessibilityRun.classList.add('opacity-60', 'cursor-not-allowed');
-      walkabilityScore.textContent = 'â€”';
+      walkabilityScore.textContent = '—';
       walkabilityDetails.textContent = 'Calculating...';
-      bikeabilityScore.textContent = 'â€”';
+      bikeabilityScore.textContent = '—';
       bikeabilityDetails.textContent = 'Calculating...';
       accessibilitySummary.innerHTML = '';
     }
@@ -3407,7 +3407,7 @@ out center;`;
     function updateRouteDestinationInfo() {
       const totalDestinations = selectedLandmarks.length + customDestinations.length;
       if (totalDestinations === 0) {
-        routeDestinationInfo.textContent = 'Destinations: â€”';
+        routeDestinationInfo.textContent = 'Destinations: —';
       } else {
         routeDestinationInfo.textContent = `Destinations: ${totalDestinations} selected (${selectedLandmarks.length} landmarks, ${customDestinations.length} custom)`;
       }
@@ -3417,7 +3417,7 @@ out center;`;
       if (routeStartPoint) {
         routeStartInfo.textContent = `Start: ${routeStartPoint.lat.toFixed(5)}, ${routeStartPoint.lng.toFixed(5)}`;
       } else {
-        routeStartInfo.textContent = 'Start: â€”';
+        routeStartInfo.textContent = 'Start: —';
       }
     }
 
@@ -3944,7 +3944,7 @@ out center;`;
         btn.disabled = true;
         // preserve the button icon HTML and show a small busy indicator (keep icon visible)
         var originalHTML = btn.innerHTML;
-        btn.innerHTML = originalHTML + ' <span aria-hidden="true">â³</span>';
+        btn.innerHTML = originalHTML + ' <span aria-hidden="true">⏳</span>';
       }
 
       navigator.geolocation.getCurrentPosition(
@@ -4552,7 +4552,7 @@ out center;`;
         btn.className = 'layer-menu-btn btn-tertiary';
         btn.setAttribute('aria-haspopup', 'true');
         btn.setAttribute('aria-expanded', 'false');
-        btn.innerHTML = '<span class="sr-only">Open layer options</span>â–¾';
+        btn.innerHTML = '<span class="sr-only">Open layer options</span>▾';
 
         // mark sub as popover for older layout compatibility
         sub.classList.add('popover');
