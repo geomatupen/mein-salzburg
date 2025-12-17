@@ -535,8 +535,8 @@
   </style>
   
 </head>
-<body class="h-full overflow-hidden font-sans">
-  <div id="map" class="w-full h-screen"></div>
+<body class="h-full overflow-hidden font-sans" style="background-color: #ffffff;">
+  <div id="map" class="w-full h-screen" style="background-color: #ffffff;"></div>
   <div id="search-container" class="absolute left-20 top-3 z-30 w-80">
     <div class="relative">
       <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3" />
@@ -855,8 +855,10 @@
         </div>
         <div class="mb-3">
           <div class="flex flex-col gap-2 pb-2">
-            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio" checked> <span class="text-xs text-gray-600">Street</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="none" id="basemap-none-radio"> <span class="text-xs text-gray-600">None</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="street" id="basemap-street-radio"> <span class="text-xs text-gray-600">Street</span></label>
             <label class="flex items-center gap-3"><input type="radio" name="basemap" value="satellite" id="basemap-sat-radio"> <span class="text-xs text-gray-600">Satellite</span></label>
+            <label class="flex items-center gap-3"><input type="radio" name="basemap" value="mapbox-light" id="basemap-mapbox-light-radio" checked> <span class="text-xs text-gray-600">Mapbox Light</span></label>
           </div>
         </div>
 
@@ -1182,7 +1184,12 @@
     // Use the public MapLibre demo style which includes a working `glyphs` URL
     const map = new maplibregl.Map({
       container: "map",
-      style: 'https://demotiles.maplibre.org/style.json',
+      style: {
+        version: 8,
+        sources: {},
+        layers: [],
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf'
+      },
       center: [13.033229, 47.811195],
       zoom: 15,
       pitch: 45,
@@ -1315,11 +1322,25 @@
         attribution: 'Tiles © Esri'
       });
 
-      // Add street raster layer (visible by default)
+      // Mapbox Light
+      map.addSource('basemap-mapbox-light-source', {
+        type: 'raster',
+        tiles: [
+          'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+          'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+        ],
+        tileSize: 256,
+        attribution: '© CartoDB'
+      });
+
+      // Add street raster layer (hidden by default)
       map.addLayer({
         id: 'basemap-street',
         type: 'raster',
-        source: 'basemap-street-source'
+        source: 'basemap-street-source',
+        layout: { 'visibility': 'none' }
       });
 
       // Add satellite raster layer (hidden by default)
@@ -1328,6 +1349,14 @@
         type: 'raster',
         source: 'basemap-satellite-source',
         layout: { 'visibility': 'none' }
+      });
+
+      // Add Mapbox Light raster layer (visible by default)
+      map.addLayer({
+        id: 'basemap-mapbox-light',
+        type: 'raster',
+        source: 'basemap-mapbox-light-source',
+        layout: { 'visibility': 'visible' }
       });
 
       map.addSource("amenities", {
@@ -1417,7 +1446,7 @@
             6
           ],
           "fill-extrusion-base": 0,
-          "fill-extrusion-opacity": 0.95
+          "fill-extrusion-opacity": 0.80
         }
       });
 
@@ -1437,10 +1466,30 @@
         id: "railway-layer",
         type: "line",
         source: "railway",
+        layout: {
+          "line-cap": "butt",
+          "line-join": "miter"
+        },
         paint: {
-          "line-color": "#ED2AD8",
-          "line-width": 1
-        }
+          "line-color": "#444444",
+          "line-width": [
+            "interpolate", ["linear"], ["zoom"],
+            10, 0.5,
+            14, 1.0,
+            16, 1.5,
+            18, 2.0,
+            19, 2.5
+          ],
+          "line-dasharray": [6, 3]
+        },
+        filter: [
+          "step", ["zoom"],
+          ["in", ["get", "usage"], ["literal", ["main", "branch"]]],
+          14,
+          ["in", ["get", "usage"], ["literal", ["main", "branch", "industrial", "tourism"]]],
+          16,
+          true
+        ]
       });
 
       // Add layers for Salzburg boundaries: transparent interior, visible border only
@@ -1466,51 +1515,174 @@
         }
       });
 
-      // Streets types Coloring - normalized to brand colors
+      // Road borders (underneath for outline effect)
+      map.addLayer({
+        id: "streets-borders",
+        type: "line",
+        source: "streets",
+        layout: {
+          "line-cap": "round",
+          "line-join": "round"
+        },
+        paint: {
+          "line-color": "#666666",
+          "line-width": [
+            "interpolate", ["exponential", 1.35], ["zoom"],
+            10, [
+              "match", ["get", "highway"],
+              "motorway", 2.8,
+              "motorway_link", 2.6,
+              "primary", 2.6,
+              "secondary", 2.2,
+              "tertiary", 1.9,
+              "tertiary_link", 1.8,
+              "residential", 1.5,
+              "living_street", 1.4,
+              "service", 1.3,
+              "unclassified", 1.3,
+              "cycleway", 1.1,
+              "path", 0.9,
+              "pedestrian", 0.9,
+              1.0
+            ],
+            14, [
+              "match", ["get", "highway"],
+              "motorway", 5.2,
+              "motorway_link", 4.8,
+              "primary", 4.8,
+              "secondary", 3.8,
+              "tertiary", 3.1,
+              "tertiary_link", 2.9,
+              "residential", 2.4,
+              "living_street", 2.2,
+              "service", 2.0,
+              "unclassified", 2.0,
+              "cycleway", 1.7,
+              "path", 1.5,
+              "pedestrian", 1.5,
+              1.7
+            ],
+            17, [
+              "match", ["get", "highway"],
+              "motorway", 9.0,
+              "motorway_link", 8.2,
+              "primary", 8.2,
+              "secondary", 6.2,
+              "tertiary", 5.2,
+              "tertiary_link", 4.8,
+              "residential", 3.8,
+              "living_street", 3.4,
+              "service", 3.0,
+              "unclassified", 3.0,
+              "cycleway", 2.6,
+              "path", 2.2,
+              "pedestrian", 2.2,
+              2.6
+            ],
+            19, [
+              "match", ["get", "highway"],
+              "motorway", 78.0,
+              "motorway_link", 71.0,
+              "primary", 71.0,
+              "secondary", 53.0,
+              "tertiary", 45.0,
+              "tertiary_link", 41.0,
+              "residential", 33.0,
+              "living_street", 31.0,
+              "service", 28.0,
+              "unclassified", 28.0,
+              "cycleway", 23.0,
+              "path", 21.0,
+              "pedestrian", 21.0,
+              23.0
+            ]
+          ]
+        }
+      });
+
+      // Main roads layer - light gray with size distinction only
       map.addLayer({
         id: "streets-layer",
         type: "line",
         source: "streets",
+        layout: {
+          "line-cap": "round",
+          "line-join": "round"
+        },
         paint: {
-          // Color by highway type (lively palette). Default gray if not matched.
-          "line-color": [
-            "match",
-            ["get", "highway"],
-            "motorway", "#EDA02A",
-            "motorway_link", "#EDA02A",
-            "primary", "#EDA02A",
-            "secondary", "#EDA02A",
-            "tertiary", "#EDA02A",
-            "primary_link", "#EDA02A",
-            "tertiary_link", "#EDA02A",
-            "residential", "#ED2AD8",
-            "living_street", "#16a085",
-            "service", "#16a085",
-            "unclassified", "#16a085",
-            "cycleway", "#16a085",
-            "path", "#2A77ED",
-            "pedestrian", "#2A77ED",
-            "#95a5a6"
-          ],
+          // Light gray background for all roads
+          "line-color": "#e8e8e8",
           // Widths: larger for main roads, smaller for paths
           "line-width": [
-            "match",
-            ["get", "highway"],
-            "motorway", 5,
-            "motorway_link", 4.5,
-            "primary", 4,
-            "primary_link", 3.8,
-            "secondary", 3,
-            "tertiary", 2.4,
-            "tertiary_link", 2.2,
-            "residential", 1.8,
-            "living_street", 1.6,
-            "service", 1.4,
-            "unclassified", 1.2,
-            "cycleway", 1.2,
-            "path", 1,
-            "pedestrian", 1,
-            1.2
+            "interpolate", ["exponential", 1.35], ["zoom"],
+            10, [
+              "match", ["get", "highway"],
+              "motorway", 2.0,
+              "motorway_link", 1.8,
+              "primary", 1.8,
+              "secondary", 1.4,
+              "tertiary", 1.2,
+              "tertiary_link", 1.1,
+              "residential", 0.9,
+              "living_street", 0.8,
+              "service", 0.8,
+              "unclassified", 0.8,
+              "cycleway", 0.7,
+              "path", 0.5,
+              "pedestrian", 0.5,
+              0.6
+            ],
+            14, [
+              "match", ["get", "highway"],
+              "motorway", 4.0,
+              "motorway_link", 3.6,
+              "primary", 3.6,
+              "secondary", 2.8,
+              "tertiary", 2.3,
+              "tertiary_link", 2.1,
+              "residential", 1.8,
+              "living_street", 1.6,
+              "service", 1.5,
+              "unclassified", 1.5,
+              "cycleway", 1.3,
+              "path", 1.1,
+              "pedestrian", 1.1,
+              1.3
+            ],
+            17, [
+              "match", ["get", "highway"],
+              "motorway", 7.6,
+              "motorway_link", 6.8,
+              "primary", 6.8,
+              "secondary", 5.2,
+              "tertiary", 4.4,
+              "tertiary_link", 4.0,
+              "residential", 3.2,
+              "living_street", 2.8,
+              "service", 2.6,
+              "unclassified", 2.6,
+              "cycleway", 2.0,
+              "path", 1.6,
+              "pedestrian", 1.6,
+              2.0
+            ],
+            19, [
+              "match", ["get", "highway"],
+              "motorway", 75.0,
+              "motorway_link", 68.0,
+              "primary", 68.0,
+              "secondary", 50.0,
+              "tertiary", 42.0,
+              "tertiary_link", 38.0,
+              "residential", 30.0,
+              "living_street", 28.0,
+              "service", 25.0,
+              "unclassified", 25.0,
+              "cycleway", 20.0,
+              "path", 18.0,
+              "pedestrian", 18.0,
+              20.0
+            ]
           ]
         }
       });
@@ -1520,11 +1692,25 @@
         id: "rivers-layer",
         type: "line",
         source: "rivers",
+        layout: {
+          "line-cap": "round",
+          "line-join": "round"
+        },
         paint: {
-          "line-color": "#2A77ED",
-          "line-width": 2
+          "line-color": "#6ec6ff",
+          "line-width": [
+            "interpolate", ["exponential", 1.35], ["zoom"],
+            10, 2.0,
+            14, 6.0,
+            15, 15.0,
+            16, 30.0,
+            17, 52.8,
+            18, 115.0,
+            19, 325.0
+          ]
         }
       });
+
 
       // Add education POIs (points)
       map.addLayer({
@@ -1590,12 +1776,22 @@
       const basemapRadios = document.querySelectorAll('input[name="basemap"]');
       basemapRadios.forEach(r => r.addEventListener('change', (e) => {
         const val = e.target.value;
-        if (val === 'street') {
+        if (val === 'none') {
+          map.setLayoutProperty('basemap-street', 'visibility', 'none');
+          map.setLayoutProperty('basemap-satellite', 'visibility', 'none');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'none');
+        } else if (val === 'street') {
           map.setLayoutProperty('basemap-street', 'visibility', 'visible');
           map.setLayoutProperty('basemap-satellite', 'visibility', 'none');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'none');
         } else if (val === 'satellite') {
           map.setLayoutProperty('basemap-street', 'visibility', 'none');
           map.setLayoutProperty('basemap-satellite', 'visibility', 'visible');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'none');
+        } else if (val === 'mapbox-light') {
+          map.setLayoutProperty('basemap-street', 'visibility', 'none');
+          map.setLayoutProperty('basemap-satellite', 'visibility', 'none');
+          map.setLayoutProperty('basemap-mapbox-light', 'visibility', 'visible');
         }
       }));
 
@@ -3823,9 +4019,9 @@
       const configs = [
         { layers: [{ id: 'amenities-layer', paintKey: 'circle-opacity' }], source: 'amenities', ui: 'amenities', defaultOpacity: 0.9 },
         { layers: [{ id: 'buildings-layer', paintKey: 'fill-extrusion-opacity' }, { id: 'buildings-outline', paintKey: 'line-opacity' }], source: 'buildings', ui: 'buildings', defaultOpacity: 0.95 },
-        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1 },
+        { layers: [{ id: 'streets-layer', paintKey: 'line-opacity' }], source: 'streets', ui: 'streets', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'railway-layer', paintKey: 'line-opacity' }], source: 'railway', ui: 'railway', defaultOpacity: 1 },
-        { layers: [{ id: 'rivers-layer', paintKey: 'line-opacity' }], source: 'rivers', ui: 'rivers', defaultOpacity: 1 },
+        { layers: [{ id: 'rivers-layer', paintKey: 'line-opacity' }], source: 'rivers', ui: 'rivers', defaultOpacity: 1, labelsDefaultOn: true, labelMinZoom: 16 },
         { layers: [{ id: 'education-layer', paintKey: 'circle-opacity' }], source: 'education', ui: 'education', defaultOpacity: 0.85 },
         { layers: [{ id: 'health-layer', paintKey: 'circle-opacity' }], source: 'health', ui: 'health', defaultOpacity: 0.85 },
         { layers: [{ id: 'restaurants-layer', paintKey: 'circle-opacity' }], source: 'restaurants', ui: 'restaurants', defaultOpacity: 0.85 },
@@ -3876,11 +4072,19 @@
             id: labelId,
             type: 'symbol',
             source: cfg.source,
+            minzoom: cfg.labelMinZoom || 0,
             layout: {
+              'symbol-placement': 'line',
               'text-field': ['coalesce', ['get', 'name'], ['get', 'NAME'], ''],
-              'text-size': 12,
+              'text-size': [
+                'interpolate', ['linear'], ['zoom'],
+                (cfg.labelMinZoom || 10), 11,
+                18, 14,
+                19, 15
+              ],
               'visibility': 'none',
-              'text-allow-overlap': false
+              'text-allow-overlap': false,
+              'text-optional': true
             },
             paint: {
               'text-color': '#17202A',
@@ -3947,20 +4151,27 @@
         }
 
         if (labelsEl) {
-          labelsEl.checked = false; // labels off by default
+          labelsEl.checked = !!cfg.labelsDefaultOn;
           // if glyphs are not available, disable the checkbox and inform user via console
-          labelsEl.addEventListener('change', (ev) => {
+          const toggleLabels = (evChecked) => {
             const created = ensureLabelLayer(cfg);
             if (!created) {
-              // creation failed (likely missing glyphs) — revert checkbox and notify
-              ev.target.checked = false;
-              ev.target.disabled = true;
-              ev.target.title = 'Label rendering requires a style with `glyphs` configured.';
+              labelsEl.checked = false;
+              labelsEl.disabled = true;
+              labelsEl.title = 'Label rendering requires a style with `glyphs` configured.';
               console.warn('Labels unavailable for', cfg.ui, '- style missing glyphs or source unavailable');
               return;
             }
-            applyLayout([labelLayerId], ev.target.checked);
+            applyLayout([labelLayerId], evChecked);
+          };
+
+          labelsEl.addEventListener('change', (ev) => {
+            toggleLabels(ev.target.checked);
           });
+
+          if (cfg.labelsDefaultOn) {
+            toggleLabels(true);
+          }
         }
       });
 
