@@ -212,6 +212,38 @@
     .maplibregl-ctrl-group button { overflow: visible !important; min-width:auto;}
     .maplibregl-popup-close-button{padding-right: 3px;}
 
+    /* Popup visual tweaks: larger, more readable, and rounded corners */
+    .maplibregl-popup-content {
+      border-radius: 0.6rem !important;
+      padding: 0.75rem 0.9rem !important;
+      font-size: 14px !important;
+      line-height: 1.4 !important;
+      box-shadow: 0 8px 24px rgba(2,6,23,0.18) !important;
+    }
+    /* Slightly enlarge table cells inside popups */
+    .maplibregl-popup-content table td, .maplibregl-popup-content table th {
+      font-size: 13px !important;
+      padding: 6px 8px !important;
+    }
+    /* Keep the popup tip subtle */
+    .maplibregl-popup-tip {
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.12));
+    }
+
+    /* Legend styling: clearer, larger and rounded to match popups */
+    #map-legend { font-size: 13px; padding: 0; border-radius: 0.6rem; min-width: 14rem; }
+    #map-legend .panel-header { padding: 0.75rem 0.9rem; }
+    #map-legend .panel-header strong { font-size: 0.95rem; color: #1f2937; }
+    #map-legend .panel-body { padding: 0.75rem 0.9rem; }
+    #map-legend .legend-item { padding: 0.35rem 0.25rem; border-radius: 0.4rem; transition: background-color 0.12s, transform 0.08s; }
+    #map-legend .legend-item:hover { background: rgba(42,119,237,0.04); transform: translateY(-1px); }
+    #map-legend .legend-item .text-xxs { font-size: 13px; color: #374151; }
+    #map-legend .legend-item > div:first-child { flex: 0 0 auto; }
+    #map-legend .legend-item .w-3, #map-legend .legend-item .w-4 { box-shadow: inset 0 -1px 0 rgba(0,0,0,0.08); }
+    #map-legend .legend-group .text-xxs { font-size: 12.5px; color: #374151; }
+    #map-legend .legend-group .ml-2 .flex { gap: 0.5rem; }
+    #map-legend .panel-body { max-height: 20rem; overflow: auto; }
+
     /* Provide a few utility classes that our JS toggles — keep them small and explicit so they work without JIT
        These mirror the Tailwind utilities used in toggleMenu's openClasses array. */
     .max-h-80 { max-height: 20rem !important; }
@@ -1454,7 +1486,7 @@
 
 
       // Function to build popup HTML content
-      function buildPopupHTML(properties) {
+      function buildPopupHTML(properties, layerId) {
         // Determine the title: prefer name, fall back to type, or use "Feature"
         const title = properties.name || properties.NAME || properties.type || properties.TYPE || "Feature";
 
@@ -1980,15 +2012,9 @@
       "transportation-layer"
     ];
 
-    layersWithPopups.forEach(layerId => {
-      map.on("click", layerId, (e) => {
-        const props = e.features[0].properties;
-        new maplibregl.Popup({ closeButton: true })
-          .setLngLat(e.lngLat)
-          .setHTML(buildPopupHTML(props, layerId))
-          .addTo(map);
-      });
-    });
+    // Note: individual per-layer click handlers removed to avoid duplicate popups.
+    // The global click handler below handles popups for all interactive layers and
+    // provides a unified layer selector when multiple features exist at the click point.
 
     // Handle clicks for all layers with layer selection if multiple layers at click point
     // Exclude Salzburg boundary layers from interactive queries so the transparent interior
@@ -2021,75 +2047,76 @@
         
         // Only show popup if top layer is not salzburg boundaries
         if (topLayerId !== "salzburg-boundaries-layer" && topLayerId !== "salzburg-boundaries-outline") {
-          let popupHTML = buildPopupHTML(topFeature.properties, topLayerId);
-          
-          // Add dropdown if multiple layers
+            // Build dropdown (if needed) first so it appears at the top of the popup
+          let dropdownHtml = '';
           if (uniqueLayers.length > 1) {
             const dropdownOptions = uniqueLayers.map((layerId, idx) => `
               <option value="${idx}" ${idx === 0 ? 'selected' : ''}>
                 ${layerId.replace('-layer', '').replace('-outline', ' outline')}
               </option>
             `).join('');
-            
-            popupHTML += `
-              <div class="mt-2 pt-2 border-t border-gray-300">
-                <label class="text-xs block mb-1"><strong>Other layers:</strong></label>
+
+            dropdownHtml = `
+              <div class="mb-2">
+                <label class="text-xs block mb-1"><strong>Layers</strong></label>
                 <select class="layer-dropdown w-full p-1.5 border border-gray-300 rounded text-xs">
                   ${dropdownOptions}
                 </select>
               </div>
             `;
           }
-          
+
+          // Compose final HTML with dropdown on top followed by the feature content
           const popup = new maplibregl.Popup({ closeButton: true })
             .setLngLat(e.lngLat)
-            .setHTML(popupHTML)
+            .setHTML(dropdownHtml + buildPopupHTML(topFeature.properties, topLayerId))
             .addTo(map);
-          
-          // Add dropdown change handler if multiple layers
+
+          // If there are multiple layers, listen for selection changes and update the same popup
           if (uniqueLayers.length > 1) {
+            // Use a delegated handler that updates popup HTML; avoid creating multiple popups
             setTimeout(() => {
               const dropdown = document.querySelector('.layer-dropdown');
-              if (dropdown) {
-                dropdown.addEventListener('change', (evt) => {
-                  const selectedIdx = parseInt(evt.target.value);
-                  const selectedLayerId = uniqueLayers[selectedIdx];
-                  const selectedFeature = features.find(f => f.layer.id === selectedLayerId);
-                  
-                  if (selectedFeature && selectedLayerId !== "salzburg-boundaries-layer" && selectedLayerId !== "salzburg-boundaries-outline") {
-                      popup.remove();
-                      let newPopupHTML = buildPopupHTML(selectedFeature.properties, selectedLayerId);
-                    
-                    // Re-add dropdown with updated selection
-                    const dropdownOptions = uniqueLayers.map((layerId, idx) => `
-                      <option value="${idx}" ${idx === selectedIdx ? 'selected' : ''}>
-                        ${layerId.replace('-layer', '').replace('-outline', ' outline')}
-                      </option>
-                    `).join('');
-                    
-                    newPopupHTML += `
-                      <div class="mt-2 pt-2 border-t border-gray-300">
-                        <label class="text-xs block mb-1"><strong>Other layers:</strong></label>
-                        <select class="layer-dropdown w-full p-1.5 border border-gray-300 rounded text-xs">
-                          ${dropdownOptions}
-                        </select>
-                      </div>
-                    `;
-                    
-                    const newPopup = new maplibregl.Popup({ closeButton: true })
-                      .setLngLat(e.lngLat)
-                      .setHTML(newPopupHTML)
-                      .addTo(map);
-                    
-                    setTimeout(() => {
-                      const newDropdown = document.querySelector('.layer-dropdown');
-                      if (newDropdown) {
-                        newDropdown.addEventListener('change', arguments.callee);
-                      }
-                    }, 0);
+              if (!dropdown) return;
+
+              function onLayerChange(evt) {
+                const selectedIdx = parseInt(evt.target.value);
+                const selectedLayerId = uniqueLayers[selectedIdx];
+                const selectedFeature = features.find(f => f.layer.id === selectedLayerId);
+                if (!selectedFeature) return;
+                if (selectedLayerId === "salzburg-boundaries-layer" || selectedLayerId === "salzburg-boundaries-outline") return;
+
+                // Update popup content in-place
+                const newHtml = dropdownHtml.replace(/value="\d+"\s*selected/g, (m) => m.replace(' selected',''))
+                  .replace(/value="' + selectedIdx + '"/, `value="${selectedIdx}" selected`);
+                // Simpler: rebuild dropdownHtml with correct selected index
+                const newDropdownOptions = uniqueLayers.map((layerId, idx) => `
+                  <option value="${idx}" ${idx === selectedIdx ? 'selected' : ''}>
+                    ${layerId.replace('-layer', '').replace('-outline', ' outline')}
+                  </option>
+                `).join('');
+                const newDropdownHtml = `
+                  <div class="mb-2">
+                    <label class="text-xs block mb-1"><strong>Layers</strong></label>
+                    <select class="layer-dropdown w-full p-1.5 border border-gray-300 rounded text-xs">
+                      ${newDropdownOptions}
+                    </select>
+                  </div>
+                `;
+
+                popup.setHTML(newDropdownHtml + buildPopupHTML(selectedFeature.properties, selectedLayerId));
+
+                // Reattach handler to the newly rendered select element
+                setTimeout(() => {
+                  const newDropdown = document.querySelector('.layer-dropdown');
+                  if (newDropdown) {
+                    newDropdown.removeEventListener('change', onLayerChange);
+                    newDropdown.addEventListener('change', onLayerChange);
                   }
-                });
+                }, 0);
               }
+
+              dropdown.addEventListener('change', onLayerChange);
             }, 0);
           }
         }
