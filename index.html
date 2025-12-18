@@ -196,6 +196,10 @@
        Calculation: left offset of search container (left-20 = 5rem) + width (w-80 = 20rem) + gap 0.5rem = 25.5rem
        Flex container holds filter and analytics buttons side-by-side with small gap */
      .buttons-right { left: calc(25.5rem); display: flex; gap: 0.5rem; align-items: center; }
+     /* Mobile: move buttons below search bar */
+     @media (max-width: 768px) {
+       .buttons-right { left: 0.75rem !important; top: 4rem !important; }
+     }
      /* Welcome popup overlay: ensure a semi-opaque dark veil behind the modal so it stands out
        (some utility classes can make it appear fully transparent depending on cascade; enforce here).
        Also ensure the modal sits above other fixed UI elements (scalebar, controls) by increasing z-index. */
@@ -546,7 +550,7 @@
 </head>
 <body class="h-full overflow-hidden font-sans" style="background-color: #ffffff;">
   <div id="map" class="w-full h-screen" style="background-color: #ffffff;"></div>
-  <div id="search-container" class="absolute left-20 top-3 z-30 w-80">
+  <div id="search-container" class="absolute left-3 md:left-20 top-3 z-30 w-auto md:w-80 right-3 md:right-auto">
     <div class="relative">
       <input id="search-input" type="search" placeholder="Search place or address..." autocomplete="off" class="px-3 py-2 border border-gray-200 rounded-md bg-white text-xs focus:outline-none focus:ring-2 focus:ring-sky-200 w-full h-9 pr-3 shadow-lg" />
     </div>
