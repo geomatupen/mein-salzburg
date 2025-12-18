@@ -52,6 +52,7 @@
 <html class="h-full">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Salzburg</title>
   <link
     href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css"
@@ -607,7 +608,7 @@
   </div>
 
   <!-- Legend (draggable + minimizable) -->
-  <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 w-56 max-w-xs z-20 bg-white rounded-lg shadow-xl" role="dialog" aria-label="Map legend">
+  <div id="map-legend" class="draggable-panel map-legend absolute left-3 bottom-3 md:left-3 md:bottom-3 md:right-auto md:top-auto w-56 md:w-56 max-w-xs z-20 bg-white rounded-lg shadow-xl" role="dialog" aria-label="Map legend">
     <div class="panel-header flex items-center justify-between p-3 pb-1 pt-1 border-b border-gray-100">
       <strong class="text-xs">Legend</strong>
       <div class="panel-controls flex items-center gap-2">
@@ -849,7 +850,7 @@
 
   <!-- Webmap Title: top right, above layer panel -->
   
-  <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 w-1/4 max-w-md z-20 h-screen flex flex-col bg-white/95 shadow-xl rounded-lg pb-4">
+  <div id="layer-panel" class="draggable-panel layer-panel absolute right-3 top-3 md:right-3 md:top-3 md:left-auto md:bottom-auto w-full md:w-1/4 max-w-md md:max-w-md z-20 h-auto md:h-screen flex flex-col bg-white/95 shadow-xl rounded-lg pb-4">
     <div class="panel-header flex items-center justify-between p-3 border-b bg-primary border-gray-100 rounded-lg-top">
       <div class="text-sm font-semibold text-gray-100">MeinSalzburg | Urban Toolkit</div>
       <div class="panel-controls flex items-center gap-2">
