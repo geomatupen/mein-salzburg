@@ -4418,13 +4418,18 @@ out center;`;
         }
 
         try {
+          // Determine if this is a point or line layer based on the layer type
+          const sourceLayer = cfg.layers && cfg.layers[0] && cfg.layers[0].id;
+          const layerType = sourceLayer && map.getLayer(sourceLayer) ? map.getLayer(sourceLayer).type : null;
+          const isPointLayer = layerType === 'circle';
+          
           map.addLayer({
             id: labelId,
             type: 'symbol',
             source: cfg.source,
             minzoom: cfg.labelMinZoom || 0,
             layout: {
-              'symbol-placement': 'line',
+              'symbol-placement': isPointLayer ? 'point' : 'line',
               'text-field': ['coalesce', ['get', 'name'], ['get', 'NAME'], ''],
               'text-size': [
                 'interpolate', ['linear'], ['zoom'],
@@ -4432,6 +4437,8 @@ out center;`;
                 18, 14,
                 19, 15
               ],
+              'text-offset': isPointLayer ? [0, 0.7] : [0, 0],
+              'text-anchor': isPointLayer ? 'top' : 'center',
               'visibility': 'none',
               'text-allow-overlap': false,
               'text-optional': true
