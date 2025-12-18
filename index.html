@@ -4388,7 +4388,13 @@ out center;`;
           layersDef.forEach(l => {
             const id = (typeof l === 'string') ? l : l.id;
             const paintKey = (typeof l === 'string') ? null : l.paintKey;
-            if (paintKey && map.getLayer(id)) map.setPaintProperty(id, paintKey, Number(value));
+            if (paintKey && map.getLayer(id)) {
+              map.setPaintProperty(id, paintKey, Number(value));
+              // Also update stroke opacity for circle layers so border follows fill opacity
+              if (paintKey === 'circle-opacity') {
+                map.setPaintProperty(id, 'circle-stroke-opacity', Number(value));
+              }
+            }
           });
         } catch (e) {}
       }
